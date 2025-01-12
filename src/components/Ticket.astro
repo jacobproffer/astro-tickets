@@ -8,10 +8,21 @@ interface Props {
 }
 
 const { title, theater, time, price, rating } = Astro.props;
+
+// Format the date string to a human-readable format
+const formatDate = (dateString: string | null | undefined): string | null => {
+  if (!dateString) return null;
+
+  const [year, month] = dateString.split("-");
+  if (!year || !month) return null;
+
+  const date = new Date(Number(year), Number(month) - 1); // Month is 0-indexed
+  return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long" }).format(date);
+};
 ---
 
-<div class="relative">
-  <div class="flex">
+<div class="relative h-full text-black">
+  <div class="flex flex-col justify-between h-full">
     <div class="grid">
       {title && <h3>{title}</h3>}
 
@@ -30,7 +41,7 @@ const { title, theater, time, price, rating } = Astro.props;
           time && (
             <li>
               <span class="sr-only">Ticket purchased on</span>
-              <time datetime={time}>{time}</time>
+              <time datetime={formatDate(time)}>{time}</time>
             </li>
           )
         }
