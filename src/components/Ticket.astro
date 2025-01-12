@@ -1,0 +1,58 @@
+---
+interface Props {
+  title: string;
+  theater: string;
+  time: string;
+  price: string;
+  rating: string;
+}
+
+const { title, theater, time, price, rating } = Astro.props;
+---
+
+<div class="relative">
+  <div class="flex">
+    <div class="grid">
+      {title && <h3>{title}</h3>}
+
+      {
+        theater && (
+          <small>
+            <span class="sr-only">Ticket purchased at</span>
+            {theater}
+            <span aria-hidden="true">Presenting</span>
+          </small>
+        )
+      }
+
+      <ul class="flex">
+        {
+          time && (
+            <li>
+              <span class="sr-only">Ticket purchased on</span>
+              <time datetime={time}>{time}</time>
+            </li>
+          )
+        }
+
+        {
+          price && (
+            <li>
+              <span class="sr-only">The ticket cost</span>
+              <small class="ticket__price">${price}</small>
+            </li>
+          )
+        }
+
+        {
+          rating && (
+            <li>
+              <span class="sr-only">The movie is rated</span>
+              {rating}
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+</div>
