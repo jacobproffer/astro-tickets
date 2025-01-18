@@ -28,14 +28,20 @@ const formatDate = (dateString: string | null | undefined): string | null => {
 };
 ---
 
-<div class="relative h-full text-black">
+<div class="relative h-full text-black bg-blue rounded-md">
   <div class="flex flex-col justify-between h-full">
-    <div class="grid">
-      {title && <h3>{title}</h3>}
+    <div class="grid p-1">
+      {
+        title && (
+          <h3 class="p-0 text-balance border-b-2 border-solid border-gray">
+            {title}
+          </h3>
+        )
+      }
 
       {
         theater && (
-          <small>
+          <small class="-order-1">
             <span class="sr-only">Ticket purchased at</span>
             {theater}
             <span aria-hidden="true">Presenting</span>
@@ -43,7 +49,7 @@ const formatDate = (dateString: string | null | undefined): string | null => {
         )
       }
 
-      <ul class="flex">
+      <ul class="flex items-center justify-between">
         {
           time && (
             <li>
@@ -64,7 +70,7 @@ const formatDate = (dateString: string | null | undefined): string | null => {
 
         {
           rating && (
-            <li>
+            <li class="border-2 border-solid border-gray">
               <span class="sr-only">The movie is rated</span>
               {rating}
             </li>

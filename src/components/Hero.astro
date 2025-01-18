@@ -1,16 +1,33 @@
 ---
 import Container from "./Container.astro";
+import Graphic from "../assets/graphic.svg";
 
-interface Props {
-  headline: string;
-}
-
-const { headline } = Astro.props;
+const initialYear = 2007;
+const currentYear = new Date().getFullYear();
+const years = currentYear - initialYear;
 ---
 
-<section>
-  <Container>
-    {headline && <h1 class="font-medium text-xl leading-8 text-balance">{headline}</h1>}
-    <slot />
+<section class="grid pt-8">
+  <Container class="grid w-full gap-1 p-1">
+    <h1 class="sr-only">Tickets</h1>
+    <Graphic mode="inline" />
+    <ul class="grid grid-cols-3 border-t-2 border-gray border-solid">
+      <li
+        class="flex items-center justify-between border-r-2 border-gray pt-1 pr-1 pb-1 border-solid"
+      >
+        <h2 class="text-lg">Years</h2>
+        <div class="text-md">{years}</div>
+      </li>
+      <li
+        class="flex items-center justify-between p-1 border-r-2 border-gray border-solid"
+      >
+        <h2 class="text-lg">Theaters</h2>
+        <div class="text-md">0</div>
+      </li>
+      <li class="flex items-center justify-between pt-1 pb-1 pl-1">
+        <h2 class="text-lg">Tickets</h2>
+        <div class="text-md">0</div>
+      </li>
+    </ul>
   </Container>
 </section>
