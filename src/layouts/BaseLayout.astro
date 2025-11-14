@@ -21,7 +21,7 @@ const { pageTitle, pageDescription } = Astro.props;
     <SiteSEO seo={{ title: pageTitle, description: pageDescription }} />
     <ClientRouter />
   </head>
-  <body>
+  <body class="text-white bg-black">
     <Header />
     <main id="content">
       <slot />
