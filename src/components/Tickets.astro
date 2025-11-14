@@ -15,10 +15,10 @@ const tickets = await getCollection("tickets");
         {tickets.map((ticket) => (
           <Ticket
             title={ticket.data.title}
-            theater={ticket.data.theaters}
+            theater={ticket.data.theater}
             time={ticket.data.date.toISOString().split("T")[0]}
             price={ticket.data.price}
-            rating={ticket.data.ratings}
+            rating={ticket.data.rating}
           />
         ))}
       </div>
