@@ -1,1 +1,24 @@
-<nav aria-label="primary"></nav>
+<nav aria-label="primary">
+  <ul class="flex space-x-4 mt-2">
+    <li>
+      <a
+        href="/"
+        class="text-white hover:text-blue transition-colors"
+        aria-current={Astro.url.pathname === "/" ? "page" : undefined}
+      >
+        Home
+      </a>
+    </li>
+    <li>
+      <a
+        href="/tickets/"
+        class="text-white hover:text-blue transition-colors"
+        aria-current={Astro.url.pathname.startsWith("/tickets")
+          ? "page"
+          : undefined}
+      >
+        All Tickets
+      </a>
+    </li>
+  </ul>
+</nav>
