@@ -3,7 +3,7 @@ import "@styles/global.css";
 import SiteSEO from "../components/SiteSEO.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   pageTitle: string;
@@ -19,9 +19,9 @@ const { pageTitle, pageDescription } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <SiteSEO seo={{ title: pageTitle, description: pageDescription }} />
-    <ViewTransitions />
+    <ClientRouter />
   </head>
-  <body>
+  <body class="text-white bg-black">
     <Header />
     <main id="content">
       <slot />
