@@ -47,7 +47,7 @@ const sortedYears = Object.keys(ticketsByYear)
               </div>
             </div>
 
-            <ol class="flex flex-col gap-2">
+            <ol class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
               {yearTickets.map((ticket) => (
                 <li>
                   <Ticket
