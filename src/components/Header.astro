@@ -3,7 +3,7 @@ import Navigation from "./Navigation.astro";
 import Container from "./Container.astro";
 ---
 
-<div>
+<div class="fixed z-20 w-full h-auto py-1 bg-black border-t-8 border-blue">
   <Container>
     <div>
       <header>
@@ -11,7 +11,10 @@ import Container from "./Container.astro";
           class="fixed -top-full left-1/2 py-1 px-4 -translate-x-1/2 transition-top ease-in-out delay-150 focus:top-0 focus:outline-dashed focus:outline-black dark:focus:outline-orange focus:outline-1"
           href="#content">Skip to main content</a
         >
-        Dead Man's Brew
+        <div class="leading-none">
+          <div>Dead Man's Brew</div>
+          <div class="text-blue">Movie Ticket Collection</div>
+        </div>
       </header>
       <Navigation />
     </div>
