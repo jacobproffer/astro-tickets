@@ -1,0 +1,27 @@
+---
+import { getCollection } from "astro:content";
+import Section from "./Section.astro";
+import Ticket from "./Ticket.astro";
+
+const tickets = await getCollection("tickets");
+---
+
+<Section headline="Movie Tickets">
+  {
+    tickets.length === 0 ? (
+      <p>No tickets found.</p>
+    ) : (
+      <div class="tickets-grid">
+        {tickets.map((ticket) => (
+          <Ticket
+            title={ticket.data.title}
+            theater={ticket.data.theaters}
+            time={ticket.data.date.toISOString().split("T")[0]}
+            price={ticket.data.price}
+            rating={ticket.data.ratings}
+          />
+        ))}
+      </div>
+    )
+  }
+</Section>

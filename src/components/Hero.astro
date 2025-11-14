@@ -1,10 +1,14 @@
 ---
 import Container from "./Container.astro";
 import Graphic from "../assets/graphic.svg";
+import { getCollection } from "astro:content";
 
 const initialYear = 2007;
 const currentYear = new Date().getFullYear();
 const years = currentYear - initialYear;
+
+const tickets = await getCollection("tickets");
+const ticketCount = tickets.length;
 ---
 
 <section class="grid pt-20">
@@ -26,7 +30,7 @@ const years = currentYear - initialYear;
       </li>
       <li class="flex items-center justify-between pt-1 pb-1 pl-1">
         <h2 class="text-lg">Tickets</h2>
-        <div class="text-md">0</div>
+        <div class="text-md">{ticketCount}</div>
       </li>
     </ul>
   </Container>
