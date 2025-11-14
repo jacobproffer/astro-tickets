@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+import Section from "./Section.astro";
+import Ticket from "./Ticket.astro";
+
+const tickets = await getCollection("tickets");
+// Sort tickets by date in descending order (newest first)
+const sortedTickets = tickets.sort((a, b) => {
+  const dateA = new Date(a.data.date);
+  const dateB = new Date(b.data.date);
+  return dateB.getTime() - dateA.getTime();
+});
+
+// Group tickets by year
+const ticketsByYear = sortedTickets.reduce(
+  (acc, ticket) => {
+    const year = new Date(ticket.data.date).getFullYear();
+    if (!acc[year]) {
+      acc[year] = [];
+    }
+    acc[year].push(ticket);
+    return acc;
+  },
+  {} as Record<number, typeof tickets>
+);
+
+// Sort years in descending order (newest first)
+const sortedYears = Object.keys(ticketsByYear)
+  .map(Number)
+  .sort((a, b) => b - a);
+---
+
+<Section headline="Tickets Collected">
+  <ol>
+    {
+      sortedYears.map((year) => {
+        const yearTickets = ticketsByYear[year];
+        const pageCount = yearTickets.length;
+
+        return (
+          <li class="flex flex-col gap-2">
+            <div class="flex content-center justify-between">
+              <h2>{year}</h2>
+
+              <div>
+                <span>{pageCount}</span> Tickets
+              </div>
+            </div>
+
+            <ol class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              {yearTickets.map((ticket) => (
+                <li>
+                  <Ticket
+                    title={ticket.data.title}
+                    theater={ticket.data.theater}
+                    time={ticket.data.date.toISOString().split("T")[0]}
+                    price={ticket.data.price}
+                    rating={ticket.data.rating}
+                  />
+                </li>
+              ))}
+            </ol>
+          </li>
+        );
+      })
+    }
+  </ol>
+</Section>

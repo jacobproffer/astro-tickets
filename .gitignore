@@ -12,6 +12,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# lock files (if using npm, ignore yarn.lock)
+yarn.lock
 
 # environment variables
 .env

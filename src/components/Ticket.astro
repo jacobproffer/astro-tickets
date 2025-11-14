@@ -1,0 +1,119 @@
+---
+interface Props {
+  title: string;
+  theater: string;
+  time: string;
+  price: number;
+  rating: string;
+}
+
+const { title, theater, time, price, rating } = Astro.props;
+
+/**
+ * Format a date string for display (e.g., "Fri 11/07/2025").
+ * @param {string} dateString - The date string to format (YYYY-MM-DD).
+ * @returns {string} The formatted date string.
+ */
+const formatDateForDisplay = (
+  dateString: string | null | undefined
+): string | null => {
+  if (!dateString) return null;
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return null;
+
+  const weekday = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(
+    date
+  );
+  const dateStr = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+
+  return `${weekday} ${dateStr}`;
+};
+
+/**
+ * Format a date string for datetime attribute (ISO format).
+ * @param {string} dateString - The date string to format (YYYY-MM-DD).
+ * @returns {string} The ISO formatted date string.
+ */
+const formatDateForDateTime = (
+  dateString: string | null | undefined
+): string | null => {
+  if (!dateString) return null;
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return null;
+
+  return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD format
+};
+
+/**
+ * Format a price number as currency.
+ * @param {number} price - The price to format.
+ * @returns {string} The formatted price string.
+ */
+const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(price);
+};
+---
+
+<div class="relative h-full text-black bg-white">
+  <div class="flex flex-col justify-between h-full">
+    <div class="grid p-1">
+      {
+        title && (
+          <h3 class="p-0 text-balance border-b-2 border-solid border-gray">
+            {title}
+          </h3>
+        )
+      }
+
+      {
+        theater && (
+          <small class="-order-1">
+            <span class="sr-only">Ticket purchased at</span>
+            {theater}
+            <span aria-hidden="true">Presenting</span>
+          </small>
+        )
+      }
+
+      <ul class="flex items-center justify-between">
+        {
+          time && (
+            <li>
+              <span class="sr-only">Ticket purchased on</span>
+              <time datetime={formatDateForDateTime(time)}>
+                {formatDateForDisplay(time)}
+              </time>
+            </li>
+          )
+        }
+
+        {
+          price && (
+            <li>
+              <span class="sr-only">The ticket cost</span>
+              <small class="ticket__price">{formatPrice(price)}</small>
+            </li>
+          )
+        }
+
+        {
+          rating && (
+            <li class="border-2 border-solid border-gray">
+              <span class="sr-only">The movie is rated</span>
+              {rating}
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-# Astro Starter
+# Dead Man's Brew
 
 Made with Astro and Tailwind.
 
