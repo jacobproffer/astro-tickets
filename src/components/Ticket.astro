@@ -63,57 +63,71 @@ const formatPrice = (price: number): string => {
 };
 ---
 
+<!-- Minimal Movie Ticket -->
 <div class="relative h-full" transition:animate="slide">
-  <div class="flex flex-col justify-between h-full">
-    <div class="grid p-1">
-      {
-        title && (
-          <h3 class="p-0 text-balance border-b-2 border-solid border-gray">
-            {title}
-          </h3>
-        )
-      }
+  <div class="h-full bg-gray-100 p-6">
+    <!-- Theater Header -->
+    {
+      theater && (
+        <div class="text-xs uppercase tracking-wide">
+          <span class="sr-only">Ticket purchased at</span>
+          {theater}
+        </div>
+      )
+    }
 
-      {
-        theater && (
-          <small class="-order-1">
-            <span class="sr-only">Ticket purchased at</span>
-            {theater}
-            <span aria-hidden="true">Presenting</span>
-          </small>
-        )
-      }
+    <!-- Movie Title -->
+    {title && <h3 class="text-2xl font-bold leading-tight">{title}</h3>}
 
-      <ul class="flex items-center justify-between">
+    <!-- Ticket Details -->
+    <div class="space-y-3 text-sm">
+      <!-- Date and Rating -->
+      <div class="flex justify-between items-center">
         {
           time && (
-            <li>
-              <span class="sr-only">Ticket purchased on</span>
-              <time datetime={formatDateForDateTime(time)}>
+            <div>
+              <span class="text-xs uppercase tracking-wide block mb-1">
+                Date
+              </span>
+              <time datetime={formatDateForDateTime(time)} class="font-medium">
+                <span class="sr-only">Ticket purchased on</span>
                 {formatDateForDisplay(time)}
               </time>
-            </li>
-          )
-        }
-
-        {
-          price && (
-            <li>
-              <span class="sr-only">The ticket cost</span>
-              <small class="ticket__price">{formatPrice(price)}</small>
-            </li>
+            </div>
           )
         }
 
         {
           rating && (
-            <li class="border-2 border-solid border-gray">
-              <span class="sr-only">The movie is rated</span>
-              {rating}
-            </li>
+            <div class="text-right">
+              <span class="text-xs uppercase tracking-wide block mb-1">
+                Rated
+              </span>
+              <span class="px-2 py-1 bg-black text-white text-xs font-bold rounded">
+                <span class="sr-only">The movie is rated</span>
+                {rating}
+              </span>
+            </div>
           )
         }
-      </ul>
+      </div>
+
+      <!-- Price -->
+      {
+        price && (
+          <div class="pt-3 border-t">
+            <div class="flex justify-between items-center">
+              <span class="text-xs uppercase tracking-wide" aria-hidden="true">
+                Admit One
+              </span>
+              <span class="text-lg font-bold text-black">
+                <span class="sr-only">The ticket cost</span>
+                {formatPrice(price)}
+              </span>
+            </div>
+          </div>
+        )
+      }
     </div>
   </div>
 </div>

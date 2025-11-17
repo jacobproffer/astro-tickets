@@ -45,7 +45,7 @@ const { page } = Astro.props;
 
   <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
     <div>
-      <p class="text-sm text-gray-400">
+      <p class="text-sm">
         Showing <span class="font-medium">{page.start + 1}</span> to{" "}
         <span class="font-medium">{page.end + 1}</span> of{" "}
         <span class="font-medium">{page.total}</span> tickets
@@ -73,7 +73,7 @@ const { page } = Astro.props;
 
       {
         page.lastPage > 1 && (
-          <span class="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-400">
+          <span class="relative inline-flex items-center px-2 py-2 text-sm font-medium">
             of {page.lastPage}
           </span>
         )

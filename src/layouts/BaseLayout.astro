@@ -1,4 +1,5 @@
 ---
+import "@fontsource/vt323";
 import "@styles/global.css";
 import SiteSEO from "../components/SiteSEO.astro";
 import Header from "../components/Header.astro";
@@ -18,10 +19,19 @@ const { pageTitle, pageDescription } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Backup: Google Fonts for VT323 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+
     <SiteSEO seo={{ title: pageTitle, description: pageDescription }} />
     <ClientRouter />
   </head>
-  <body class="text-white bg-black">
+  <body class="font-mono text-black bg-gray-200">
     <Header />
     <main id="content">
       <slot />

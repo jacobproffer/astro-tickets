@@ -15,26 +15,26 @@ const uniqueTheaters = new Set(tickets.map((ticket) => ticket.data.theater));
 const theaterCount = uniqueTheaters.size;
 ---
 
-<section class="grid pt-20" transition:name="hero">
+<section class="grid text-gray-200 bg-black">
   <Container class="grid w-full gap-1 p-1">
     <h1 class="sr-only">Tickets</h1>
-    <Graphic mode="inline" transition:name="logo" />
-    <ul class="grid grid-cols-3 border-t-2 border-gray border-solid">
+    <Graphic mode="inline" />
+    <ul class="grid grid-cols-3 border-t border-gray border-solid">
       <li
-        class="flex items-center justify-between border-r-2 border-gray pt-1 pr-1 pb-1 border-solid"
+        class="flex items-center justify-between border-r border-gray pt-1 pr-1 pb-1 border-solid"
       >
-        <h2 class="text-lg">Years</h2>
-        <div class="text-md">{years}</div>
+        <h2 class="text-4xl">Years</h2>
+        <div class="text-2xl">{years}</div>
       </li>
       <li
-        class="flex items-center justify-between p-1 border-r-2 border-gray border-solid"
+        class="flex items-center justify-between p-1 border-r border-gray border-solid"
       >
-        <h2 class="text-lg">Theaters</h2>
-        <div class="text-md">{theaterCount}</div>
+        <h2 class="text-4xl">Theaters</h2>
+        <div class="text-2xl">{theaterCount}</div>
       </li>
       <li class="flex items-center justify-between pt-1 pb-1 pl-1">
-        <h2 class="text-lg">Tickets</h2>
-        <div class="text-md">{ticketCount}</div>
+        <h2 class="text-4xl">Tickets</h2>
+        <div class="text-2xl">{ticketCount}</div>
       </li>
     </ul>
   </Container>
