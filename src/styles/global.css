@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-black: #030507;
+  --color-black: #121212;
   --color-blue: #72c1ca;
-  --color-gray: #6c6b68;
+  --color-gray-100: #c1c1bd;
+  --color-gray-200: #b3b2ae;
+  --font-mono: "VT323", monospace;
 }
 
 /* Custom View Transition Animations */

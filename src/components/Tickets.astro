@@ -18,33 +18,33 @@ const totalTickets = tickets.length;
 ---
 
 <Section headline="Recent Tickets">
-  <div
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mb-8"
+  <ol
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8"
   >
     {
       recentTickets.map((ticket) => (
-        <Ticket
-          title={ticket.data.title}
-          theater={ticket.data.theater}
-          time={ticket.data.date.toISOString().split("T")[0]}
-          price={ticket.data.price}
-          rating={ticket.data.rating}
-        />
+        <li>
+          <Ticket
+            title={ticket.data.title}
+            theater={ticket.data.theater}
+            time={ticket.data.date.toISOString().split("T")[0]}
+            price={ticket.data.price}
+            rating={ticket.data.rating}
+          />
+        </li>
       ))
     }
-  </div>
+  </ol>
 
-  <Container>
-    <div class="text-center">
-      <p class="text-gray-400 mb-4">
-        Showing {recentTickets.length} of {totalTickets} tickets
-      </p>
-      <a
-        href="/tickets/"
-        class="inline-flex items-center px-6 py-3 border border-gray-600 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors"
-      >
-        View All {totalTickets} Tickets →
-      </a>
-    </div>
-  </Container>
+  <div class="text-center">
+    <p class="mb-4">
+      Showing {recentTickets.length} of {totalTickets} tickets
+    </p>
+    <a
+      href="/tickets/"
+      class="inline-flex items-center px-6 py-3 border border-gray-600 bg-gray-800 text-black rounded-md hover:bg-gray-700 transition-colors"
+    >
+      View All {totalTickets} Tickets →
+    </a>
+  </div>
 </Section>
