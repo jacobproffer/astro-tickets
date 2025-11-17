@@ -8,9 +8,9 @@ interface Props {
 const { headline } = Astro.props;
 ---
 
-<section class="relative">
+<section class="relative py-4">
   <Container>
-    {headline && <h2 class="text-6xl">{headline}</h2>}
+    {headline && <h2 class="text-4xl">{headline}</h2>}
     <slot />
   </Container>
 </section>
