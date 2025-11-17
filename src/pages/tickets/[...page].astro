@@ -43,14 +43,14 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
 <BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
   <Section headline={`All Tickets (${page.total})`} headingLevel={1}>
     <div class="mb-4">
-      <div class="flex items-center justify-between text-sm">
+      <h2 class="flex items-center justify-between text-sm">
         <span>
           Showing {page.start + 1}-{page.end + 1} of {page.total} tickets
         </span>
         <span>
           Page {page.currentPage} of {page.lastPage}
         </span>
-      </div>
+      </h2>
     </div>
 
     <ol
