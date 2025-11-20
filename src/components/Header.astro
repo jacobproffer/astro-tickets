@@ -3,10 +3,12 @@ import Navigation from "./Navigation.astro";
 import Container from "./Container.astro";
 ---
 
-<div class="bg-black py-4" transition:persist>
+<div class="bg-card py-4" transition:persist>
   <Container>
-    <div>
-      <header class="text-gray-200">
+    <div
+      class="flex items-center justify-between border-b border-black border-dashed pb-4"
+    >
+      <header class="text-black">
         <a
           class="fixed -top-full left-1/2 py-1 px-4 -translate-x-1/2 transition-top ease-in-out delay-150 focus:top-0 focus:outline-dashed focus:outline-black dark:focus:outline-orange focus:outline-1"
           href="#content">Skip to main content</a

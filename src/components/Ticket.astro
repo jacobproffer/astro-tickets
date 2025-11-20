@@ -65,11 +65,11 @@ const formatPrice = (price: number): string => {
 
 <!-- Minimal Movie Ticket -->
 <div class="relative h-full" transition:animate="slide">
-  <div class="h-full bg-gray-100 p-6">
+  <div class="h-full bg-card p-6 border-r border-b border-dashed border-black">
     <!-- Theater Header -->
     {
       theater && (
-        <div class="text-xs uppercase tracking-wide">
+        <div class="text-xs uppercase tracking-wide text-gray-600 font-mono">
           <span class="sr-only">Ticket purchased at</span>
           {theater}
         </div>
@@ -77,7 +77,13 @@ const formatPrice = (price: number): string => {
     }
 
     <!-- Movie Title -->
-    {title && <h3 class="text-2xl font-bold leading-tight">{title}</h3>}
+    {
+      title && (
+        <h3 class="text-2xl font-bold leading-tight -mx-2 px-2 py-1 mb-2">
+          {title}
+        </h3>
+      )
+    }
 
     <!-- Ticket Details -->
     <div class="space-y-4 text-sm">
@@ -103,7 +109,7 @@ const formatPrice = (price: number): string => {
               <span class="text-xs uppercase tracking-wide block mb-1">
                 Rated
               </span>
-              <span class="px-2 py-1 bg-black text-gray-200 text-xs font-bold rounded">
+              <span class="px-2 py-1 bg-black text-white text-xs font-bold rounded">
                 <span class="sr-only">The movie is rated</span>
                 {rating}
               </span>
@@ -115,9 +121,12 @@ const formatPrice = (price: number): string => {
       <!-- Price -->
       {
         price && (
-          <div class="pt-3 border-t">
+          <div class="pt-3 border-t border-dashed border-black">
             <div class="flex justify-between items-center">
-              <span class="text-xs uppercase tracking-wide" aria-hidden="true">
+              <span
+                class="text-xs uppercase tracking-wide font-mono"
+                aria-hidden="true"
+              >
                 Admit One
               </span>
               <span class="text-lg font-bold text-black">
