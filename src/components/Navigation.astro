@@ -5,14 +5,19 @@ import NavLink from "./NavLink.astro";
 <nav aria-label="primary">
   <ul class="flex space-x-4">
     <li>
-      <NavLink href="/" isActive={Astro.url.pathname === "/"}>Home</NavLink>
-    </li>
-    <li>
       <NavLink
         href="/tickets/"
         isActive={Astro.url.pathname.startsWith("/tickets")}
       >
         All Tickets
+      </NavLink>
+    </li>
+    <li>
+      <NavLink
+        href="/ratings/"
+        isActive={Astro.url.pathname.startsWith("/ratings")}
+      >
+        Ratings
       </NavLink>
     </li>
   </ul>

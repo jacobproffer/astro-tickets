@@ -1,0 +1,85 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/Section.astro";
+
+const tickets = await getCollection("tickets");
+
+// Count tickets by rating
+const ratingCounts = tickets.reduce(
+  (acc, ticket) => {
+    const rating = ticket.data.rating;
+    acc[rating] = (acc[rating] || 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>
+);
+
+// Sort ratings in a logical order (G, PG, PG-13, R, etc.)
+const ratingOrder = ["G", "PG", "PG-13", "R", "NC-17", "NR", "Unrated"];
+const sortedRatings = Object.entries(ratingCounts).sort(([a], [b]) => {
+  const aIndex = ratingOrder.indexOf(a);
+  const bIndex = ratingOrder.indexOf(b);
+
+  // If both ratings are in the order array, sort by their position
+  if (aIndex !== -1 && bIndex !== -1) {
+    return aIndex - bIndex;
+  }
+
+  // If only one is in the order array, prioritize it
+  if (aIndex !== -1) return -1;
+  if (bIndex !== -1) return 1;
+
+  // If neither is in the order array, sort alphabetically
+  return a.localeCompare(b);
+});
+
+const totalTickets = tickets.length;
+const pageTitle = "Movie Ratings";
+const pageDescription = `Browse movie tickets by rating. ${totalTickets} total tickets across ${sortedRatings.length} different ratings.`;
+
+// Function to create URL-friendly rating slug
+function createRatingSlug(rating: string): string {
+  return rating.toLowerCase().replace(/[^a-z0-9]/g, "-");
+}
+---
+
+<BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
+  <Section
+    headline={`Movie Ratings (${sortedRatings.length})`}
+    headingLevel={1}
+  >
+    <p class="text-lg mb-8">
+      Browse {totalTickets} movie tickets organized by rating across {
+        sortedRatings.length
+      } different classifications.
+    </p>
+
+    <ol
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-t border-l border-dashed border-black"
+    >
+      {
+        sortedRatings.map(([rating, count]) => (
+          <li>
+            <a
+              href={`/ratings/${createRatingSlug(rating)}/`}
+              class="block p-4 border-r border-b border-dashed border-black hover:bg-gray-50 transition-colors group"
+            >
+              <div class="text-center">
+                <h2 class="text-3xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
+                  {rating}
+                </h2>
+                <p class="text-lg text-gray-600">
+                  {count} {count === 1 ? "movie" : "movies"}
+                </p>
+                <p class="text-sm text-gray-500 mt-1">
+                  {Math.round((count / totalTickets) * 100)}% of collection
+                </p>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+</BaseLayout>
