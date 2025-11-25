@@ -19,7 +19,7 @@ const totalTickets = tickets.length;
 
 <Section headline="Recent Tickets">
   <ol
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-8 border-t border-l border-dashed border-black"
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-t border-l border-dashed border-black"
   >
     {
       recentTickets.map((ticket) => (
@@ -30,21 +30,19 @@ const totalTickets = tickets.length;
             time={ticket.data.date.toISOString().split("T")[0]}
             price={ticket.data.price}
             rating={ticket.data.rating}
+            international={ticket.data.international}
           />
         </li>
       ))
     }
   </ol>
 
-  <div class="text-center">
-    <p class="mb-4">
+  <div class="flex justify-between items-center pb-4 border-b border-dashed">
+    <p>
       Showing {recentTickets.length} of {totalTickets} tickets
     </p>
-    <a
-      href="/tickets/"
-      class="inline-flex items-center px-6 py-4 border-black border bg-black text-white hover:bg-gray-200 hover:text-black transition-colors"
-    >
-      View All {totalTickets} Tickets →
+    <a href="/tickets/" class="border border-dashed py-3 px-4">
+      View All {totalTickets} Tickets
     </a>
   </div>
 </Section>
