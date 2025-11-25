@@ -12,7 +12,13 @@ const HeadingTag = `h${headingLevel}` as any;
 
 <section class="relative py-4">
   <Container>
-    {headline && <HeadingTag class="text-4xl">{headline}</HeadingTag>}
+    {
+      headline && (
+        <HeadingTag class="text-2xl md:text-4xl sm:text-2xl">
+          {headline}
+        </HeadingTag>
+      )
+    }
     <slot />
   </Container>
 </section>
