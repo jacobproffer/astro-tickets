@@ -63,6 +63,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
               time={ticket.data.date.toISOString().split("T")[0]}
               price={ticket.data.price}
               rating={ticket.data.rating}
+              international={ticket.data.international}
             />
           </li>
         ))

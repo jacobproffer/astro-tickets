@@ -4,4 +4,5 @@ date: "2022-10-26"
 price: "8.10"
 theater: "TOHO Cinemas Shinjuku"
 rating: "R"
+international: true
 ---
