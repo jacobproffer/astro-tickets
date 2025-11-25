@@ -1,24 +1,19 @@
+---
+import NavLink from "./NavLink.astro";
+---
+
 <nav aria-label="primary">
-  <ul class="flex gap-x-4">
+  <ul class="flex space-x-4">
     <li>
-      <a
-        href="/"
-        class="text-black py-3 px-4 aria-[current=page]:border aria-[current=page]:border-dashed"
-        aria-current={Astro.url.pathname === "/" ? "page" : undefined}
-      >
-        Home
-      </a>
+      <NavLink href="/" isActive={Astro.url.pathname === "/"}>Home</NavLink>
     </li>
     <li>
-      <a
+      <NavLink
         href="/tickets/"
-        class="text-black py-3 px-4 aria-[current=page]:border aria-[current=page]:border-dashed"
-        aria-current={Astro.url.pathname.startsWith("/tickets")
-          ? "page"
-          : undefined}
+        isActive={Astro.url.pathname.startsWith("/tickets")}
       >
         All Tickets
-      </a>
+      </NavLink>
     </li>
   </ul>
 </nav>
