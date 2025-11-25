@@ -1,6 +1,7 @@
 ---
 import Navigation from "./Navigation.astro";
 import Container from "./Container.astro";
+import NavLink from "./NavLink.astro";
 ---
 
 <div class="bg-card py-4" transition:persist>
@@ -13,7 +14,9 @@ import Container from "./Container.astro";
           class="fixed -top-full left-1/2 py-1 px-4 -translate-x-1/2 transition-top ease-in-out delay-150 focus:top-0 focus:outline-dashed focus:outline-black dark:focus:outline-orange focus:outline-1"
           href="#content">Skip to main content</a
         >
-        Dead Man's Brew
+        <NavLink href="/" isActive={Astro.url.pathname === "/"}
+          >Dead Man's Brew</NavLink
+        >
       </header>
       <Navigation />
     </div>
