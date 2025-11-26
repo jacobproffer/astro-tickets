@@ -1,0 +1,58 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/Section.astro";
+import Ticket from "../../components/Ticket.astro";
+
+export async function getStaticPaths() {
+  const tickets = await getCollection("tickets");
+
+  // Get all unique theaters
+  const theaters = [...new Set(tickets.map((ticket) => ticket.data.theater))];
+
+  return theaters.map((theater) => ({
+    params: { theater: theater.toLowerCase().replace(/[^a-z0-9]/g, "-") },
+    props: {
+      tickets: tickets.filter((ticket) => ticket.data.theater === theater),
+      theater,
+    },
+  }));
+}
+
+const { tickets, theater } = Astro.props;
+const sortedTickets = tickets.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const pageTitle = `${theater} Movies`;
+const pageDescription = `Browse ${tickets.length} movie tickets from ${theater} in my collection.`;
+---
+
+<BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
+  <Section headline={`${theater} Movies (${tickets.length})`} headingLevel={1}>
+    <h2>
+      Showing all {tickets.length}
+      movies from {theater}
+    </h2>
+
+    <ol
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 border-t border-l border-dashed border-black"
+      transition:name="tickets-grid"
+    >
+      {
+        sortedTickets.map((ticket) => (
+          <li>
+            <Ticket
+              title={ticket.data.title}
+              theater={ticket.data.theater}
+              time={ticket.data.date.toISOString().split("T")[0]}
+              price={ticket.data.price}
+              rating={ticket.data.rating}
+              international={ticket.data.international}
+            />
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+</BaseLayout>

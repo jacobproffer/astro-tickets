@@ -1,24 +1,57 @@
 ---
 import NavLink from "./NavLink.astro";
+
+const currentPath = Astro.url.pathname;
 ---
 
 <nav aria-label="primary">
   <ul class="flex gap-4">
     <li>
-      <NavLink
-        href="/tickets/"
-        isActive={Astro.url.pathname.startsWith("/tickets")}
-      >
+      <NavLink href="/tickets/" isActive={currentPath.startsWith("/tickets")}>
         All Tickets
       </NavLink>
     </li>
     <li>
-      <NavLink
-        href="/ratings/"
-        isActive={Astro.url.pathname.startsWith("/ratings")}
-      >
+      <NavLink href="/theaters/" isActive={currentPath.startsWith("/theaters")}>
+        Theaters
+      </NavLink>
+    </li>
+    <li>
+      <NavLink href="/ratings/" isActive={currentPath.startsWith("/ratings")}>
         Ratings
       </NavLink>
     </li>
   </ul>
 </nav>
+
+<script>
+  document.addEventListener("astro:after-swap", () => {
+    const currentPath = window.location.pathname;
+    const nav = document.querySelector('nav[aria-label="primary"]');
+    if (!nav) return;
+
+    const links = nav.querySelectorAll("a");
+    links.forEach((link) => {
+      const href = link.getAttribute("href");
+      let isActive = false;
+
+      if (href === "/tickets/") {
+        isActive = currentPath.startsWith("/tickets");
+      } else if (href === "/theaters/") {
+        isActive =
+          currentPath === "/theaters/" || currentPath.startsWith("/theaters/");
+      } else if (href === "/ratings/") {
+        isActive =
+          currentPath === "/ratings/" || currentPath.startsWith("/ratings");
+      }
+
+      if (isActive) {
+        link.setAttribute("aria-current", "page");
+        link.classList.add("bg-green");
+      } else {
+        link.removeAttribute("aria-current");
+        link.classList.remove("bg-green");
+      }
+    });
+  });
+</script>
