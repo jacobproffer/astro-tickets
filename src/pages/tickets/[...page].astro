@@ -80,7 +80,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
           page.url.prev && (
             <a
               href={page.url.prev}
-              class="relative inline-flex items-center rounded-md border border-black-600 bg-gray-800 px-4 py-2 text-sm font-medium text-black hover:bg-gray-700"
+              class="relative inline-flex items-center rounded-md border border-black-600 bg-gray-800 px-4 py-2 text-black hover:bg-gray-700"
             >
               Previous
             </a>
@@ -90,7 +90,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
           page.url.next && (
             <a
               href={page.url.next}
-              class="relative ml-3 inline-flex items-center rounded-md border border-black-600 bg-gray-800 px-4 py-2 text-sm font-medium text-black hover:bg-gray-700"
+              class="relative ml-3 inline-flex items-center rounded-md border border-black-600 bg-gray-800 px-4 py-2 text-black hover:bg-gray-700"
             >
               Next
             </a>
@@ -100,7 +100,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
 
       <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
-          <p class="text-sm">
+          <p>
             Showing <span class="font-medium">{page.start + 1}</span> to{" "}
             <span class="font-medium">{page.end + 1}</span> of{" "}
             <span class="font-medium">{page.total}</span> tickets
