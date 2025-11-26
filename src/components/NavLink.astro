@@ -11,7 +11,7 @@ const { href, isActive, class: className } = Astro.props;
 <a
   href={href}
   class:list={[
-    "text-black md:text-2xl py-3 px-4 decoration-dashed aria-[current=page]:border aria-[current=page]:border-dashed",
+    "block text-black md:text-2xl pb-4 decoration-dashed aria-[current=page]:border-b aria-[current=page]:border-dashed",
     className,
   ]}
   aria-current={isActive ? "page" : undefined}
