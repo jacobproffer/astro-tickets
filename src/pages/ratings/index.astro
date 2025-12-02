@@ -48,6 +48,7 @@ function createRatingSlug(rating: string): string {
   <Section
     headline={`Movie Ratings (${sortedRatings.length})`}
     headingLevel={1}
+    transition:name="ratings-section"
   >
     <p>
       Browse {totalTickets} movie tickets organized by rating across {
@@ -63,19 +64,13 @@ function createRatingSlug(rating: string): string {
           <li>
             <a
               href={`/ratings/${createRatingSlug(rating)}/`}
-              class="block p-4 border-r border-b border-dashed border-black hover:bg-gray-50 transition-colors group"
+              class="flex flex-col gap-y-4 p-4 border-r border-b border-dashed border-black hover:bg-green transition-colors group"
             >
-              <div class="text-center">
-                <h2 class="text-3xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
-                  {rating}
-                </h2>
-                <p class="text-lg text-gray-600">
-                  {count} {count === 1 ? "movie" : "movies"}
-                </p>
-                <p class="text-gray-500 mt-1">
-                  {Math.round((count / totalTickets) * 100)}% of collection
-                </p>
-              </div>
+              <h2 class="text-3xl transition-colors">{rating}</h2>
+              <p>
+                {count} {count === 1 ? "movie" : "movies"}
+              </p>
+              <p>{Math.round((count / totalTickets) * 100)}% of collection</p>
             </a>
           </li>
         ))

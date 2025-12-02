@@ -75,30 +75,9 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
       aria-label="Pagination Navigation"
       class="flex items-center justify-between pb-4 border-b border-dashed"
     >
-      <div class="flex flex-1 justify-between sm:hidden">
-        {
-          page.url.prev && (
-            <a
-              href={page.url.prev}
-              class="relative inline-flex items-center rounded-md border border-black-600 bg-gray-800 px-4 py-2 text-black hover:bg-gray-700"
-            >
-              Previous
-            </a>
-          )
-        }
-        {
-          page.url.next && (
-            <a
-              href={page.url.next}
-              class="relative ml-3 inline-flex items-center rounded-md border border-black-600 bg-gray-800 px-4 py-2 text-black hover:bg-gray-700"
-            >
-              Next
-            </a>
-          )
-        }
-      </div>
-
-      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+      <div
+        class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between"
+      >
         <div>
           <p>
             Showing <span class="font-medium">{page.start + 1}</span> to{" "}
@@ -107,12 +86,12 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
           </p>
         </div>
 
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center">
           {
             page.url.prev && (
               <a
                 href={page.url.prev}
-                class="relative inline-flex items-center border border-dashed px-4 py-3 text-black hover:bg-gray-700 focus:z-20"
+                class="relative inline-flex items-center border-t border-l border-b border-dashed px-4 py-3 text-black hover:bg-green focus:z-20 transition-colors"
               >
                 Previous
               </a>
@@ -120,7 +99,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
           }
 
           <span
-            class="relative inline-flex items-center px-4 py-3 border border-dashed z-10 text-black focus:z-20"
+            class="relative inline-flex items-center px-4 py-3 border border-dashed z-10 text-black bg-green focus:z-20"
           >
             {page.currentPage}
           </span>
@@ -137,7 +116,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
             page.url.next && (
               <a
                 href={page.url.next}
-                class="relative inline-flex items-center border border-dashed px-4 py-3 text-black hover:bg-gray-700 focus:z-20"
+                class="relative inline-flex items-center border border-dashed px-4 py-3 text-black hover:bg-green focus:z-20 transition-colors"
               >
                 Next
               </a>

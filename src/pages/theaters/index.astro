@@ -1,0 +1,71 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/Section.astro";
+
+const tickets = await getCollection("tickets");
+
+// Group tickets by theater and count them
+const theaterCounts = tickets.reduce(
+  (acc, ticket) => {
+    const theater = ticket.data.theater;
+    acc[theater] = (acc[theater] || 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>
+);
+
+// Convert to array and sort by count (descending), then alphabetically
+const sortedTheaters = Object.entries(theaterCounts).sort(
+  ([a, countA], [b, countB]) => {
+    if (countB !== countA) {
+      return countB - countA; // Sort by count descending
+    }
+    return a.localeCompare(b); // Then alphabetically
+  }
+);
+
+const totalTickets = tickets.length;
+const pageTitle = "Movie Theaters";
+const pageDescription = `Browse movie tickets by theater. ${totalTickets} total tickets across ${sortedTheaters.length} different theaters.`;
+
+// Function to create URL-friendly theater slug
+function createTheaterSlug(theater: string): string {
+  return theater.toLowerCase().replace(/[^a-z0-9]/g, "-");
+}
+---
+
+<BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
+  <Section
+    headline={`Movie Theaters (${sortedTheaters.length})`}
+    headingLevel={1}
+    transition:name="theaters-section"
+  >
+    <p>
+      Browse {totalTickets} movie tickets organized by theater across {
+        sortedTheaters.length
+      } different venues.
+    </p>
+
+    <ol
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-dashed border-black"
+    >
+      {
+        sortedTheaters.map(([theater, count]) => (
+          <li>
+            <a
+              href={`/theaters/${createTheaterSlug(theater)}/`}
+              class="flex flex-col gap-y-4 h-full p-4 border-r border-b border-dashed border-black hover:bg-green transition-colors group"
+            >
+              <h2 class="text-3xl transition-colors">{theater}</h2>
+              <p>
+                {count} {count === 1 ? "movie" : "movies"}
+              </p>
+              <p>{Math.round((count / totalTickets) * 100)}% of collection</p>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+</BaseLayout>

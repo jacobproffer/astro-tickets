@@ -66,7 +66,9 @@ const formatPrice = (price: number): string => {
 
 <!-- Minimal Movie Ticket -->
 <div class="relative h-full" transition:animate="slide">
-  <div class="h-full bg-card p-4 border-r border-b border-dashed border-black">
+  <div
+    class={`h-full ${international ? "bg-green" : "bg-card"} p-4 border-r border-b border-dashed border-black`}
+  >
     <!-- Theater Header -->
     {
       theater && (
@@ -131,7 +133,7 @@ const formatPrice = (price: number): string => {
 
       <!-- Price -->
       {
-        price && (
+        price !== undefined && price !== null && (
           <div class="pt-3 border-t border-dashed border-black">
             <div class="flex justify-between items-center">
               <span
