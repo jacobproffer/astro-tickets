@@ -5,23 +5,23 @@ const currentPath = Astro.url.pathname;
 ---
 
 <nav aria-label="primary">
-  <ul class="flex border-r border-dashed">
-    <li>
+  <ul class="flex justify-between border-r border-dashed">
+    <li class="w-full sm:w-auto">
       <NavLink href="/tickets/" isActive={currentPath.startsWith("/tickets")}>
-        All Tickets
+        All
       </NavLink>
     </li>
-    <li>
+    <li class="w-full sm:w-auto">
       <NavLink href="/theaters/" isActive={currentPath.startsWith("/theaters")}>
         Theaters
       </NavLink>
     </li>
-    <li>
+    <li class="w-full sm:w-auto">
       <NavLink href="/ratings/" isActive={currentPath.startsWith("/ratings")}>
         Ratings
       </NavLink>
     </li>
-    <li>
+    <li class="w-full sm:w-auto">
       <NavLink href="/about/" isActive={currentPath === "/about/"}>
         About
       </NavLink>
