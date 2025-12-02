@@ -107,12 +107,12 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
           </p>
         </div>
 
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center">
           {
             page.url.prev && (
               <a
                 href={page.url.prev}
-                class="relative inline-flex items-center border border-dashed px-4 py-3 text-black hover:bg-green focus:z-20 transition-colors"
+                class="relative inline-flex items-center border-t border-l border-b border-dashed px-4 py-3 text-black hover:bg-green focus:z-20 transition-colors"
               >
                 Previous
               </a>
@@ -120,7 +120,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
           }
 
           <span
-            class="relative inline-flex items-center px-4 py-3 border border-dashed z-10 text-black focus:z-20"
+            class="relative inline-flex items-center px-4 py-3 border border-dashed z-10 text-black bg-green focus:z-20"
           >
             {page.currentPage}
           </span>

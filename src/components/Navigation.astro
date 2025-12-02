@@ -5,7 +5,7 @@ const currentPath = Astro.url.pathname;
 ---
 
 <nav aria-label="primary">
-  <ul class="flex gap-4">
+  <ul class="flex border-r border-dashed">
     <li>
       <NavLink href="/tickets/" isActive={currentPath.startsWith("/tickets")}>
         All Tickets
