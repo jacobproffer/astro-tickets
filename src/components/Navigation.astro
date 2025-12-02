@@ -21,6 +21,11 @@ const currentPath = Astro.url.pathname;
         Ratings
       </NavLink>
     </li>
+    <li>
+      <NavLink href="/about/" isActive={currentPath === "/about/"}>
+        About
+      </NavLink>
+    </li>
   </ul>
 </nav>
 
@@ -43,6 +48,8 @@ const currentPath = Astro.url.pathname;
       } else if (href === "/ratings/") {
         isActive =
           currentPath === "/ratings/" || currentPath.startsWith("/ratings");
+      } else if (href === "/about/") {
+        isActive = currentPath === "/about/";
       }
 
       if (isActive) {
