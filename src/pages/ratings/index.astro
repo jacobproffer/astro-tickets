@@ -61,16 +61,61 @@ function createRatingSlug(rating: string): string {
     >
       {
         sortedRatings.map(([rating, count]) => (
-          <li>
+          <li class="relative h-full">
             <a
               href={`/ratings/${createRatingSlug(rating)}/`}
-              class="flex flex-col gap-y-4 p-4 border-r border-b border-dashed border-black hover:bg-green transition-colors group"
+              class="block h-full"
             >
-              <h2 class="text-3xl transition-colors">{rating}</h2>
-              <p>
-                {count} {count === 1 ? "movie" : "movies"}
-              </p>
-              <p>{Math.round((count / totalTickets) * 100)}% of collection</p>
+              <div class="h-full bg-card p-4 border-r border-b border-dashed border-black hover:bg-green transition-colors">
+                {/* Rating Header */}
+                <div class="text-xs uppercase tracking-wide text-black font-mono">
+                  <div>
+                    <span class="sr-only">Rating</span>
+                    Movie Rating
+                  </div>
+                </div>
+
+                {/* Rating Classification */}
+                <h2 class="text-2xl font-bold leading-tight -mx-2 px-2 py-1 mb-2">
+                  {rating}
+                </h2>
+
+                {/* Rating Details */}
+                <div class="space-y-4 text-sm">
+                  {/* Movies Count and Percentage */}
+                  <div class="flex justify-between items-center">
+                    <div>
+                      <span class="text-xs uppercase tracking-wide block mb-1">
+                        Movies
+                      </span>
+                      <span class="font-medium">
+                        {count} {count === 1 ? "ticket" : "tickets"}
+                      </span>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xs uppercase tracking-wide block mb-1">
+                        Share
+                      </span>
+                      <span class="px-2 py-1 border border-dashed text-xs font-bold">
+                        {Math.round((count / totalTickets) * 100)}%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div class="pt-3 border-t border-dashed border-black">
+                    <div class="flex justify-between items-center">
+                      <span
+                        class="text-xs uppercase tracking-wide font-mono"
+                        aria-hidden="true"
+                      >
+                        View Rating
+                      </span>
+                      <span class="text-lg font-bold text-black">→</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </a>
           </li>
         ))
