@@ -7,15 +7,17 @@ import NavLink from "./NavLink.astro";
 <div class="bg-card pt-4" transition:persist>
   <Container>
     <div
-      class="flex justify-between flex-col sm:items-center sm:flex-row border-t border-b border-dashed mb-4"
+      class="flex justify-between flex-col sm:items-center sm:flex-row border-t border-b border-l pl-4 border-dashed mb-4"
     >
       <header>
         <a
           class="fixed -top-full left-1/2 py-1 px-4 -translate-x-1/2 transition-top ease-in-out delay-150 focus:top-0 focus:outline-dashed focus:outline-black dark:focus:outline-orange focus:outline-1"
           href="#content">Skip to main content</a
         >
-        <NavLink href="/" isActive={Astro.url.pathname === "/"}
-          >Dead Man's Brew</NavLink
+        <a class="flex flex-col pt-2 leading-none uppercase text-xs" href="/"
+          >Movie Ticket Collection <span class="text-2xl normal-case"
+            >Dead Man's Brew</span
+          ></a
         >
       </header>
       <Navigation />
