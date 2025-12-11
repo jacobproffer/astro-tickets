@@ -1,11 +1,18 @@
 ---
 import Container from "./Container.astro";
+import Graphic from "../assets/graphic.svg";
 ---
 
 <footer class="py-4">
   <Container>
-    <span
-      >Built with love by <a href="https://proffer.dev/">Jacob Proffer</a></span
+    <Graphic class="w-full" mode="inline" />
+    <div
+      class="flex items-center justify-between gap-2 pt-4 max-md:flex-col border-t border-dashed"
     >
+      <p>Built by <a href="https://proffer.dev/">Jacob Proffer</a>.</p>
+      <a href="https://github.com/jacobproffer/astro-tickets"
+        >GitHub Repository</a
+      >
+    </div>
   </Container>
 </footer>
