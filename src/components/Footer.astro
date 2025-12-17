@@ -7,10 +7,15 @@ import Graphic from "../assets/graphic.svg";
   <Container>
     <Graphic class="w-full" mode="inline" />
     <div
-      class="flex items-center justify-between gap-2 pt-4 max-md:flex-col border-t border-dashed"
+      class="flex items-center justify-between max-sm:flex-col border-t border-b border-dashed"
     >
-      <p>Built by <a href="https://proffer.dev/">Jacob Proffer</a>.</p>
-      <a href="https://github.com/jacobproffer/astro-tickets"
+      <a
+        class="w-full text-center p-4 border-l border-dashed transition-colors hover:bg-gray-100 focus:outline-none focus:border-black max-sm:border-r max-sm:border-b"
+        href="https://proffer.dev/">Built by Jacob Proffer</a
+      >
+      <a
+        class="w-full text-center p-4 border-r border-l border-dashed transition-colors hover:bg-gray-100 focus:outline-none focus:border-black"
+        href="https://github.com/jacobproffer/astro-tickets"
         >GitHub Repository</a
       >
     </div>

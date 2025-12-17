@@ -11,7 +11,7 @@ const { href, isActive, class: className } = Astro.props;
 <a
   href={href}
   class:list={[
-    "block text-black md:text-2xl py-3 px-4 border-l border-dashed border-black text-center transition-colors hover:bg-gray-100 focus:outline-none focus:border-black",
+    "block text-black py-3 px-4 border-l border-dashed border-black text-center transition-colors hover:bg-gray-100 focus:outline-none focus:border-black",
     isActive && "border-black bg-green",
     className,
   ]}
