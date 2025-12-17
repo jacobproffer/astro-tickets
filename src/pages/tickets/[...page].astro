@@ -1,8 +1,8 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import Section from "../../components/Section.astro";
-import Ticket from "../../components/Ticket.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/Section.astro";
+import TicketGrid from "@components/TicketGrid.astro";
 
 export async function getStaticPaths({ paginate }: { paginate: any }) {
   const tickets = await getCollection("tickets");
@@ -50,25 +50,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
       </span>
     </h2>
 
-    <ol
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 border-t border-l border-dashed border-black"
-      transition:name="tickets-grid"
-    >
-      {
-        page.data.map((ticket) => (
-          <li>
-            <Ticket
-              title={ticket.data.title}
-              theater={ticket.data.theater}
-              time={ticket.data.date.toISOString().split("T")[0]}
-              price={ticket.data.price}
-              rating={ticket.data.rating}
-              international={ticket.data.international}
-            />
-          </li>
-        ))
-      }
-    </ol>
+    <TicketGrid tickets={page.data} transitionName="tickets-grid" />
 
     <!-- Pagination Navigation -->
     <nav

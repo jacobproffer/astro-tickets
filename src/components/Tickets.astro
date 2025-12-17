@@ -1,8 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Section from "./Section.astro";
-import Ticket from "./Ticket.astro";
-import Container from "./Container.astro";
+import TicketGrid from "./TicketGrid.astro";
 
 const tickets = await getCollection("tickets");
 // Sort tickets by date in descending order (newest first)
@@ -18,24 +17,7 @@ const totalTickets = tickets.length;
 ---
 
 <Section headline="Recent Tickets">
-  <ol
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-t border-l border-dashed border-black"
-  >
-    {
-      recentTickets.map((ticket) => (
-        <li>
-          <Ticket
-            title={ticket.data.title}
-            theater={ticket.data.theater}
-            time={ticket.data.date.toISOString().split("T")[0]}
-            price={ticket.data.price}
-            rating={ticket.data.rating}
-            international={ticket.data.international}
-          />
-        </li>
-      ))
-    }
-  </ol>
+  <TicketGrid tickets={recentTickets} />
 
   <div class="flex justify-between items-center pb-4 border-b border-dashed">
     <p>
