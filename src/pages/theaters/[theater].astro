@@ -1,8 +1,9 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
 import Section from "../../components/Section.astro";
-import Ticket from "../../components/Ticket.astro";
+import TicketGrid from "../../components/TicketGrid.astro";
 
 export async function getStaticPaths() {
   const tickets = await getCollection("tickets");
@@ -30,29 +31,12 @@ const pageDescription = `Browse ${tickets.length} movie tickets from ${theater} 
 
 <BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
   <Section headline={`${theater} Movies (${tickets.length})`} headingLevel={1}>
-    <h2>
-      Showing all {tickets.length}
-      movies from {theater}
-    </h2>
+    <PageHeader
+      title="movies"
+      count={tickets.length}
+      description={`Showing all ${tickets.length} movies from ${theater}`}
+    />
 
-    <ol
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 border-t border-l border-dashed border-black"
-      transition:name="tickets-grid"
-    >
-      {
-        sortedTickets.map((ticket) => (
-          <li>
-            <Ticket
-              title={ticket.data.title}
-              theater={ticket.data.theater}
-              time={ticket.data.date.toISOString().split("T")[0]}
-              price={ticket.data.price}
-              rating={ticket.data.rating}
-              international={ticket.data.international}
-            />
-          </li>
-        ))
-      }
-    </ol>
+    <TicketGrid tickets={sortedTickets} transitionName="tickets-grid" />
   </Section>
 </BaseLayout>
