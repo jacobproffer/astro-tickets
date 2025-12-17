@@ -1,0 +1,61 @@
+---
+interface Props {
+  title: string;
+  count?: number;
+  description?: string;
+  showRange?: {
+    start: number;
+    end: number;
+    total: number;
+  };
+  showPagination?: {
+    current: number;
+    last: number;
+  };
+  class?: string;
+}
+
+const {
+  title,
+  count,
+  description,
+  showRange,
+  showPagination,
+  class: className,
+} = Astro.props;
+
+const displayTitle = count !== undefined ? `${title} (${count})` : title;
+---
+
+<h2
+  class:list={[
+    showRange || showPagination ? "flex items-center justify-between" : "",
+    className,
+  ]}
+>
+  {
+    showRange ? (
+      <>
+        <span>
+          Showing {showRange.start + 1}-{showRange.end + 1} of {showRange.total}{" "}
+          {description || "items"}
+        </span>
+        {showPagination && (
+          <span>
+            Page {showPagination.current} of {showPagination.last}
+          </span>
+        )}
+      </>
+    ) : (
+      <>
+        {description ? (
+          description
+        ) : (
+          <>
+            Showing all {count} {title.toLowerCase()}
+          </>
+        )}
+      </>
+    )
+  }
+</h2>

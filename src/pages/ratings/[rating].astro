@@ -3,6 +3,7 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Section from "../../components/Section.astro";
 import TicketGrid from "../../components/TicketGrid.astro";
+import PageHeader from "../../components/PageHeader.astro";
 
 export async function getStaticPaths() {
   const tickets = await getCollection("tickets");
@@ -33,10 +34,11 @@ const pageDescription = `Browse ${tickets.length} ${rating} rated movie tickets 
     headline={`${rating} Rated Movies (${tickets.length})`}
     headingLevel={1}
   >
-    <h2>
-      Showing all {tickets.length}
-      {rating} rated movies
-    </h2>
+    <PageHeader
+      title="movies"
+      count={tickets.length}
+      description={`Showing all ${tickets.length} ${rating} rated movies`}
+    />
 
     <TicketGrid tickets={sortedTickets} transitionName="tickets-grid" />
   </Section>

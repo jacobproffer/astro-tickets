@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Section from "../../components/Section.astro";
+import PageHeader from "../../components/PageHeader.astro";
 
 const tickets = await getCollection("tickets");
 
@@ -50,11 +51,10 @@ function createRatingSlug(rating: string): string {
     headingLevel={1}
     transition:name="ratings-section"
   >
-    <p>
-      Browse {totalTickets} movie tickets organized by rating across {
-        sortedRatings.length
-      } different classifications.
-    </p>
+    <PageHeader 
+      title="ratings"
+      description={`Browse ${totalTickets} movie tickets organized by rating across ${sortedRatings.length} different classifications.`}
+    />
 
     <ol
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-dashed border-black"
