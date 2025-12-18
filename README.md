@@ -1,4 +1,4 @@
-# Dead Man's Brew
+# Deadman's Brew
 
 Made with Astro and Tailwind.
 
