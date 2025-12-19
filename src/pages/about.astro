@@ -1,4 +1,6 @@
 ---
+import { Image } from "astro:assets";
+import image from "../assets/images/tickets.jpg";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/Section.astro";
 
@@ -9,13 +11,17 @@ const pageDescription =
 
 <BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
   <Section headline="About Deadman's Brew" headingLevel={1}>
-    <div class="grid gap-4 border-b border-dashed md:grid-cols-2">
-      <div class="prose prose-lg pb-4">
+    <div
+      class="grid gap-4 border-t border-b border-dashed md:grid-cols-[max-content_1fr]"
+    >
+      <div
+        class="max-w-prose prose prose-lg pt-4 md:border-r md:pb-4 border-dashed"
+      >
         <p>
-          Deadman's Brew is a personal collection of movie tickets, documenting
-          years of cinema experiences and theatrical visits. Each ticket tells a
-          story of a moment in time, from the early days at Carmike Royal Cinema
-          10 to recent visits at Marquette Cinemas.
+          Deadman's Brew is the personal collection of movie tickets of Jacob
+          Proffer, documenting years of cinema experiences and theatrical
+          visits. Each ticket tells a story of a moment in time, from the early
+          days at Carmike Royal Cinema 10 to recent visits at Marquette Cinemas.
         </p>
         <h2 class="text-xl md:text-2xl mt-4 mb-4">Built With</h2>
         <p>
@@ -27,6 +33,15 @@ const pageDescription =
             class="underline decoration-dashed">Tailwind CSS</a
           >.
         </p>
+      </div>
+      <div class="py-4">
+        <Image
+          src={image}
+          alt="Movie tickets"
+          widths={[400, 600, 800, 1200]}
+          sizes={`(max-width: 767px) 400px, (max-width: 1023px) 600px, (max-width: 1439px) 800px, 1200px`}
+          loading="eager"
+        />
       </div>
     </div>
   </Section>
