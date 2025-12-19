@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import Section from "./Section.astro";
-import TicketGrid from "./TicketGrid.astro";
+import Section from "@components/Section.astro";
+import TicketGrid from "@components/TicketGrid.astro";
 
 const tickets = await getCollection("tickets");
 // Sort tickets by date in descending order (newest first)
