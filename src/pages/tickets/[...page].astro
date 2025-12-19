@@ -72,7 +72,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
             page.url.prev && (
               <a
                 href={page.url.prev}
-                class="relative inline-flex items-center border-t border-l border-b border-dashed px-4 py-3 text-black hover:bg-green focus:z-20 transition-colors"
+                class="relative inline-flex items-center border-t border-l border-b border-dashed px-4 py-3 text-black hover:bg-green focus:z-20 focus:outline focus:outline-black transition-colors"
               >
                 Previous
               </a>
@@ -97,7 +97,7 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
             page.url.next && (
               <a
                 href={page.url.next}
-                class="relative inline-flex items-center border border-dashed px-4 py-3 text-black hover:bg-green focus:z-20 transition-colors"
+                class="relative inline-flex items-center border border-dashed px-4 py-3 text-black hover:bg-green focus:z-20 focus:outline focus:outline-black transition-colors"
               >
                 Next
               </a>
