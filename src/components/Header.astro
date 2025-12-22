@@ -6,20 +6,17 @@ import Container from "@components/Container.astro";
 <div class="bg-card pt-4" transition:persist>
   <Container>
     <div
-      class="flex justify-between flex-col sm:items-center sm:flex-row border-t border-b border-dashed mb-4 sm:pl-4 sm:border-l"
+      class="flex justify-between flex-col sm:items-center sm:flex-row border-t border-b border-dashed mb-4"
     >
       <header
-        class="py-2 border-r border-b border-l border-dashed text-center sm:border-0 sm:text-left sm:p-0"
+        class="w-full py-2 border-r border-b border-l border-dashed text-center sm:border-0 sm:text-left sm:p-0"
       >
         <a
           class="fixed -top-full left-1/2 py-3 px-4 bg-green -translate-x-1/2 transition-top ease-in-out delay-150 focus:top-4 focus:outline focus:outline-black"
           href="#content">Skip to main content</a
         >
-        <a class="flex flex-col leading-none text-2xl uppercase" href="/"
-          >Deadman's Brew</a
-        >
+        <Navigation />
       </header>
-      <Navigation />
     </div>
   </Container>
 </div>

@@ -5,23 +5,26 @@ const currentPath = Astro.url.pathname;
 ---
 
 <nav aria-label="primary">
-  <ul class="flex justify-between border-r border-dashed">
-    <li class="w-full sm:w-auto">
+  <ul class="grid grid-cols-4 md:grid-cols-5 border-r border-dashed">
+    <li class="w-full max-md:col-span-5 max-md:border-b border-dashed">
+      <NavLink href="/" isActive={currentPath === "/"}> Home </NavLink>
+    </li>
+    <li class="w-full">
       <NavLink href="/tickets/" isActive={currentPath.startsWith("/tickets")}>
         All
       </NavLink>
     </li>
-    <li class="w-full sm:w-auto">
+    <li class="w-full">
       <NavLink href="/theaters/" isActive={currentPath.startsWith("/theaters")}>
         Theaters
       </NavLink>
     </li>
-    <li class="w-full sm:w-auto">
+    <li class="w-full">
       <NavLink href="/ratings/" isActive={currentPath.startsWith("/ratings")}>
         Ratings
       </NavLink>
     </li>
-    <li class="w-full sm:w-auto">
+    <li class="w-full">
       <NavLink href="/about/" isActive={currentPath === "/about/"}>
         About
       </NavLink>
@@ -40,7 +43,9 @@ const currentPath = Astro.url.pathname;
       const href = link.getAttribute("href");
       let isActive = false;
 
-      if (href === "/tickets/") {
+      if (href === "/") {
+        isActive = currentPath === "/";
+      } else if (href === "/tickets/") {
         isActive = currentPath.startsWith("/tickets");
       } else if (href === "/theaters/") {
         isActive =
