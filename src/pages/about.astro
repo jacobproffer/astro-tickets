@@ -1,12 +1,56 @@
 ---
 import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
 import image from "@images/tickets.jpg";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import Section from "@components/Section.astro";
 
+// Get all tickets and calculate statistics
+const tickets = await getCollection("tickets");
+const totalTickets = tickets.length;
+
+// Calculate date range
+const dates = tickets
+  .map((t) => new Date(t.data.date))
+  .sort((a, b) => a.getTime() - b.getTime());
+const firstTicketDate = dates[0];
+const lastTicketDate = dates[dates.length - 1];
+const yearsCollecting =
+  lastTicketDate.getFullYear() - firstTicketDate.getFullYear();
+
+// Get unique theaters
+const uniqueTheaters = [...new Set(tickets.map((t) => t.data.theater))];
+const totalTheaters = uniqueTheaters.length;
+
+// Calculate total spent
+const totalSpent = tickets.reduce((sum, ticket) => sum + ticket.data.price, 0);
+
+// Get most visited theater
+const theaterCounts = tickets.reduce(
+  (acc, ticket) => {
+    acc[ticket.data.theater] = (acc[ticket.data.theater] || 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>
+);
+const mostVisitedTheater = Object.entries(theaterCounts).sort(
+  (a, b) => b[1] - a[1]
+)[0];
+
+// Get rating distribution
+const ratingCounts = tickets.reduce(
+  (acc, ticket) => {
+    acc[ticket.data.rating] = (acc[ticket.data.rating] || 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>
+);
+
+// Count international tickets
+const internationalCount = tickets.filter((t) => t.data.international).length;
+
 const pageTitle = "About";
-const pageDescription =
-  "Learn more about Deadman's Brew - a collection of movie tickets and cinema experiences.";
+const pageDescription = `Learn more about Deadman's Brew - ${totalTickets} movie tickets collected across ${totalTheaters} theaters over ${yearsCollecting} years.`;
 ---
 
 <BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
@@ -15,14 +59,62 @@ const pageDescription =
       class="grid gap-4 border-t border-b border-dashed md:grid-cols-[max-content_1fr]"
     >
       <div
-        class="max-w-prose prose prose-lg pt-4 md:border-r md:pb-4 border-dashed"
+        class="md:max-w-prose prose prose-lg pt-4 md:pr-4 md:border-r md:pb-4 border-dashed"
       >
         <p>
           Deadman's Brew is the personal collection of movie tickets of Jacob
-          Proffer, documenting years of cinema experiences and theatrical
-          visits. Each ticket tells a story of a moment in time, from the early
-          days at Carmike Royal Cinema 10 to recent visits at Marquette Cinemas.
+          Proffer, documenting <strong>{yearsCollecting} years</strong> of cinema
+          experiences across
+          <strong>{totalTheaters} different theaters</strong>. Starting with {
+            firstTicketDate.toLocaleDateString("en-US", {
+              month: "long",
+              year: "numeric",
+            })
+          }, this collection has grown to <strong>{totalTickets} tickets</strong
+          >, capturing memories from
+          {
+            internationalCount > 0
+              ? ` both domestic and international venues`
+              : ` theaters across the United States`
+          }.
         </p>
+
+        <h2 class="text-xl md:text-2xl mt-4 mb-4">Collection Highlights</h2>
+        <ul>
+          <li><strong>{totalTickets}</strong> total movie tickets</li>
+          <li><strong>{totalTheaters}</strong> unique theaters visited</li>
+          <li>
+            <strong>${totalSpent.toFixed(2)}</strong> spent on tickets over the years
+          </li>
+          <li>
+            <strong>{mostVisitedTheater[0]}</strong> is the most frequented theater
+            with {mostVisitedTheater[1]} visits
+          </li>
+          {
+            internationalCount > 0 && (
+              <li>
+                <strong>{internationalCount}</strong> international{" "}
+                {internationalCount === 1 ? "ticket" : "tickets"} from theaters
+                abroad
+              </li>
+            )
+          }
+        </ul>
+
+        <h2 class="text-xl md:text-2xl mt-4 mb-4">Rating Breakdown</h2>
+        <ul>
+          {
+            Object.entries(ratingCounts)
+              .sort((a, b) => b[1] - a[1])
+              .map(([rating, count]) => (
+                <li>
+                  <strong>{rating}</strong>: {count}{" "}
+                  {count === 1 ? "ticket" : "tickets"}
+                </li>
+              ))
+          }
+        </ul>
+
         <h2 class="text-xl md:text-2xl mt-4 mb-4">Built With</h2>
         <p>
           This site is built with <a
@@ -33,11 +125,14 @@ const pageDescription =
             href="https://tailwindcss.com/"
             class="underline decoration-dashed focus:outline focus:outline-black"
             >Tailwind CSS</a
-          >.
+          >. All ticket data is managed through Astro's content collections,
+          making it easy to add new tickets and maintain the collection over
+          time.
         </p>
       </div>
       <div class="py-4">
         <Image
+          class="w-full"
           src={image}
           alt="Movie tickets"
           widths={[400, 600, 800, 1200]}
