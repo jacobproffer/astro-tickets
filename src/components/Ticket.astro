@@ -20,7 +20,8 @@ const formatDateForDisplay = (
 ): string | null => {
   if (!dateString) return null;
 
-  const date = new Date(dateString);
+  // Parse date in local timezone by appending time to prevent UTC interpretation
+  const date = new Date(dateString + "T00:00:00");
   if (isNaN(date.getTime())) return null;
 
   const weekday = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(
@@ -45,10 +46,8 @@ const formatDateForDateTime = (
 ): string | null => {
   if (!dateString) return null;
 
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return null;
-
-  return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD format
+  // Return the date string as-is since it's already in YYYY-MM-DD format
+  return dateString;
 };
 
 /**
