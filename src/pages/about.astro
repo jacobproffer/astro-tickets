@@ -84,7 +84,14 @@ const pageDescription = `Learn more about Deadman's Brew - ${totalTickets} movie
           <li><strong>{totalTickets}</strong> total movie tickets</li>
           <li><strong>{totalTheaters}</strong> unique theaters visited</li>
           <li>
-            <strong>${totalSpent.toFixed(2)}</strong> spent on tickets over the years
+            <strong
+              >${
+                totalSpent.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              }</strong
+            > spent on tickets over the years
           </li>
           <li>
             <strong>{mostVisitedTheater[0]}</strong> is the most frequented theater
