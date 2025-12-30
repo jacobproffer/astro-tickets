@@ -54,8 +54,8 @@ const internationalCount = tickets.filter((t) => t.data.international).length;
   >
     <div class="prose prose-lg pt-4 lg:pr-4 lg:border-r lg:pb-4 border-dashed">
       <p class="text-lg leading-6">
-        Deadman's Brew is the personal collection of movie tickets of Jacob
-        Proffer, documenting <strong>{yearsCollecting} years</strong> of cinema experiences
+        Deadman's Brew is the movie ticket collection of Jacob Proffer,
+        documenting <strong>{yearsCollecting} years</strong> of cinema experiences
         across
         <strong>{totalTheaters} different theaters</strong>. Starting with {
           firstTicketDate.toLocaleDateString("en-US", {
@@ -124,7 +124,7 @@ const internationalCount = tickets.filter((t) => t.data.international).length;
           href="https://tailwindcss.com/"
           class="underline decoration-dashed focus:outline focus:outline-black"
           >Tailwind CSS</a
-        >. All ticket data is managed through Astro's content collections.
+        >.
       </p>
     </div>
     <MoviesPerYearChart tickets={tickets} />
