@@ -34,7 +34,7 @@ const ticketsData = sortedTickets.map((ticket) => ({
         type="search"
         id="searchInput"
         placeholder="Search by movie title, theater, or rating..."
-        class="w-full px-4 py-3 border-2 border-black font-mono text-lg focus:outline-none focus:ring-2 focus:ring-black"
+        class="w-full px-4 py-3 border-black border-dashed border font-mono text-lg focus:outline-none focus:ring-2 focus:ring-black"
         autocomplete="off"
       />
     </div>
@@ -59,7 +59,7 @@ const ticketsData = sortedTickets.map((ticket) => ({
       id="noResults"
       class="hidden text-center py-12 font-mono text-lg border-2 border-dashed border-black"
     >
-      <p class="text-2xl mb-2">No tickets found</p>
+      <h2 class="text-2xl mb-2">No tickets found</h2>
       <p class="text-sm">Try a different search term</p>
     </div>
   </Section>
@@ -114,7 +114,7 @@ const ticketsData = sortedTickets.map((ticket) => ({
           (ticket) => `
           <li>
             <div class="relative h-full">
-              <div class="${ticket.international ? "bg-green" : "bg-card"} p-4 border-r border-b border-dashed border-black h-full">
+              <div class="h-full ${ticket.international ? "bg-green" : "bg-card"} p-4 border-r border-b border-dashed border-black">
                 <div class="text-xs uppercase tracking-wide text-black font-mono flex items-center justify-between">
                   <div>
                     <span class="sr-only">Ticket purchased at</span>
@@ -129,20 +129,31 @@ const ticketsData = sortedTickets.map((ticket) => ({
                 <h3 class="text-2xl font-bold leading-tight -mx-2 px-2 py-1 mb-2">
                   ${ticket.title}
                 </h3>
-                <div class="space-y-1 text-sm font-mono">
-                  <div class="flex justify-between">
-                    <span class="text-gray-600">Date:</span>
-                    <time datetime="${ticket.date}">
-                      ${formatDateForDisplay(ticket.date)}
-                    </time>
+                <div class="space-y-4 text-sm">
+                  <div class="flex justify-between items-center">
+                    <div>
+                      <span class="text-xs uppercase tracking-wide block mb-1">Date</span>
+                      <time datetime="${ticket.date}" class="font-medium">
+                        <span class="sr-only">Ticket purchased on</span>
+                        ${formatDateForDisplay(ticket.date)}
+                      </time>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xs uppercase tracking-wide block mb-1">Rated</span>
+                      <span class="px-2 py-1 border border-dashed text-xs font-bold">
+                        <span class="sr-only">The movie is rated</span>
+                        ${ticket.rating}
+                      </span>
+                    </div>
                   </div>
-                  <div class="flex justify-between">
-                    <span class="text-gray-600">Price:</span>
-                    <span>${formatPrice(ticket.price)}</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-gray-600">Rating:</span>
-                    <span>${ticket.rating}</span>
+                  <div class="pt-3 border-t border-dashed border-black">
+                    <div class="flex justify-between items-center">
+                      <span class="text-xs uppercase tracking-wide font-mono" aria-hidden="true">Admit One</span>
+                      <span class="text-lg font-bold text-black">
+                        <span class="sr-only">The ticket cost</span>
+                        ${formatPrice(ticket.price)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
