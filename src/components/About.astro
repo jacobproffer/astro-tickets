@@ -1,8 +1,7 @@
 ---
-import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import image from "@images/tickets.jpg";
 import Section from "@components/Section.astro";
+import MoviesPerYearChart from "@components/MoviesPerYearChart.astro";
 
 // Get all tickets and calculate statistics
 const tickets = await getCollection("tickets");
@@ -51,9 +50,9 @@ const internationalCount = tickets.filter((t) => t.data.international).length;
 
 <Section headline="About Deadman's Brew" headingLevel={1}>
   <div
-    class="grid gap-4 border-t border-b border-dashed md:grid-cols-[1fr_1.8fr]"
+    class="grid gap-4 border-t border-b border-dashed lg:grid-cols-[1fr_2fr]"
   >
-    <div class="prose prose-lg pt-4 md:pr-4 md:border-r md:pb-4 border-dashed">
+    <div class="prose prose-lg pt-4 lg:pr-4 lg:border-r lg:pb-4 border-dashed">
       <p class="text-lg leading-6">
         Deadman's Brew is the personal collection of movie tickets of Jacob
         Proffer, documenting <strong>{yearsCollecting} years</strong> of cinema experiences
@@ -128,15 +127,6 @@ const internationalCount = tickets.filter((t) => t.data.international).length;
         >. All ticket data is managed through Astro's content collections.
       </p>
     </div>
-    <div class="py-4">
-      <Image
-        class="w-full"
-        src={image}
-        alt="Movie tickets"
-        widths={[400, 600, 800, 1200]}
-        sizes={`(max-width: 767px) 400px, (max-width: 1023px) 600px, (max-width: 1439px) 800px, 1200px`}
-        loading="eager"
-      />
-    </div>
+    <MoviesPerYearChart />
   </div>
 </Section>

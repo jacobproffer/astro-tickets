@@ -1,0 +1,96 @@
+---
+import { getCollection } from "astro:content";
+
+// Fetch all tickets
+const allTickets = await getCollection("tickets");
+
+// Count movies per year
+const moviesByYear = allTickets.reduce(
+  (acc, ticket) => {
+    const year = ticket.data.date.getFullYear();
+    acc[year] = (acc[year] || 0) + 1;
+    return acc;
+  },
+  {} as Record<number, number>
+);
+
+// Convert to array and sort by year
+const data = Object.entries(moviesByYear)
+  .map(([year, count]) => ({ year: +year, count }))
+  .sort((a, b) => a.year - b.year);
+
+// Calculate some stats
+const totalMovies = allTickets.length;
+const years = Object.keys(moviesByYear).length;
+const avgPerYear = (totalMovies / years).toFixed(1);
+---
+
+<div class="flex flex-col gap-2 py-4 max-lg:border-t max-lg:border-dashed">
+  <h2 class="text-xl md:text-2xl">Movies Per Year</h2>
+  <p>
+    {totalMovies} movies across {years} years (avg: {avgPerYear}/year)
+  </p>
+  <div id="movies-chart" class="w-full overflow-x-auto"></div>
+</div>
+
+<script>
+  import * as Plot from "@observablehq/plot";
+
+  function initChart() {
+    // Get the data from the component
+    const data = JSON.parse(
+      document.getElementById("chart-data")?.textContent || "[]"
+    );
+
+    const container = document.getElementById("movies-chart");
+
+    function createChart() {
+      if (!container) return;
+
+      // Clear existing chart
+      container.innerHTML = "";
+
+      // Create the plot with container width
+      const plot = Plot.plot({
+        width: container.clientWidth,
+        x: {
+          label: "Year",
+          tickFormat: (d) => d.toString(),
+        },
+        y: {
+          label: "Number of Movies",
+          grid: true,
+        },
+        marks: [
+          Plot.barY(data, {
+            x: "year",
+            y: "count",
+            fill: "#121212",
+            tip: true,
+          }),
+          Plot.ruleY([0]),
+        ],
+      });
+
+      container.appendChild(plot);
+    }
+
+    // Create chart on load
+    createChart();
+
+    // Recreate on window resize
+    window.addEventListener("resize", createChart);
+  }
+
+  // Run on initial load
+  initChart();
+
+  // Re-run after view transitions
+  document.addEventListener("astro:page-load", initChart);
+</script>
+
+<script
+  type="application/json"
+  id="chart-data"
+  set:html={JSON.stringify(data)}
+/>
