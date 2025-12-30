@@ -50,9 +50,12 @@ const avgPerYear = (totalMovies / years).toFixed(1);
       // Clear existing chart
       container.innerHTML = "";
 
-      // Create the plot with container width
+      const chartWidth = container.clientWidth;
+
+      // Create the plot with line chart for all screen sizes
       const plot = Plot.plot({
-        width: container.clientWidth,
+        width: chartWidth,
+        marginBottom: 50,
         x: {
           label: "Year",
           tickFormat: (d) => d.toString(),
@@ -62,11 +65,18 @@ const avgPerYear = (totalMovies / years).toFixed(1);
           grid: true,
         },
         marks: [
-          Plot.barY(data, {
+          Plot.line(data, {
+            x: "year",
+            y: "count",
+            stroke: "#121212",
+            strokeWidth: 2,
+            tip: true,
+          }),
+          Plot.dot(data, {
             x: "year",
             y: "count",
             fill: "#121212",
-            tip: true,
+            r: 3,
           }),
           Plot.ruleY([0]),
         ],
