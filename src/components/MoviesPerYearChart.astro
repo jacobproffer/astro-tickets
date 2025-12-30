@@ -30,7 +30,12 @@ const avgPerYear = (totalMovies / years).toFixed(1);
   <p>
     {totalMovies} movies across {years} years (avg: {avgPerYear}/year)
   </p>
-  <div id="movies-chart" class="w-full overflow-x-auto"></div>
+  <div
+    id="movies-chart"
+    class="w-full overflow-x-auto"
+    aria-label="Movies per year chart"
+  >
+  </div>
 </div>
 
 <script>
@@ -44,13 +49,14 @@ const avgPerYear = (totalMovies / years).toFixed(1);
 
     const container = document.getElementById("movies-chart");
 
+    // Early return if container doesn't exist
+    if (!container) return;
+
     function createChart() {
-      if (!container) return;
-
       // Clear existing chart
-      container.innerHTML = "";
+      container!.innerHTML = "";
 
-      const chartWidth = container.clientWidth;
+      const chartWidth = container!.clientWidth;
 
       // Create the plot with line chart for all screen sizes
       const plot = Plot.plot({
@@ -82,7 +88,7 @@ const avgPerYear = (totalMovies / years).toFixed(1);
         ],
       });
 
-      container.appendChild(plot);
+      container!.appendChild(plot);
     }
 
     // Create chart on load
