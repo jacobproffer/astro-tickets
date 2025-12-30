@@ -1,0 +1,203 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import PageHeader from "@components/PageHeader.astro";
+import Section from "@components/Section.astro";
+import TicketGrid from "@components/TicketGrid.astro";
+
+const pageTitle = "Search";
+const allTickets = await getCollection("tickets");
+
+// Sort tickets by date (newest first) for initial display
+const sortedTickets = allTickets.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+// Prepare ticket data for client-side search
+const ticketsData = sortedTickets.map((ticket) => ({
+  slug: ticket.slug,
+  title: ticket.data.title,
+  theater: ticket.data.theater,
+  date: ticket.data.date.toISOString().split("T")[0],
+  price: ticket.data.price,
+  rating: ticket.data.rating,
+  international: ticket.data.international || false,
+}));
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <Section headline="Search Tickets" headingLevel={1}>
+    <!-- Search Input -->
+    <div class="mb-4">
+      <label for="searchInput" class="sr-only">Search tickets</label>
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Search by movie title, theater, or rating..."
+        class="w-full px-4 py-3 border-2 border-black font-mono text-lg focus:outline-none focus:ring-2 focus:ring-black"
+        autocomplete="off"
+      />
+    </div>
+
+    <!-- Results Count -->
+    <div
+      id="resultsCount"
+      class="mb-4 text-sm font-mono"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      Showing all {allTickets.length} tickets
+    </div>
+
+    <!-- Results Grid -->
+    <div id="resultsContainer">
+      <TicketGrid tickets={sortedTickets} />
+    </div>
+
+    <!-- No Results Message -->
+    <div
+      id="noResults"
+      class="hidden text-center py-12 font-mono text-lg border-2 border-dashed border-black"
+    >
+      <p class="text-2xl mb-2">No tickets found</p>
+      <p class="text-sm">Try a different search term</p>
+    </div>
+  </Section>
+</BaseLayout>
+
+<script define:vars={{ ticketsData }}>
+  function formatDateForDisplay(dateString) {
+    const date = new Date(dateString + "T00:00:00");
+    const weekday = new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+    }).format(date);
+    const dateStr = new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+    return `${weekday} ${dateStr}`;
+  }
+
+  function formatPrice(price) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(price);
+  }
+
+  function initializeSearch() {
+    const searchInput = document.getElementById("searchInput");
+    const resultsContainer = document.getElementById("resultsContainer");
+    const resultsCount = document.getElementById("resultsCount");
+    const noResults = document.getElementById("noResults");
+
+    if (!searchInput || !resultsContainer || !resultsCount || !noResults) {
+      return;
+    }
+
+    function renderTickets(tickets) {
+      if (tickets.length === 0) {
+        resultsContainer.classList.add("hidden");
+        noResults.classList.remove("hidden");
+        resultsCount.textContent = "No tickets found";
+        return;
+      }
+
+      resultsContainer.classList.remove("hidden");
+      noResults.classList.add("hidden");
+      resultsCount.textContent = `Showing ${tickets.length} ticket${tickets.length === 1 ? "" : "s"}`;
+
+      // Generate ticket HTML
+      const ticketsHTML = tickets
+        .map(
+          (ticket) => `
+          <li>
+            <div class="relative h-full">
+              <div class="${ticket.international ? "bg-green" : "bg-card"} p-4 border-r border-b border-dashed border-black h-full">
+                <div class="text-xs uppercase tracking-wide text-black font-mono flex items-center justify-between">
+                  <div>
+                    <span class="sr-only">Ticket purchased at</span>
+                    ${ticket.theater}
+                  </div>
+                  ${
+                    ticket.international
+                      ? '<span class="px-1 py-0.5 border border-dashed border-black text-xs font-bold" aria-hidden="true">INTL</span>'
+                      : ""
+                  }
+                </div>
+                <h3 class="text-2xl font-bold leading-tight -mx-2 px-2 py-1 mb-2">
+                  ${ticket.title}
+                </h3>
+                <div class="space-y-1 text-sm font-mono">
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Date:</span>
+                    <time datetime="${ticket.date}">
+                      ${formatDateForDisplay(ticket.date)}
+                    </time>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Price:</span>
+                    <span>${formatPrice(ticket.price)}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Rating:</span>
+                    <span>${ticket.rating}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        `
+        )
+        .join("");
+
+      resultsContainer.innerHTML = `
+        <ol class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 border-t border-l border-dashed border-black">
+          ${ticketsHTML}
+        </ol>
+      `;
+    }
+
+    function searchTickets(query) {
+      if (!query.trim()) {
+        renderTickets(ticketsData);
+        return;
+      }
+
+      const lowerQuery = query.toLowerCase();
+      const filtered = ticketsData.filter((ticket) => {
+        return (
+          ticket.title.toLowerCase().includes(lowerQuery) ||
+          ticket.theater.toLowerCase().includes(lowerQuery) ||
+          ticket.rating.toLowerCase().includes(lowerQuery)
+        );
+      });
+
+      renderTickets(filtered);
+    }
+
+    // Search on input
+    searchInput.addEventListener("input", (e) => {
+      searchTickets(e.target.value);
+    });
+  }
+
+  // Initialize on page load
+  initializeSearch();
+
+  // Re-initialize after view transitions
+  document.addEventListener("astro:after-swap", initializeSearch);
+</script>
+
+<style>
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 1em;
+    width: 1em;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E")
+      center/contain no-repeat;
+    cursor: pointer;
+  }
+</style>

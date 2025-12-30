@@ -5,8 +5,8 @@ const currentPath = Astro.url.pathname;
 ---
 
 <nav aria-label="primary">
-  <ul class="grid grid-cols-4 md:grid-cols-5 border-r border-dashed">
-    <li class="w-full max-md:col-span-5 max-md:border-b border-dashed">
+  <ul class="grid grid-cols-5 md:grid-cols-6 border-r border-dashed">
+    <li class="w-full max-md:col-span-6 max-md:border-b border-dashed">
       <NavLink href="/" isActive={currentPath === "/"}> Home </NavLink>
     </li>
     <li class="w-full">
@@ -22,6 +22,11 @@ const currentPath = Astro.url.pathname;
     <li class="w-full">
       <NavLink href="/ratings/" isActive={currentPath.startsWith("/ratings")}>
         Ratings
+      </NavLink>
+    </li>
+    <li class="w-full">
+      <NavLink href="/search/" isActive={currentPath === "/search/"}>
+        Search
       </NavLink>
     </li>
     <li class="w-full">
@@ -53,6 +58,8 @@ const currentPath = Astro.url.pathname;
       } else if (href === "/ratings/") {
         isActive =
           currentPath === "/ratings/" || currentPath.startsWith("/ratings");
+      } else if (href === "/search/") {
+        isActive = currentPath === "/search/";
       } else if (href === "/about/") {
         isActive = currentPath === "/about/";
       }
