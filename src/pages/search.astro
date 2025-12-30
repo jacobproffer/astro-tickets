@@ -4,6 +4,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import PageHeader from "@components/PageHeader.astro";
 import Section from "@components/Section.astro";
 import TicketGrid from "@components/TicketGrid.astro";
+import { formatDateForDisplay, formatPrice } from "../utils/format";
 
 const pageTitle = "Search";
 const allTickets = await getCollection("tickets");
@@ -33,7 +34,7 @@ const ticketsData = sortedTickets.map((ticket) => ({
       <input
         type="search"
         id="searchInput"
-        placeholder="Search by movie title, theater, or rating..."
+        placeholder="Search by movie title, theater, rating, price, or date..."
         class="w-full px-4 py-3 border-black border-dashed border font-mono text-lg focus:outline-none focus:ring-2 focus:ring-black placeholder:text-black"
         autocomplete="off"
       />
@@ -66,6 +67,10 @@ const ticketsData = sortedTickets.map((ticket) => ({
 </BaseLayout>
 
 <script define:vars={{ ticketsData }}>
+  window.ticketsData = ticketsData;
+</script>
+
+<script type="module">
   function formatDateForDisplay(dateString) {
     const date = new Date(dateString + "T00:00:00");
     const weekday = new Intl.DateTimeFormat("en-US", {
@@ -86,7 +91,58 @@ const ticketsData = sortedTickets.map((ticket) => ({
     }).format(price);
   }
 
+  function generateTicketHTML(ticket) {
+    return `
+    <div class="relative h-full">
+      <div class="h-full ${ticket.international ? "bg-green" : "bg-card"} p-4 border-r border-b border-dashed border-black">
+        <div class="text-xs uppercase tracking-wide text-black font-mono flex items-center justify-between">
+          <div>
+            <span class="sr-only">Ticket purchased at</span>
+            ${ticket.theater}
+          </div>
+          ${
+            ticket.international
+              ? '<span class="px-1 py-0.5 border border-dashed border-black text-xs font-bold" aria-hidden="true">INTL</span>'
+              : ""
+          }
+        </div>
+        <h3 class="text-2xl font-bold leading-tight -mx-2 px-2 py-1 mb-2">
+          ${ticket.title}
+        </h3>
+        <div class="space-y-4 text-sm">
+          <div class="flex justify-between items-center">
+            <div>
+              <span class="text-xs uppercase tracking-wide block mb-1">Date</span>
+              <time datetime="${ticket.date}" class="font-medium">
+                <span class="sr-only">Ticket purchased on</span>
+                ${formatDateForDisplay(ticket.date)}
+              </time>
+            </div>
+            <div class="text-right">
+              <span class="text-xs uppercase tracking-wide block mb-1">Rated</span>
+              <span class="px-2 py-1 border border-dashed text-xs font-bold">
+                <span class="sr-only">The movie is rated</span>
+                ${ticket.rating}
+              </span>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-dashed border-black">
+            <div class="flex justify-between items-center">
+              <span class="text-xs uppercase tracking-wide font-mono" aria-hidden="true">Admit One</span>
+              <span class="text-lg font-bold text-black">
+                <span class="sr-only">The ticket cost</span>
+                ${formatPrice(ticket.price)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  }
+
   function initializeSearch() {
+    const ticketsData = window.ticketsData;
     const searchInput = document.getElementById("searchInput");
     const resultsContainer = document.getElementById("resultsContainer");
     const resultsCount = document.getElementById("resultsCount");
@@ -108,59 +164,9 @@ const ticketsData = sortedTickets.map((ticket) => ({
       noResults.classList.add("hidden");
       resultsCount.textContent = `Showing ${tickets.length} ticket${tickets.length === 1 ? "" : "s"}`;
 
-      // Generate ticket HTML
+      // Generate ticket HTML using shared template
       const ticketsHTML = tickets
-        .map(
-          (ticket) => `
-          <li>
-            <div class="relative h-full">
-              <div class="h-full ${ticket.international ? "bg-green" : "bg-card"} p-4 border-r border-b border-dashed border-black">
-                <div class="text-xs uppercase tracking-wide text-black font-mono flex items-center justify-between">
-                  <div>
-                    <span class="sr-only">Ticket purchased at</span>
-                    ${ticket.theater}
-                  </div>
-                  ${
-                    ticket.international
-                      ? '<span class="px-1 py-0.5 border border-dashed border-black text-xs font-bold" aria-hidden="true">INTL</span>'
-                      : ""
-                  }
-                </div>
-                <h3 class="text-2xl font-bold leading-tight -mx-2 px-2 py-1 mb-2">
-                  ${ticket.title}
-                </h3>
-                <div class="space-y-4 text-sm">
-                  <div class="flex justify-between items-center">
-                    <div>
-                      <span class="text-xs uppercase tracking-wide block mb-1">Date</span>
-                      <time datetime="${ticket.date}" class="font-medium">
-                        <span class="sr-only">Ticket purchased on</span>
-                        ${formatDateForDisplay(ticket.date)}
-                      </time>
-                    </div>
-                    <div class="text-right">
-                      <span class="text-xs uppercase tracking-wide block mb-1">Rated</span>
-                      <span class="px-2 py-1 border border-dashed text-xs font-bold">
-                        <span class="sr-only">The movie is rated</span>
-                        ${ticket.rating}
-                      </span>
-                    </div>
-                  </div>
-                  <div class="pt-3 border-t border-dashed border-black">
-                    <div class="flex justify-between items-center">
-                      <span class="text-xs uppercase tracking-wide font-mono" aria-hidden="true">Admit One</span>
-                      <span class="text-lg font-bold text-black">
-                        <span class="sr-only">The ticket cost</span>
-                        ${formatPrice(ticket.price)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-        `
-        )
+        .map((ticket) => `<li>${generateTicketHTML(ticket)}</li>`)
         .join("");
 
       resultsContainer.innerHTML = `
@@ -181,7 +187,9 @@ const ticketsData = sortedTickets.map((ticket) => ({
         return (
           ticket.title.toLowerCase().includes(lowerQuery) ||
           ticket.theater.toLowerCase().includes(lowerQuery) ||
-          ticket.rating.toLowerCase().includes(lowerQuery)
+          ticket.rating.toLowerCase().includes(lowerQuery) ||
+          ticket.price.toString().includes(lowerQuery) ||
+          ticket.date.includes(lowerQuery)
         );
       });
 
