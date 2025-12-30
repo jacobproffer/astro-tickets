@@ -1,8 +1,11 @@
 ---
-import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 
-// Fetch all tickets
-const allTickets = await getCollection("tickets");
+interface Props {
+  tickets: CollectionEntry<"tickets">[];
+}
+
+const { tickets: allTickets } = Astro.props;
 
 // Count movies per year
 const moviesByYear = allTickets.reduce(
@@ -22,7 +25,7 @@ const data = Object.entries(moviesByYear)
 // Calculate some stats
 const totalMovies = allTickets.length;
 const years = Object.keys(moviesByYear).length;
-const avgPerYear = (totalMovies / years).toFixed(1);
+const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
 ---
 
 <div class="flex flex-col gap-2 py-4 max-lg:border-t max-lg:border-dashed">
