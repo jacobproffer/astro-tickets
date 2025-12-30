@@ -44,12 +44,25 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
 <script>
   import * as Plot from "@observablehq/plot";
 
-  function initChart() {
-    // Get the data from the component
-    const data = JSON.parse(
-      document.getElementById("chart-data")?.textContent || "[]"
-    );
+  // Parse data once at module level
+  const dataElement = document.getElementById("chart-data");
+  if (!dataElement?.textContent) {
+    console.error("MoviesPerYearChart: chart-data element not found or empty");
+  }
 
+  let chartData: Array<{ year: number; count: number }> = [];
+  try {
+    chartData = JSON.parse(dataElement?.textContent || "[]");
+    if (!Array.isArray(chartData) || chartData.length === 0) {
+      console.warn("MoviesPerYearChart: No chart data available");
+    }
+  } catch (error) {
+    console.error("MoviesPerYearChart: Failed to parse chart data", error);
+  }
+
+  let resizeListener: (() => void) | null = null;
+
+  function initChart() {
     const container = document.getElementById("movies-chart");
 
     // Early return if container doesn't exist
@@ -74,14 +87,14 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
           grid: true,
         },
         marks: [
-          Plot.line(data, {
+          Plot.line(chartData, {
             x: "year",
             y: "count",
             stroke: "#121212",
             strokeWidth: 2,
             tip: true,
           }),
-          Plot.dot(data, {
+          Plot.dot(chartData, {
             x: "year",
             y: "count",
             fill: "#121212",
@@ -97,8 +110,14 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
     // Create chart on load
     createChart();
 
-    // Recreate on window resize
-    window.addEventListener("resize", createChart);
+    // Remove old resize listener before adding a new one
+    if (resizeListener) {
+      window.removeEventListener("resize", resizeListener);
+    }
+
+    // Store and add new resize listener
+    resizeListener = createChart;
+    window.addEventListener("resize", resizeListener);
   }
 
   // Run on initial load
