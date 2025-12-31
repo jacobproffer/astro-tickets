@@ -1,10 +1,8 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
-import PageHeader from "@components/PageHeader.astro";
 import Section from "@components/Section.astro";
 import TicketGrid from "@components/TicketGrid.astro";
-import { formatDateForDisplay, formatPrice } from "../utils/format";
 
 const pageTitle = "Search";
 const allTickets = await getCollection("tickets");
@@ -28,7 +26,6 @@ const ticketsData = sortedTickets.map((ticket) => ({
 
 <BaseLayout pageTitle={pageTitle}>
   <Section headline="Search Tickets" headingLevel={1}>
-    <!-- Search Input -->
     <div>
       <label for="searchInput" class="sr-only">Search tickets</label>
       <input
@@ -40,7 +37,6 @@ const ticketsData = sortedTickets.map((ticket) => ({
       />
     </div>
 
-    <!-- Results Count -->
     <h2
       id="resultsCount"
       class="text-sm font-mono"
@@ -50,12 +46,10 @@ const ticketsData = sortedTickets.map((ticket) => ({
       Showing all {allTickets.length} tickets
     </h2>
 
-    <!-- Results Grid -->
     <div id="resultsContainer">
       <TicketGrid tickets={sortedTickets} />
     </div>
 
-    <!-- No Results Message -->
     <div
       id="noResults"
       class="hidden text-center py-12 font-mono text-lg border-2 border-solid border-black"
