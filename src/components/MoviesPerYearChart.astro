@@ -28,7 +28,7 @@ const years = Object.keys(moviesByYear).length;
 const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
 ---
 
-<div class="flex flex-col gap-2 py-4 max-lg:border-t max-lg:border-dashed">
+<div class="flex flex-col gap-2 py-4 max-lg:border-t max-lg:border-solid">
   <h2 class="text-xl md:text-2xl">Movies Per Year</h2>
   <p>
     {totalMovies} movies across {years} years (avg: {avgPerYear}/year)

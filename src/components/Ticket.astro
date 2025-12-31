@@ -20,7 +20,7 @@ const { title, theater, time, price, rating, international } = Astro.props;
 <!-- Minimal Movie Ticket -->
 <div class="relative h-full" transition:animate="slide">
   <div
-    class={`h-full ${international ? "bg-green" : "bg-card"} p-4 border-r border-b border-dashed border-black`}
+    class={`h-full ${international ? "bg-green" : "bg-card"} p-4 border-r border-b border-solid border-black`}
   >
     <!-- Theater Header -->
     {
@@ -32,7 +32,7 @@ const { title, theater, time, price, rating, international } = Astro.props;
           </div>
           {international && (
             <span
-              class="px-1 py-0.5 border border-dashed border-black text-xs font-bold"
+              class="px-1 py-0.5 border border-solid border-black text-xs font-bold"
               aria-hidden="true"
             >
               INTL
@@ -75,7 +75,7 @@ const { title, theater, time, price, rating, international } = Astro.props;
               <span class="text-xs uppercase tracking-wide block mb-1">
                 Rated
               </span>
-              <span class="px-2 py-1 border border-dashed text-xs font-bold">
+              <span class="px-2 py-1 border border-solid text-xs font-bold">
                 <span class="sr-only">The movie is rated</span>
                 {rating}
               </span>
@@ -87,7 +87,7 @@ const { title, theater, time, price, rating, international } = Astro.props;
       <!-- Price -->
       {
         price !== undefined && price !== null && (
-          <div class="pt-3 border-t border-dashed border-black">
+          <div class="pt-3 border-t border-solid border-black">
             <div class="flex justify-between items-center">
               <span
                 class="text-xs uppercase tracking-wide font-mono"
