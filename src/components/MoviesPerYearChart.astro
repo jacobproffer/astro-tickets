@@ -80,7 +80,7 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
         marginBottom: 50,
         x: {
           label: "Year",
-          tickFormat: (d) => d.toString(),
+          tickFormat: (d) => String(d),
         },
         y: {
           label: "Number of Movies",
@@ -92,7 +92,11 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
             y: "count",
             stroke: "#121212",
             strokeWidth: 2,
-            tip: true,
+            tip: {
+              format: {
+                x: (d) => String(d),
+              },
+            },
           }),
           Plot.dot(chartData, {
             x: "year",
