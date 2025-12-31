@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Section from "@components/Section.astro";
+import ExternalLink from "@components/ExternalLink.astro";
 import MoviesPerYearChart from "@components/MoviesPerYearChart.astro";
 
 // Get all tickets and calculate statistics
@@ -114,15 +115,21 @@ const internationalCount = tickets.filter((t) => t.data.international).length;
 
       <h2 class="text-xl md:text-2xl mt-4 mb-4">Built With</h2>
       <p class="text-lg leading-6">
-        This site is built with <a
-          href="https://astro.build/"
-          class="underline decoration-dashed focus:outline focus:outline-black"
-          >Astro</a
-        > and styled with <a
-          href="https://tailwindcss.com/"
-          class="underline decoration-dashed focus:outline focus:outline-black"
-          >Tailwind CSS</a
-        >.
+        <p>
+          This site is built by <ExternalLink
+            url="https://proffer.dev/"
+            title="Jacob Proffer"
+          /> with <ExternalLink url="https://astro.build/" title="Astro" />, <ExternalLink
+            url="https://tailwindcss.com/"
+            title="Tailwind CSS"
+          />, <ExternalLink
+            url="https://observablehq.com/plot/"
+            title="Observable Plot"
+          />, and <ExternalLink
+            url="https://www.typescriptlang.org/"
+            title="TypeScript"
+          />.
+        </p>
       </p>
     </div>
     <MoviesPerYearChart tickets={tickets} />
