@@ -28,7 +28,7 @@ const years = Object.keys(moviesByYear).length;
 const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
 ---
 
-<div class="flex flex-col gap-2 py-4 max-lg:border-t max-lg:border-dashed">
+<div class="flex flex-col gap-2 py-4 max-lg:border-t max-lg:border-solid">
   <h2 class="text-xl md:text-2xl">Movies Per Year</h2>
   <p>
     {totalMovies} movies across {years} years (avg: {avgPerYear}/year)
@@ -80,7 +80,7 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
         marginBottom: 50,
         x: {
           label: "Year",
-          tickFormat: (d) => d.toString(),
+          tickFormat: (d) => String(d),
         },
         y: {
           label: "Number of Movies",
@@ -92,7 +92,11 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
             y: "count",
             stroke: "#121212",
             strokeWidth: 2,
-            tip: true,
+            tip: {
+              format: {
+                x: (d) => String(d),
+              },
+            },
           }),
           Plot.dot(chartData, {
             x: "year",

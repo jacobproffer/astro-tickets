@@ -26,7 +26,7 @@ const percentage = Math.round((count / totalCount) * 100);
 <li class="relative h-full">
   <a
     href={href}
-    class="h-full bg-card p-4 border-r border-b border-dashed border-black hover:bg-green transition-colors block focus:outline focus:outline-black"
+    class="h-full bg-card p-4 border-r border-b border-solid border-black hover:bg-green transition-colors block focus:outline-4 focus:outline-black focus:-outline-offset-2"
   >
     {/* Header */}
     <div class="text-xs uppercase tracking-wide text-black font-mono">
@@ -58,14 +58,14 @@ const percentage = Math.round((count / totalCount) * 100);
           <span class="text-xs uppercase tracking-wide block mb-1">
             Share
           </span>
-          <span class="px-2 py-1 border border-dashed text-xs font-bold">
+          <span class="px-2 py-1 border border-solid text-xs font-bold">
             {percentage}%
           </span>
         </div>
       </div>
 
       {/* Footer */}
-      <div class="pt-3 border-t border-dashed border-black">
+      <div class="pt-3 border-t border-solid border-black">
         <div class="flex justify-between items-center">
           <span
             class="text-xs uppercase tracking-wide font-mono"
