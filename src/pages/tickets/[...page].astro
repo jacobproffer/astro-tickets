@@ -51,21 +51,18 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
 
     <TicketGrid tickets={page.data} transitionName="tickets-grid" />
 
-    <!-- Pagination Navigation -->
     <nav
-      aria-label="Pagination Navigation"
+      aria-label="Ticket pagination"
       class="flex items-center justify-between pb-4 border-b border-solid"
     >
       <div
         class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between"
       >
-        <div>
-          <p>
-            Showing <span class="font-medium">{page.start + 1}</span> to{" "}
-            <span class="font-medium">{page.end + 1}</span> of{" "}
-            <span class="font-medium">{page.total}</span> tickets
-          </p>
-        </div>
+        <p>
+          Showing <span class="font-medium">{page.start + 1}</span> to{" "}
+          <span class="font-medium">{page.end + 1}</span> of{" "}
+          <span class="font-medium">{page.total}</span> tickets
+        </p>
 
         <div class="flex items-center">
           {
