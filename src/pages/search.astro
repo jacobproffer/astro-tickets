@@ -29,7 +29,7 @@ const ticketsData = sortedTickets.map((ticket) => ({
 <BaseLayout pageTitle={pageTitle}>
   <Section headline="Search Tickets" headingLevel={1}>
     <!-- Search Input -->
-    <div class="mb-4">
+    <div>
       <label for="searchInput" class="sr-only">Search tickets</label>
       <input
         type="search"
@@ -43,7 +43,7 @@ const ticketsData = sortedTickets.map((ticket) => ({
     <!-- Results Count -->
     <h2
       id="resultsCount"
-      class="mb-4 text-sm font-mono"
+      class="text-xl md:text-2xl"
       aria-live="polite"
       aria-atomic="true"
     >
@@ -60,7 +60,7 @@ const ticketsData = sortedTickets.map((ticket) => ({
       id="noResults"
       class="hidden text-center py-12 font-mono text-lg border-2 border-solid border-black"
     >
-      <h2 class="text-2xl mb-2">No tickets found</h2>
+      <h2 class="text-2xl md:text-4xl mb-2">No tickets found</h2>
       <p class="text-sm">Try a different search term</p>
     </div>
   </Section>
