@@ -33,12 +33,12 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
   <p>
     {totalMovies} movies across {years} years (avg: {avgPerYear}/year)
   </p>
-  <div
+  <figure
     id="movies-chart"
     class="w-full overflow-x-auto"
     aria-label="Movies per year chart"
   >
-  </div>
+  </figure>
 </div>
 
 <script>
