@@ -12,15 +12,23 @@ interface Props {
   price: number;
   rating: string;
   international?: boolean;
+  rerelease?: boolean;
 }
 
-const { title, theater, time, price, rating, international } = Astro.props;
+const { title, theater, time, price, rating, international, rerelease } =
+  Astro.props;
+
+const getBackgroundColor = () => {
+  if (international) return "bg-green";
+  if (rerelease) return "bg-blue-100";
+  return "bg-card";
+};
 ---
 
 <!-- Minimal Movie Ticket -->
 <div class="relative h-full" transition:animate="slide">
   <div
-    class={`h-full ${international ? "bg-green" : "bg-card"} p-4 border-r border-b border-solid border-black`}
+    class={`h-full ${getBackgroundColor()} p-4 border-r border-b border-solid border-black`}
   >
     <!-- Theater Header -->
     {
@@ -30,12 +38,12 @@ const { title, theater, time, price, rating, international } = Astro.props;
             <span class="sr-only">Ticket purchased at</span>
             {theater}
           </div>
-          {international && (
+          {(international || rerelease) && (
             <span
-              class="px-1 py-0.5 border border-solid border-black text-xs font-bold"
+              class="px-1 py-0.5 border border-solid border-black text-xs font-bold uppercase"
               aria-hidden="true"
             >
-              INTL
+              {international ? "International" : "Re-release"}
             </span>
           )}
         </div>

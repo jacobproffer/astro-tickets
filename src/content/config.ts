@@ -9,6 +9,7 @@ const tickets = defineCollection({
     theater: z.string(),
     rating: z.string(),
     international: z.boolean().optional(),
+    rerelease: z.boolean().optional(),
   }),
 });
 
