@@ -59,10 +59,10 @@ const currentPath = Astro.url.pathname;
 
       if (isActive) {
         link.setAttribute("aria-current", "page");
-        link.classList.add("bg-green");
+        link.classList.add("bg-pink");
       } else {
         link.removeAttribute("aria-current");
-        link.classList.remove("bg-green");
+        link.classList.remove("bg-pink");
       }
     });
   });
