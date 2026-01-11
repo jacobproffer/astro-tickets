@@ -24,7 +24,11 @@ const data = Object.entries(moviesByYear)
 
 // Calculate some stats
 const totalMovies = allTickets.length;
-const years = Object.keys(moviesByYear).length;
+const yearNumbers = data.map((d) => d.year);
+const years =
+  yearNumbers.length > 0
+    ? Math.max(...yearNumbers) - Math.min(...yearNumbers)
+    : 0;
 const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
 ---
 
