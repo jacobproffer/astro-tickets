@@ -1,0 +1,145 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  tickets: CollectionEntry<"tickets">[];
+}
+
+const { tickets: allTickets } = Astro.props;
+
+// Count movies by rating
+const ratingCounts = allTickets.reduce(
+  (acc, ticket) => {
+    acc[ticket.data.rating] = (acc[ticket.data.rating] || 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>,
+);
+
+// Convert to array and sort by rating order (R, PG-13, PG, G, Other)
+const ratingOrder = ["R", "PG-13", "PG", "G"];
+const data = Object.entries(ratingCounts)
+  .map(([rating, count]) => ({ rating, count }))
+  .sort((a, b) => {
+    const aIndex = ratingOrder.indexOf(a.rating);
+    const bIndex = ratingOrder.indexOf(b.rating);
+
+    // If both are in the order array, sort by that order
+    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+    // If only a is in the order array, it comes first
+    if (aIndex !== -1) return -1;
+    // If only b is in the order array, it comes first
+    if (bIndex !== -1) return 1;
+    // Otherwise, sort alphabetically
+    return a.rating.localeCompare(b.rating);
+  });
+---
+
+<div class="flex flex-col gap-2 py-4 max-lg:border-b lg:border-r">
+  <h2 class="text-xl md:text-2xl">Rating Breakdown</h2>
+  <figure
+    id="ratings-chart"
+    class="w-full overflow-x-auto"
+    aria-label="Movies by rating chart"
+  >
+  </figure>
+</div>
+
+<script>
+  import * as Plot from "@observablehq/plot";
+
+  // Parse data once at module level
+  const dataElement = document.getElementById("ratings-data");
+  if (!dataElement?.textContent) {
+    console.error("RatingsChart: ratings-data element not found or empty");
+  }
+
+  let chartData: Array<{ rating: string; count: number }> = [];
+  try {
+    chartData = JSON.parse(dataElement?.textContent || "[]");
+    if (!Array.isArray(chartData) || chartData.length === 0) {
+      console.warn("RatingsChart: No chart data available");
+    }
+  } catch (error) {
+    console.error("RatingsChart: Failed to parse chart data", error);
+  }
+
+  let resizeListener: (() => void) | null = null;
+
+  function initChart() {
+    const container = document.getElementById("ratings-chart");
+
+    // Early return if container doesn't exist
+    if (!container) return;
+
+    function createChart() {
+      // Clear existing chart
+      container!.innerHTML = "";
+
+      const chartWidth = container!.clientWidth;
+
+      // Create the plot with vertical bar chart
+      const plot = Plot.plot({
+        width: chartWidth,
+        marginBottom: 50,
+        x: {
+          label: "Rating",
+        },
+        y: {
+          label: "Number of Movies",
+          grid: true,
+        },
+        marks: [
+          Plot.barY(chartData, {
+            x: "rating",
+            y: "count",
+            fill: "#121212",
+            tip: {
+              format: {
+                x: true,
+                y: true,
+              },
+            },
+          }),
+          Plot.ruleY([0]),
+        ],
+      });
+
+      container!.appendChild(plot);
+    }
+
+    // Create chart on load
+    createChart();
+
+    // Remove old resize listener before adding a new one
+    if (resizeListener) {
+      window.removeEventListener("resize", resizeListener);
+    }
+
+    // Store and add new resize listener
+    resizeListener = createChart;
+    window.addEventListener("resize", resizeListener);
+  }
+
+  function cleanup() {
+    if (resizeListener) {
+      window.removeEventListener("resize", resizeListener);
+      resizeListener = null;
+    }
+  }
+
+  // Run on initial load
+  initChart();
+
+  // Re-run after view transitions
+  document.addEventListener("astro:page-load", initChart);
+
+  // Clean up before navigation
+  document.addEventListener("astro:before-swap", cleanup);
+</script>
+
+<script
+  type="application/json"
+  id="ratings-data"
+  set:html={JSON.stringify(data)}
+/>

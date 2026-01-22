@@ -14,7 +14,7 @@ const moviesByYear = allTickets.reduce(
     acc[year] = (acc[year] || 0) + 1;
     return acc;
   },
-  {} as Record<number, number>
+  {} as Record<number, number>,
 );
 
 // Convert to array and sort by year
@@ -32,7 +32,9 @@ const years =
 const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
 ---
 
-<div class="flex flex-col gap-2 py-4 max-lg:border-t max-lg:border-solid">
+<div
+  class="flex flex-col gap-2 py-4 lg:pl-4 max-lg:border-t max-lg:border-b max-lg:border-solid lg:border-b"
+>
   <h2 class="text-xl md:text-2xl">Movies Per Year</h2>
   <p>
     {totalMovies} movies across {years} years (avg: {avgPerYear}/year)

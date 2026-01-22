@@ -1,0 +1,137 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  tickets: CollectionEntry<"tickets">[];
+}
+
+const { tickets: allTickets } = Astro.props;
+
+// Count visits per theater
+const theaterCounts = allTickets.reduce(
+  (acc, ticket) => {
+    acc[ticket.data.theater] = (acc[ticket.data.theater] || 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>,
+);
+
+// Convert to array and sort by count (highest to lowest)
+const data = Object.entries(theaterCounts)
+  .map(([theater, count]) => ({ theater, count }))
+  .sort((a, b) => b.count - a.count);
+---
+
+<div class="flex flex-col gap-2 py-4 lg:pl-4 lg:flex-1">
+  <h2 class="text-xl md:text-2xl">Theater Breakdown</h2>
+  <figure
+    id="theaters-chart"
+    class="w-full overflow-x-auto lg:flex-1"
+    aria-label="Movies by theater chart"
+  >
+  </figure>
+</div>
+
+<script>
+  import * as Plot from "@observablehq/plot";
+
+  // Parse data once at module level
+  const dataElement = document.getElementById("theaters-data");
+  if (!dataElement?.textContent) {
+    console.error("TheatersChart: theaters-data element not found or empty");
+  }
+
+  let chartData: Array<{ theater: string; count: number }> = [];
+  try {
+    chartData = JSON.parse(dataElement?.textContent || "[]");
+    if (!Array.isArray(chartData) || chartData.length === 0) {
+      console.warn("TheatersChart: No chart data available");
+    }
+  } catch (error) {
+    console.error("TheatersChart: Failed to parse chart data", error);
+  }
+
+  let resizeListener: (() => void) | null = null;
+
+  function initChart() {
+    const container = document.getElementById("theaters-chart");
+
+    // Early return if container doesn't exist
+    if (!container) return;
+
+    function createChart() {
+      // Clear existing chart
+      container!.innerHTML = "";
+
+      const chartWidth = container!.clientWidth;
+      const isLargeScreen = window.matchMedia("(min-width: 1024px)").matches;
+      const chartHeight = isLargeScreen ? container!.clientHeight : undefined;
+
+      // Create the plot with horizontal bar chart
+      const plot = Plot.plot({
+        width: chartWidth,
+        ...(chartHeight && { height: chartHeight }),
+        marginLeft: 165,
+        marginBottom: 40,
+        x: {
+          label: "Number of Visits",
+          grid: true,
+        },
+        y: {
+          label: null,
+        },
+        marks: [
+          Plot.barX(chartData, {
+            y: "theater",
+            x: "count",
+            fill: "#121212",
+            sort: { y: "-x" },
+            tip: {
+              format: {
+                y: true,
+                x: true,
+              },
+            },
+          }),
+          Plot.ruleX([0]),
+        ],
+      });
+
+      container!.appendChild(plot);
+    }
+
+    // Create chart on load
+    createChart();
+
+    // Remove old resize listener before adding a new one
+    if (resizeListener) {
+      window.removeEventListener("resize", resizeListener);
+    }
+
+    // Store and add new resize listener
+    resizeListener = createChart;
+    window.addEventListener("resize", resizeListener);
+  }
+
+  function cleanup() {
+    if (resizeListener) {
+      window.removeEventListener("resize", resizeListener);
+      resizeListener = null;
+    }
+  }
+
+  // Run on initial load
+  initChart();
+
+  // Re-run after view transitions
+  document.addEventListener("astro:page-load", initChart);
+
+  // Clean up before navigation
+  document.addEventListener("astro:before-swap", cleanup);
+</script>
+
+<script
+  type="application/json"
+  id="theaters-data"
+  set:html={JSON.stringify(data)}
+/>

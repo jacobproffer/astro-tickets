@@ -3,6 +3,8 @@ import { getCollection } from "astro:content";
 import Section from "@components/Section.astro";
 import ExternalLink from "@components/ExternalLink.astro";
 import MoviesPerYearChart from "@components/MoviesPerYearChart.astro";
+import RatingsChart from "@components/RatingsChart.astro";
+import TheatersChart from "@components/TheatersChart.astro";
 
 // Get all tickets and calculate statistics
 const tickets = await getCollection("tickets");
@@ -30,10 +32,10 @@ const theaterCounts = tickets.reduce(
     acc[ticket.data.theater] = (acc[ticket.data.theater] || 0) + 1;
     return acc;
   },
-  {} as Record<string, number>
+  {} as Record<string, number>,
 );
 const mostVisitedTheater = Object.entries(theaterCounts).sort(
-  (a, b) => b[1] - a[1]
+  (a, b) => b[1] - a[1],
 )[0];
 
 // Get rating distribution
@@ -42,7 +44,7 @@ const ratingCounts = tickets.reduce(
     acc[ticket.data.rating] = (acc[ticket.data.rating] || 0) + 1;
     return acc;
   },
-  {} as Record<string, number>
+  {} as Record<string, number>,
 );
 
 // Count international tickets
@@ -50,8 +52,10 @@ const internationalCount = tickets.filter((t) => t.data.international).length;
 ---
 
 <Section headline="About Deadman's Brew">
-  <div class="grid gap-4 border-t border-b border-solid lg:grid-cols-[1fr_2fr]">
-    <div class="prose prose-lg pt-4 lg:pr-4 lg:border-r lg:pb-4 border-solid">
+  <div class="grid border-t border-b border-solid lg:grid-cols-[1fr_2fr]">
+    <div
+      class="prose prose-lg pt-4 max-lg:pb-4 lg:pr-4 lg:border-r lg:border-b lg:pb-4 border-solid"
+    >
       <p class="text-lg leading-6">
         Deadman's Brew is the movie ticket collection of Jacob Proffer,
         documenting <strong>{yearsCollecting} years</strong> of cinema experiences
@@ -98,21 +102,6 @@ const internationalCount = tickets.filter((t) => t.data.international).length;
           )
         }
       </ul>
-
-      <h2 class="text-xl md:text-2xl mt-4 mb-4">Rating Breakdown</h2>
-      <ul>
-        {
-          Object.entries(ratingCounts)
-            .sort((a, b) => b[1] - a[1])
-            .map(([rating, count]) => (
-              <li>
-                <strong>{rating}</strong>: {count}{" "}
-                {count === 1 ? "ticket" : "tickets"}
-              </li>
-            ))
-        }
-      </ul>
-
       <h2 class="text-xl md:text-2xl mt-4 mb-4">Built With</h2>
       <p class="text-lg leading-6">
         <p>
@@ -133,5 +122,7 @@ const internationalCount = tickets.filter((t) => t.data.international).length;
       </p>
     </div>
     <MoviesPerYearChart tickets={tickets} />
+    <RatingsChart tickets={tickets} />
+    <TheatersChart tickets={tickets} />
   </div>
 </Section>
