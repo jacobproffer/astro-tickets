@@ -7,42 +7,40 @@ interface Props {
 
 const { tickets: allTickets } = Astro.props;
 
-// Count movies per year
-const moviesByYear = allTickets.reduce(
+// Count movies by rating
+const ratingCounts = allTickets.reduce(
   (acc, ticket) => {
-    const year = ticket.data.date.getFullYear();
-    acc[year] = (acc[year] || 0) + 1;
+    acc[ticket.data.rating] = (acc[ticket.data.rating] || 0) + 1;
     return acc;
   },
-  {} as Record<number, number>,
+  {} as Record<string, number>,
 );
 
-// Convert to array and sort by year
-const data = Object.entries(moviesByYear)
-  .map(([year, count]) => ({ year: +year, count }))
-  .sort((a, b) => a.year - b.year);
+// Convert to array and sort by rating order (R, PG-13, PG, G, Other)
+const ratingOrder = ["R", "PG-13", "PG", "G"];
+const data = Object.entries(ratingCounts)
+  .map(([rating, count]) => ({ rating, count }))
+  .sort((a, b) => {
+    const aIndex = ratingOrder.indexOf(a.rating);
+    const bIndex = ratingOrder.indexOf(b.rating);
 
-// Calculate some stats
-const totalMovies = allTickets.length;
-const yearNumbers = data.map((d) => d.year);
-const years =
-  yearNumbers.length > 0
-    ? Math.max(...yearNumbers) - Math.min(...yearNumbers)
-    : 0;
-const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
+    // If both are in the order array, sort by that order
+    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+    // If only a is in the order array, it comes first
+    if (aIndex !== -1) return -1;
+    // If only b is in the order array, it comes first
+    if (bIndex !== -1) return 1;
+    // Otherwise, sort alphabetically
+    return a.rating.localeCompare(b.rating);
+  });
 ---
 
-<div
-  class="flex flex-col gap-2 py-4 lg:pl-4 max-lg:border-t max-lg:border-solid"
->
-  <h2 class="text-xl md:text-2xl">Movies Per Year</h2>
-  <p>
-    {totalMovies} movies across {years} years (avg: {avgPerYear}/year)
-  </p>
+<div class="flex flex-col gap-2 py-4 lg:border-r">
+  <h2 class="text-xl md:text-2xl">Rating Breakdown</h2>
   <figure
-    id="movies-chart"
+    id="ratings-chart"
     class="w-full overflow-x-auto"
-    aria-label="Movies per year chart"
+    aria-label="Movies by rating chart"
   >
   </figure>
 </div>
@@ -51,25 +49,25 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
   import * as Plot from "@observablehq/plot";
 
   // Parse data once at module level
-  const dataElement = document.getElementById("chart-data");
+  const dataElement = document.getElementById("ratings-data");
   if (!dataElement?.textContent) {
-    console.error("MoviesPerYearChart: chart-data element not found or empty");
+    console.error("RatingsChart: ratings-data element not found or empty");
   }
 
-  let chartData: Array<{ year: number; count: number }> = [];
+  let chartData: Array<{ rating: string; count: number }> = [];
   try {
     chartData = JSON.parse(dataElement?.textContent || "[]");
     if (!Array.isArray(chartData) || chartData.length === 0) {
-      console.warn("MoviesPerYearChart: No chart data available");
+      console.warn("RatingsChart: No chart data available");
     }
   } catch (error) {
-    console.error("MoviesPerYearChart: Failed to parse chart data", error);
+    console.error("RatingsChart: Failed to parse chart data", error);
   }
 
   let resizeListener: (() => void) | null = null;
 
   function initChart() {
-    const container = document.getElementById("movies-chart");
+    const container = document.getElementById("ratings-chart");
 
     // Early return if container doesn't exist
     if (!container) return;
@@ -80,35 +78,28 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
 
       const chartWidth = container!.clientWidth;
 
-      // Create the plot with line chart for all screen sizes
+      // Create the plot with vertical bar chart
       const plot = Plot.plot({
         width: chartWidth,
         marginBottom: 50,
         x: {
-          label: "Year",
-          tickFormat: (d) => String(d),
+          label: "Rating",
         },
         y: {
           label: "Number of Movies",
           grid: true,
         },
         marks: [
-          Plot.line(chartData, {
-            x: "year",
-            y: "count",
-            stroke: "#121212",
-            strokeWidth: 2,
-            tip: {
-              format: {
-                x: (d) => String(d),
-              },
-            },
-          }),
-          Plot.dot(chartData, {
-            x: "year",
+          Plot.barY(chartData, {
+            x: "rating",
             y: "count",
             fill: "#121212",
-            r: 3,
+            tip: {
+              format: {
+                x: true,
+                y: true,
+              },
+            },
           }),
           Plot.ruleY([0]),
         ],
@@ -139,6 +130,6 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
 
 <script
   type="application/json"
-  id="chart-data"
+  id="ratings-data"
   set:html={JSON.stringify(data)}
 />
