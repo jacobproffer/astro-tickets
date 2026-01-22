@@ -113,11 +113,21 @@ const data = Object.entries(theaterCounts)
     window.addEventListener("resize", resizeListener);
   }
 
+  function cleanup() {
+    if (resizeListener) {
+      window.removeEventListener("resize", resizeListener);
+      resizeListener = null;
+    }
+  }
+
   // Run on initial load
   initChart();
 
   // Re-run after view transitions
   document.addEventListener("astro:page-load", initChart);
+
+  // Clean up before navigation
+  document.addEventListener("astro:before-swap", cleanup);
 </script>
 
 <script
