@@ -21,7 +21,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   openGraph={{
     basic: {
       url: canonicalURL,
-      title: seo?.title ?? "Deadman's Brew",
+      title: seo?.title ?? siteName,
       type: "website",
       image: facebookImageFile.toString(),
     },
