@@ -1,15 +1,27 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, svgoOptimizer } from 'astro/config';
 
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
+import llms from "astro-llms-md";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://tickets.proffer.dev/",
   trailingSlash: "always",
 
-  integrations: [sitemap()],
+  integrations: [sitemap(), llms({
+    siteUrl: "https://tickets.proffer.dev/",
+    name: "Deadman's Brew",
+    description: "The ongoing movie ticket collection of Jacob Proffer.",
+    generateIndividualMd: true,
+    generateLlmsTxt: true,
+    generateLlmsFullTxt: true,
+    titleSelector: "h1",
+    contentSelector: "main",
+    exclude: ["404", "404.html", "_astro"],
+    verbose: false,
+  })],
 
   // Security and performance optimizations
   security: {
@@ -30,4 +42,8 @@ export default defineConfig({
       },
     },
   },
+
+  experimental: {
+    svgOptimizer: svgoOptimizer()
+  }
 });
