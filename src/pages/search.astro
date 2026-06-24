@@ -9,7 +9,7 @@ const allTickets = await getCollection("tickets");
 
 // Sort tickets by date (newest first) for initial display
 const sortedTickets = allTickets.sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 
 // Prepare ticket data for client-side search
@@ -149,6 +149,7 @@ const ticketsData = sortedTickets.map((ticket) => ({
 
   function initializeSearch() {
     const ticketsData = window.ticketsData;
+    if (!ticketsData) return;
     const searchInput = document.getElementById("searchInput");
     const resultsContainer = document.getElementById("resultsContainer");
     const resultsCount = document.getElementById("resultsCount");
@@ -212,7 +213,7 @@ const ticketsData = sortedTickets.map((ticket) => ({
   initializeSearch();
 
   // Re-initialize after view transitions
-  document.addEventListener("astro:after-swap", initializeSearch);
+  document.addEventListener("astro:page-load", initializeSearch);
 </script>
 
 <style>
