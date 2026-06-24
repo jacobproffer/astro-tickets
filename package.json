@@ -17,6 +17,6 @@
     "tailwindcss": "^4.3.1"
   },
   "devDependencies": {
-    "astro-llms-md": "^2.2.1"
+    "astro-llms-md": "^2.2.2"
   }
 }
