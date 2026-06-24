@@ -14,7 +14,7 @@ const sortedTickets = allTickets.sort(
 
 // Prepare ticket data for client-side search
 const ticketsData = sortedTickets.map((ticket) => ({
-  slug: ticket.slug,
+  slug: ticket.id,
   title: ticket.data.title,
   theater: ticket.data.theater,
   date: ticket.data.date.toISOString().split("T")[0],
