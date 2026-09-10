@@ -12,11 +12,11 @@
     "@astrojs/sitemap": "^3.7.4",
     "@observablehq/plot": "^0.6.17",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.1",
+    "astro": "^7.3.2",
     "astro-seo": "^1.2.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "astro-llms-md": "^3.0.1"
+    "astro-llms-md": "^3.0.2"
   }
 }
