@@ -1,8 +1,8 @@
 ---
-import type { CollectionEntry } from "astro:content";
+import type { Ticket } from "@utils/sanity";
 
 interface Props {
-  tickets: CollectionEntry<"tickets">[];
+  tickets: Ticket[];
 }
 
 const { tickets: allTickets } = Astro.props;
@@ -10,7 +10,7 @@ const { tickets: allTickets } = Astro.props;
 // Count movies per year
 const moviesByYear = allTickets.reduce(
   (acc, ticket) => {
-    const year = ticket.data.date.getFullYear();
+    const year = new Date(`${ticket.date}T00:00:00`).getFullYear();
     acc[year] = (acc[year] || 0) + 1;
     return acc;
   },

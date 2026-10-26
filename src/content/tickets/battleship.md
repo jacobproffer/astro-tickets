@@ -1,7 +1,0 @@
----
-title: "Battleship"
-date: "2012-05-19"
-price: "8.50"
-theater: "Carmike Royal Cinema 10"
-rating: "PG-13"
----

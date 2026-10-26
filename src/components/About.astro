@@ -1,5 +1,5 @@
 ---
-import { getCollection } from "astro:content";
+import { getTicketDate, getTickets } from "@utils/sanity";
 import Section from "@components/Section.astro";
 import ExternalLink from "@components/ExternalLink.astro";
 import MoviesPerYearChart from "@components/MoviesPerYearChart.astro";
@@ -8,29 +8,30 @@ import RatingsChart from "@components/RatingsChart.astro";
 import TheatersChart from "@components/TheatersChart.astro";
 
 // Get all tickets and calculate statistics
-const tickets = await getCollection("tickets");
+const tickets = await getTickets();
 const totalTickets = tickets.length;
 
 // Calculate date range
 const dates = tickets
-  .map((t) => new Date(t.data.date))
+  .map(getTicketDate)
   .sort((a, b) => a.getTime() - b.getTime());
 const firstTicketDate = dates[0];
 const lastTicketDate = dates[dates.length - 1];
-const yearsCollecting =
-  lastTicketDate.getFullYear() - firstTicketDate.getFullYear();
+const yearsCollecting = firstTicketDate
+  ? lastTicketDate.getFullYear() - firstTicketDate.getFullYear()
+  : 0;
 
 // Get unique theaters
-const uniqueTheaters = [...new Set(tickets.map((t) => t.data.theater))];
+const uniqueTheaters = [...new Set(tickets.map((t) => t.theater))];
 const totalTheaters = uniqueTheaters.length;
 
 // Calculate total spent
-const totalSpent = tickets.reduce((sum, ticket) => sum + ticket.data.price, 0);
+const totalSpent = tickets.reduce((sum, ticket) => sum + ticket.price, 0);
 
 // Get most visited theater
 const theaterCounts = tickets.reduce(
   (acc, ticket) => {
-    acc[ticket.data.theater] = (acc[ticket.data.theater] || 0) + 1;
+    acc[ticket.theater] = (acc[ticket.theater] || 0) + 1;
     return acc;
   },
   {} as Record<string, number>,
@@ -42,34 +43,34 @@ const mostVisitedTheater = Object.entries(theaterCounts).sort(
 // Get rating distribution
 const ratingCounts = tickets.reduce(
   (acc, ticket) => {
-    acc[ticket.data.rating] = (acc[ticket.data.rating] || 0) + 1;
+    acc[ticket.rating] = (acc[ticket.rating] || 0) + 1;
     return acc;
   },
   {} as Record<string, number>,
 );
 
 // Count international tickets
-const internationalCount = tickets.filter((t) => t.data.international).length;
+const internationalCount = tickets.filter((t) => t.international).length;
 
 const money = (n: number) =>
   `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-const pricedTickets = tickets.filter((t) => t.data.price > 0);
+const pricedTickets = tickets.filter((t) => t.price > 0);
 const avgPrice =
-  pricedTickets.reduce((sum, t) => sum + t.data.price, 0) /
+  pricedTickets.reduce((sum, t) => sum + t.price, 0) /
   (pricedTickets.length || 1);
 
 // Average price in the first and last year of the collection
 const avgForYear = (year: number) => {
   const inYear = pricedTickets.filter(
-    (t) => t.data.date.getFullYear() === year,
+    (t) => getTicketDate(t).getFullYear() === year,
   );
   return (
-    inYear.reduce((sum, t) => sum + t.data.price, 0) / (inYear.length || 1)
+    inYear.reduce((sum, t) => sum + t.price, 0) / (inYear.length || 1)
   );
 };
-const firstYear = firstTicketDate.getFullYear();
-const lastYear = lastTicketDate.getFullYear();
+const firstYear = firstTicketDate?.getFullYear() ?? new Date().getFullYear();
+const lastYear = lastTicketDate?.getFullYear() ?? new Date().getFullYear();
 const firstAvg = avgForYear(firstYear);
 const priceIncrease =
   firstAvg > 0
@@ -78,7 +79,7 @@ const priceIncrease =
 
 const yearCounts = tickets.reduce(
   (acc, t) => {
-    const y = t.data.date.getFullYear();
+    const y = getTicketDate(t).getFullYear();
     acc[y] = (acc[y] || 0) + 1;
     return acc;
   },
@@ -87,59 +88,62 @@ const yearCounts = tickets.reduce(
 const busiestYear = Object.entries(yearCounts).sort((a, b) => b[1] - a[1])[0];
 const topRating = Object.entries(ratingCounts).sort((a, b) => b[1] - a[1])[0];
 const priciest = [...pricedTickets].sort(
-  (a, b) => b.data.price - a.data.price,
+  (a, b) => b.price - a.price,
 )[0];
 
-const stats = [
-  {
-    label: "Total Spent",
-    value: money(totalSpent),
-    note: "on tickets over the years",
-  },
-  {
-    label: "Average Ticket",
-    value: money(avgPrice),
-    note: "across every visit",
-  },
-  {
-    label: "Price Increase",
-    value: `${priceIncrease >= 0 ? "+" : ""}${priceIncrease}%`,
-    note: `average price, ${firstYear} to ${lastYear}`,
-  },
-  {
-    label: "Busiest Year",
-    value: busiestYear[0],
-    note: `${busiestYear[1]} movies`,
-  },
-  {
-    label: "Favorite Theater",
-    value: mostVisitedTheater[0],
-    note: `${mostVisitedTheater[1]} visits`,
-    small: true,
-  },
-  {
-    label: "Most Watched Rating",
-    value: topRating[0],
-    note: `${topRating[1]} movies`,
-  },
-  {
-    label: "Priciest Ticket",
-    value: money(priciest.data.price),
-    note: priciest.data.title,
-  },
-  ...(internationalCount > 0
-    ? [
+const stats =
+  totalTickets === 0
+    ? []
+    : [
         {
-          label: "International",
-          value: internationalCount,
-          note:
-            internationalCount === 1
-              ? "ticket from abroad"
-              : "tickets from abroad",
+          label: "Total Spent",
+          value: money(totalSpent),
+          note: "on tickets over the years",
         },
-      ]
-    : []),
-];
+        {
+          label: "Average Ticket",
+          value: money(avgPrice),
+          note: "across every visit",
+        },
+        {
+          label: "Price Increase",
+          value: `${priceIncrease >= 0 ? "+" : ""}${priceIncrease}%`,
+          note: `average price, ${firstYear} to ${lastYear}`,
+        },
+        {
+          label: "Busiest Year",
+          value: busiestYear[0],
+          note: `${busiestYear[1]} movies`,
+        },
+        {
+          label: "Favorite Theater",
+          value: mostVisitedTheater[0],
+          note: `${mostVisitedTheater[1]} visits`,
+          small: true,
+        },
+        {
+          label: "Most Watched Rating",
+          value: topRating[0],
+          note: `${topRating[1]} movies`,
+        },
+        {
+          label: "Priciest Ticket",
+          value: money(priciest.price),
+          note: priciest.title,
+        },
+        ...(internationalCount > 0
+          ? [
+              {
+                label: "International",
+                value: internationalCount,
+                note:
+                  internationalCount === 1
+                    ? "ticket from abroad"
+                    : "tickets from abroad",
+              },
+            ]
+          : []),
+      ];
 ---
 
 <Section headline="About Deadman's Brew">
@@ -152,10 +156,12 @@ const stats = [
         documenting <strong>{yearsCollecting} years</strong> of cinema experiences
         across{" "}
         <strong>{totalTheaters} different theaters</strong>. Starting with {
-          firstTicketDate.toLocaleDateString("en-US", {
-            month: "long",
-            year: "numeric",
-          })
+          firstTicketDate
+            ? firstTicketDate.toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              })
+            : "your first ticket"
         }, this collection has grown to <strong>{totalTickets} tickets</strong>,
         capturing memories from
         {

@@ -1,16 +1,16 @@
 ---
-import { getCollection } from "astro:content";
+import { getTickets } from "@utils/sanity";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import Section from "@components/Section.astro";
 import PageHeader from "@components/PageHeader.astro";
 import Card from "@components/Card.astro";
 
-const tickets = await getCollection("tickets");
+const tickets = await getTickets();
 
 // Count tickets by rating
 const ratingCounts = tickets.reduce(
   (acc, ticket) => {
-    const rating = ticket.data.rating;
+    const rating = ticket.rating;
     acc[rating] = (acc[rating] || 0) + 1;
     return acc;
   },

@@ -1,8 +1,8 @@
 ---
-import type { CollectionEntry } from "astro:content";
+import type { Ticket } from "@utils/sanity";
 
 interface Props {
-  tickets: CollectionEntry<"tickets">[];
+  tickets: Ticket[];
 }
 
 const { tickets: allTickets } = Astro.props;
@@ -10,7 +10,7 @@ const { tickets: allTickets } = Astro.props;
 // Count visits per theater
 const theaterCounts = allTickets.reduce(
   (acc, ticket) => {
-    acc[ticket.data.theater] = (acc[ticket.data.theater] || 0) + 1;
+    acc[ticket.theater] = (acc[ticket.theater] || 0) + 1;
     return acc;
   },
   {} as Record<string, number>,

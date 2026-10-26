@@ -1,17 +1,17 @@
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getTicketDate, getTickets, type Ticket } from "@utils/sanity";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import PageHeader from "@components/PageHeader.astro";
 import Section from "@components/Section.astro";
 import TicketGrid from "@components/TicketGrid.astro";
 
 export async function getStaticPaths({ paginate }: { paginate: any }) {
-  const tickets = await getCollection("tickets");
+  const tickets = await getTickets();
 
   // Sort tickets by date in descending order (newest first)
   const sortedTickets = tickets.sort((a, b) => {
-    const dateA = new Date(a.data.date);
-    const dateB = new Date(b.data.date);
+    const dateA = getTicketDate(a);
+    const dateB = getTicketDate(b);
     return dateB.getTime() - dateA.getTime();
   });
 
@@ -20,7 +20,7 @@ export async function getStaticPaths({ paginate }: { paginate: any }) {
 
 interface Props {
   page: {
-    data: CollectionEntry<"tickets">[];
+    data: Ticket[];
     url: {
       current: string;
       next?: string;
