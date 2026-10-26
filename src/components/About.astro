@@ -61,14 +61,20 @@ const avgPrice =
 
 // Average price in the first and last year of the collection
 const avgForYear = (year: number) => {
-  const inYear = pricedTickets.filter((t) => t.data.date.getFullYear() === year);
-  return inYear.reduce((sum, t) => sum + t.data.price, 0) / (inYear.length || 1);
+  const inYear = pricedTickets.filter(
+    (t) => t.data.date.getFullYear() === year,
+  );
+  return (
+    inYear.reduce((sum, t) => sum + t.data.price, 0) / (inYear.length || 1)
+  );
 };
 const firstYear = firstTicketDate.getFullYear();
 const lastYear = lastTicketDate.getFullYear();
 const firstAvg = avgForYear(firstYear);
 const priceIncrease =
-  firstAvg > 0 ? Math.round(((avgForYear(lastYear) - firstAvg) / firstAvg) * 100) : 0;
+  firstAvg > 0
+    ? Math.round(((avgForYear(lastYear) - firstAvg) / firstAvg) * 100)
+    : 0;
 
 const yearCounts = tickets.reduce(
   (acc, t) => {
@@ -80,11 +86,21 @@ const yearCounts = tickets.reduce(
 );
 const busiestYear = Object.entries(yearCounts).sort((a, b) => b[1] - a[1])[0];
 const topRating = Object.entries(ratingCounts).sort((a, b) => b[1] - a[1])[0];
-const priciest = [...pricedTickets].sort((a, b) => b.data.price - a.data.price)[0];
+const priciest = [...pricedTickets].sort(
+  (a, b) => b.data.price - a.data.price,
+)[0];
 
 const stats = [
-  { label: "Total Spent", value: money(totalSpent), note: "on tickets over the years" },
-  { label: "Average Ticket", value: money(avgPrice), note: "across every visit" },
+  {
+    label: "Total Spent",
+    value: money(totalSpent),
+    note: "on tickets over the years",
+  },
+  {
+    label: "Average Ticket",
+    value: money(avgPrice),
+    note: "across every visit",
+  },
   {
     label: "Price Increase",
     value: `${priceIncrease >= 0 ? "+" : ""}${priceIncrease}%`,
@@ -101,7 +117,11 @@ const stats = [
     note: `${mostVisitedTheater[1]} visits`,
     small: true,
   },
-  { label: "Most Watched Rating", value: topRating[0], note: `${topRating[1]} movies` },
+  {
+    label: "Most Watched Rating",
+    value: topRating[0],
+    note: `${topRating[1]} movies`,
+  },
   {
     label: "Priciest Ticket",
     value: money(priciest.data.price),
@@ -112,7 +132,10 @@ const stats = [
         {
           label: "International",
           value: internationalCount,
-          note: internationalCount === 1 ? "ticket from abroad" : "tickets from abroad",
+          note:
+            internationalCount === 1
+              ? "ticket from abroad"
+              : "tickets from abroad",
         },
       ]
     : []),
@@ -120,7 +143,7 @@ const stats = [
 ---
 
 <Section headline="About Deadman's Brew">
-  <div class="grid border-t border-b border-solid">
+  <div class="grid">
     <div
       class="prose prose-lg max-w-none grid gap-x-8 gap-y-4 py-4 lg:grid-cols-2 border-b border-solid"
     >
@@ -175,7 +198,7 @@ const stats = [
         ))
       }
     </dl>
-    <div class="grid gap-4 py-4 lg:grid-cols-3">
+    <div class="grid gap-4 lg:grid-cols-3">
       <MoviesPerYearChart tickets={tickets} />
       <TheatersChart tickets={tickets} />
       <PriceChart tickets={tickets} />
