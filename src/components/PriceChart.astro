@@ -1,0 +1,133 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  tickets: CollectionEntry<"tickets">[];
+}
+
+const { tickets: allTickets } = Astro.props;
+
+// Average ticket price per year (tickets without a price are ignored)
+const byYear = allTickets.reduce(
+  (acc, ticket) => {
+    if (!ticket.data.price) return acc;
+    const year = ticket.data.date.getFullYear();
+    acc[year] ??= { total: 0, count: 0 };
+    acc[year].total += ticket.data.price;
+    acc[year].count += 1;
+    return acc;
+  },
+  {} as Record<number, { total: number; count: number }>,
+);
+
+const data = Object.entries(byYear)
+  .map(([year, { total, count }]) => ({
+    year: +year,
+    price: Math.round((total / count) * 100) / 100,
+  }))
+  .sort((a, b) => a.year - b.year);
+
+const first = data[0];
+const last = data[data.length - 1];
+const change =
+  first && last && first.price > 0
+    ? Math.round(((last.price - first.price) / first.price) * 100)
+    : 0;
+---
+
+<div class="flex flex-col gap-2 p-4 border border-solid lg:col-span-2">
+  <h2 class="text-xl md:text-2xl">Average Ticket Price</h2>
+  {
+    first && last && (
+      <p>
+        ${first.price.toFixed(2)} in {first.year} to ${last.price.toFixed(2)} in{" "}
+        {last.year} ({change >= 0 ? "+" : ""}
+        {change}%)
+      </p>
+    )
+  }
+  <figure
+    id="price-chart"
+    class="w-full overflow-x-auto"
+    aria-label="Average ticket price per year chart"
+  >
+  </figure>
+</div>
+
+<script>
+  import * as Plot from "@observablehq/plot";
+
+  const dataElement = document.getElementById("price-data");
+
+  let chartData: Array<{ year: number; price: number }> = [];
+  try {
+    chartData = JSON.parse(dataElement?.textContent || "[]");
+  } catch (error) {
+    console.error("PriceChart: Failed to parse chart data", error);
+  }
+
+  let resizeListener: (() => void) | null = null;
+
+  function initChart() {
+    const container = document.getElementById("price-chart");
+    if (!container) return;
+
+    function createChart() {
+      container!.innerHTML = "";
+
+      const plot = Plot.plot({
+        width: container!.clientWidth,
+        marginBottom: 50,
+        x: {
+          label: "Year",
+          tickFormat: (d) => String(d),
+        },
+        y: {
+          label: "Average Price ($)",
+          grid: true,
+          tickFormat: (d) => `$${d}`,
+        },
+        marks: [
+          Plot.line(chartData, {
+            x: "year",
+            y: "price",
+            stroke: "#121212",
+            strokeWidth: 2,
+            tip: {
+              format: {
+                x: (d) => String(d),
+                y: (d) => `$${d.toFixed(2)}`,
+              },
+            },
+          }),
+          Plot.dot(chartData, {
+            x: "year",
+            y: "price",
+            fill: "#2e160e",
+            r: 3,
+          }),
+          Plot.ruleY([0]),
+        ],
+      });
+
+      container!.appendChild(plot);
+    }
+
+    createChart();
+
+    if (resizeListener) {
+      window.removeEventListener("resize", resizeListener);
+    }
+    resizeListener = createChart;
+    window.addEventListener("resize", resizeListener);
+  }
+
+  initChart();
+  document.addEventListener("astro:page-load", initChart);
+</script>
+
+<script
+  type="application/json"
+  id="price-data"
+  set:html={JSON.stringify(data)}
+/>

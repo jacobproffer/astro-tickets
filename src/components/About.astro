@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import Section from "@components/Section.astro";
 import ExternalLink from "@components/ExternalLink.astro";
 import MoviesPerYearChart from "@components/MoviesPerYearChart.astro";
+import PriceChart from "@components/PriceChart.astro";
 import RatingsChart from "@components/RatingsChart.astro";
 import TheatersChart from "@components/TheatersChart.astro";
 
@@ -49,14 +50,81 @@ const ratingCounts = tickets.reduce(
 
 // Count international tickets
 const internationalCount = tickets.filter((t) => t.data.international).length;
+
+const money = (n: number) =>
+  `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const pricedTickets = tickets.filter((t) => t.data.price > 0);
+const avgPrice =
+  pricedTickets.reduce((sum, t) => sum + t.data.price, 0) /
+  (pricedTickets.length || 1);
+
+// Average price in the first and last year of the collection
+const avgForYear = (year: number) => {
+  const inYear = pricedTickets.filter((t) => t.data.date.getFullYear() === year);
+  return inYear.reduce((sum, t) => sum + t.data.price, 0) / (inYear.length || 1);
+};
+const firstYear = firstTicketDate.getFullYear();
+const lastYear = lastTicketDate.getFullYear();
+const firstAvg = avgForYear(firstYear);
+const priceIncrease =
+  firstAvg > 0 ? Math.round(((avgForYear(lastYear) - firstAvg) / firstAvg) * 100) : 0;
+
+const yearCounts = tickets.reduce(
+  (acc, t) => {
+    const y = t.data.date.getFullYear();
+    acc[y] = (acc[y] || 0) + 1;
+    return acc;
+  },
+  {} as Record<number, number>,
+);
+const busiestYear = Object.entries(yearCounts).sort((a, b) => b[1] - a[1])[0];
+const topRating = Object.entries(ratingCounts).sort((a, b) => b[1] - a[1])[0];
+const priciest = [...pricedTickets].sort((a, b) => b.data.price - a.data.price)[0];
+
+const stats = [
+  { label: "Total Spent", value: money(totalSpent), note: "on tickets over the years" },
+  { label: "Average Ticket", value: money(avgPrice), note: "across every visit" },
+  {
+    label: "Price Increase",
+    value: `${priceIncrease >= 0 ? "+" : ""}${priceIncrease}%`,
+    note: `average price, ${firstYear} to ${lastYear}`,
+  },
+  {
+    label: "Busiest Year",
+    value: busiestYear[0],
+    note: `${busiestYear[1]} movies`,
+  },
+  {
+    label: "Favorite Theater",
+    value: mostVisitedTheater[0],
+    note: `${mostVisitedTheater[1]} visits`,
+    small: true,
+  },
+  { label: "Most Watched Rating", value: topRating[0], note: `${topRating[1]} movies` },
+  {
+    label: "Priciest Ticket",
+    value: money(priciest.data.price),
+    note: priciest.data.title,
+  },
+  ...(internationalCount > 0
+    ? [
+        {
+          label: "International",
+          value: internationalCount,
+          note: internationalCount === 1 ? "ticket from abroad" : "tickets from abroad",
+        },
+      ]
+    : []),
+];
 ---
 
 <Section headline="About Deadman's Brew">
-  <div class="grid border-t border-b border-solid lg:grid-cols-[1fr_2fr]">
+  <div class="grid border-t border-b border-solid">
     <div
-      class="prose prose-lg pt-4 max-lg:pb-4 lg:pr-4 lg:border-r lg:border-b lg:pb-4 border-solid"
+      class="prose prose-lg max-w-none grid gap-x-8 gap-y-4 py-4 lg:grid-cols-2 border-b border-solid"
     >
-      <p class="text-lg leading-6">
+      <p class="text-lg leading-6 m-0">
         Deadman's Brew is the movie ticket collection of Jacob Proffer,
         documenting <strong>{yearsCollecting} years</strong> of cinema experiences
         across{" "}
@@ -73,56 +141,45 @@ const internationalCount = tickets.filter((t) => t.data.international).length;
             : ` theaters across the United States`
         }.
       </p>
-
-      <h2 class="text-xl md:text-2xl mt-4 mb-4">Collection Highlights</h2>
-      <ul>
-        <li><strong>{totalTickets}</strong> total movie tickets</li>
-        <li><strong>{totalTheaters}</strong> unique theaters visited</li>
-        <li>
-          <strong
-            >${
-              totalSpent.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })
-            }</strong
-          > spent on tickets over the years
-        </li>
-        <li>
-          <strong>{mostVisitedTheater[0]}</strong> is the most frequented theater
-          with {mostVisitedTheater[1]} visits
-        </li>
-        {
-          internationalCount > 0 && (
-            <li>
-              <strong>{internationalCount}</strong> international{" "}
-              {internationalCount === 1 ? "ticket" : "tickets"} from theaters
-              abroad
-            </li>
-          )
-        }
-      </ul>
-      <h2 class="text-xl md:text-2xl mt-4 mb-4">Built With</h2>
-      <p class="text-lg leading-6">
-        <p>
-          This site is built by <ExternalLink
-            url="https://proffer.dev/"
-            title="Jacob Proffer"
-          /> with <ExternalLink url="https://astro.build/" title="Astro" />, <ExternalLink
-            url="https://tailwindcss.com/"
-            title="Tailwind CSS"
-          />, <ExternalLink
-            url="https://observablehq.com/plot/"
-            title="Observable Plot"
-          />, and <ExternalLink
-            url="https://www.typescriptlang.org/"
-            title="TypeScript"
-          />.
-        </p>
+      <p class="text-lg leading-6 m-0">
+        This site is built by <ExternalLink
+          url="https://proffer.dev/"
+          title="Jacob Proffer"
+        /> with <ExternalLink url="https://astro.build/" title="Astro" />, <ExternalLink
+          url="https://tailwindcss.com/"
+          title="Tailwind CSS"
+        />, <ExternalLink
+          url="https://observablehq.com/plot/"
+          title="Observable Plot"
+        />, and <ExternalLink
+          url="https://www.typescriptlang.org/"
+          title="TypeScript"
+        />.
       </p>
     </div>
-    <MoviesPerYearChart tickets={tickets} />
-    <TheatersChart tickets={tickets} />
-    <RatingsChart tickets={tickets} />
+    <dl class="grid grid-cols-2 gap-4 py-4 lg:grid-cols-4">
+      {
+        stats.map((stat) => (
+          <div class="flex flex-col gap-1 p-4 border border-solid">
+            <dt class="text-sm uppercase">{stat.label}</dt>
+            <dd
+              class:list={[
+                "leading-tight",
+                stat.small ? "text-xl md:text-2xl" : "text-3xl md:text-4xl",
+              ]}
+            >
+              {stat.value}
+            </dd>
+            <dd class="text-sm">{stat.note}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <div class="grid gap-4 py-4 lg:grid-cols-3">
+      <MoviesPerYearChart tickets={tickets} />
+      <TheatersChart tickets={tickets} />
+      <PriceChart tickets={tickets} />
+      <RatingsChart tickets={tickets} />
+    </div>
   </div>
 </Section>
