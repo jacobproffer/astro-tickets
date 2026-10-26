@@ -2,17 +2,17 @@
 import Container from "@components/Container.astro";
 import Stat from "@components/Stat.astro";
 import Graphic from "@images/deadmans-brew.svg";
-import { getCollection } from "astro:content";
+import { getTickets } from "@utils/sanity";
 
 const initialYear = 2007;
 const currentYear = new Date().getFullYear();
 const years = currentYear - initialYear;
 
-const tickets = await getCollection("tickets");
+const tickets = await getTickets();
 const ticketCount = tickets.length;
 
 // Get unique theaters from tickets
-const uniqueTheaters = new Set(tickets.map((ticket) => ticket.data.theater));
+const uniqueTheaters = new Set(tickets.map((ticket) => ticket.theater));
 const theaterCount = uniqueTheaters.size;
 ---
 

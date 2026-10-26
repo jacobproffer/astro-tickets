@@ -1,13 +1,13 @@
 ---
-import { getCollection } from "astro:content";
+import { getTicketDate, getTickets } from "@utils/sanity";
 import Section from "@components/Section.astro";
 import TicketGrid from "@components/TicketGrid.astro";
 
-const tickets = await getCollection("tickets");
+const tickets = await getTickets();
 // Sort tickets by date in descending order (newest first)
 const sortedTickets = tickets.sort((a, b) => {
-  const dateA = new Date(a.data.date);
-  const dateB = new Date(b.data.date);
+  const dateA = getTicketDate(a);
+  const dateB = getTicketDate(b);
   return dateB.getTime() - dateA.getTime();
 });
 

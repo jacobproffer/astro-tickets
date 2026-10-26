@@ -1,8 +1,8 @@
 ---
-import type { CollectionEntry } from "astro:content";
+import type { Ticket } from "@utils/sanity";
 
 interface Props {
-  tickets: CollectionEntry<"tickets">[];
+  tickets: Ticket[];
 }
 
 const { tickets: allTickets } = Astro.props;
@@ -10,10 +10,10 @@ const { tickets: allTickets } = Astro.props;
 // Average ticket price per year (tickets without a price are ignored)
 const byYear = allTickets.reduce(
   (acc, ticket) => {
-    if (!ticket.data.price) return acc;
-    const year = ticket.data.date.getFullYear();
+    if (!ticket.price) return acc;
+    const year = new Date(`${ticket.date}T00:00:00`).getFullYear();
     acc[year] ??= { total: 0, count: 0 };
-    acc[year].total += ticket.data.price;
+    acc[year].total += ticket.price;
     acc[year].count += 1;
     return acc;
   },

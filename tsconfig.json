@@ -3,6 +3,7 @@
   "include": [".astro/types.d.ts", "**/*"],
   "compilerOptions": {
     "jsx": "react-jsx",
+    "types": ["@sanity/astro/module"],
     "paths": {
       "@/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],

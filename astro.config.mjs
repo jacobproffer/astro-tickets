@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, svgoOptimizer } from 'astro/config';
 
+import sanity from "@sanity/astro";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import llms from "astro-llms-md";
@@ -10,18 +11,26 @@ export default defineConfig({
   site: "https://tickets.proffer.dev/",
   trailingSlash: "always",
 
-  integrations: [sitemap(), llms({
-    siteUrl: "https://tickets.proffer.dev/",
-    name: "Deadman's Brew",
-    description: "The ongoing movie ticket collection of Jacob Proffer.",
-    generateIndividualMd: true,
-    generateLlmsTxt: true,
-    generateLlmsFullTxt: true,
-    titleSelector: "h1",
-    contentSelector: "main",
-    exclude: ["404", "404.html", "_astro"],
-    verbose: false,
-  })],
+  integrations: [
+    sanity({
+      projectId: "lf1rig2j",
+      dataset: "production",
+      useCdn: false,
+    }),
+    sitemap(),
+    llms({
+      siteUrl: "https://tickets.proffer.dev/",
+      name: "Deadman's Brew",
+      description: "The ongoing movie ticket collection of Jacob Proffer.",
+      generateIndividualMd: true,
+      generateLlmsTxt: true,
+      generateLlmsFullTxt: true,
+      titleSelector: "h1",
+      contentSelector: "main",
+      exclude: ["404", "404.html", "_astro"],
+      verbose: false,
+    }),
+  ],
 
   // Security and performance optimizations
   security: {

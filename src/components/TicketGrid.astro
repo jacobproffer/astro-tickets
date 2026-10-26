@@ -1,9 +1,9 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import Ticket from "@components/Ticket.astro";
+import type { Ticket as TicketDocument } from "@utils/sanity";
 
 interface Props {
-  tickets: CollectionEntry<"tickets">[];
+  tickets: TicketDocument[];
   class?: string;
   transitionName?: string;
 }
@@ -22,13 +22,13 @@ const { tickets, class: className, transitionName } = Astro.props;
     tickets.map((ticket) => (
       <li>
         <Ticket
-          title={ticket.data.title}
-          theater={ticket.data.theater}
-          time={ticket.data.date.toISOString().split("T")[0]}
-          price={ticket.data.price}
-          rating={ticket.data.rating}
-          international={ticket.data.international}
-          rerelease={ticket.data.rerelease}
+          title={ticket.title}
+          theater={ticket.theater}
+          time={ticket.date}
+          price={ticket.price}
+          rating={ticket.rating}
+          international={ticket.international}
+          rerelease={ticket.rerelease}
         />
       </li>
     ))

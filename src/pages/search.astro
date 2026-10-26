@@ -1,27 +1,27 @@
 ---
-import { getCollection } from "astro:content";
+import { getTicketDate, getTickets } from "@utils/sanity";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import Section from "@components/Section.astro";
 import TicketGrid from "@components/TicketGrid.astro";
 
 const pageTitle = "Search";
-const allTickets = await getCollection("tickets");
+const allTickets = await getTickets();
 
 // Sort tickets by date (newest first) for initial display
 const sortedTickets = allTickets.sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+  (a, b) => getTicketDate(b).getTime() - getTicketDate(a).getTime(),
 );
 
 // Prepare ticket data for client-side search
 const ticketsData = sortedTickets.map((ticket) => ({
-  slug: ticket.id,
-  title: ticket.data.title,
-  theater: ticket.data.theater,
-  date: ticket.data.date.toISOString().split("T")[0],
-  price: ticket.data.price,
-  rating: ticket.data.rating,
-  international: ticket.data.international || false,
-  rerelease: ticket.data.rerelease || false,
+  slug: ticket.sourceId ?? ticket._id,
+  title: ticket.title,
+  theater: ticket.theater,
+  date: ticket.date,
+  price: ticket.price,
+  rating: ticket.rating,
+  international: ticket.international || false,
+  rerelease: ticket.rerelease || false,
 }));
 ---
 
