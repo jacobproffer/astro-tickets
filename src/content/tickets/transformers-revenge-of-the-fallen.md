@@ -1,7 +1,0 @@
----
-title: "Transformers: Revenge of the Fallen"
-date: "2009-06-24"
-price: "6.00"
-theater: "Carmike Royal Cinema 10"
-rating: "PG-13"
----
