@@ -9,7 +9,30 @@
   --color-green: #9bd49d;
   --color-pink: #f598a0;
   --color-card: #fcf6ee;
+  /* VT323 is the display face: headings, titles, prices, numbers. It only has
+     a regular weight and turns muddy below ~16px, so keep it large and unbolded. */
   --font-mono: "VT323", monospace;
+  /* The "fine print" face for small labels, dates, and metadata. */
+  --font-print: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+
+/* Ticket-stub fine print: tiny, uppercase, letterspaced. */
+@utility label {
+  font-family: var(--font-print);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Dotted leader between a key and its value, like a receipt line. */
+@utility leader {
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 1px dotted currentColor;
+  opacity: 0.6;
+  translate: 0 -0.25em;
 }
 
 /* Custom View Transition Animations */

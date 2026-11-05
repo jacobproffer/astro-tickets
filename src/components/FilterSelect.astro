@@ -1,0 +1,26 @@
+---
+interface Option {
+  value: string | number;
+  label: string;
+}
+
+interface Props {
+  id: string;
+  label: string;
+  options: Option[];
+  class?: string;
+}
+
+const { id, label, options, class: className } = Astro.props;
+---
+
+<select
+  id={id}
+  aria-label={label}
+  class:list={[
+    "w-full min-w-0 rounded-none bg-card px-4 py-3 font-mono text-base uppercase focus:outline-2 focus:-outline-offset-2 focus:outline-black",
+    className,
+  ]}
+>
+  {options.map((o) => <option value={o.value}>{o.label}</option>)}
+</select>

@@ -6,12 +6,47 @@ interface Props {
   tickets: TicketDocument[];
   class?: string;
   transitionName?: string;
+  id?: string;
+  /** Adds data attributes to each item for client-side filtering and sorting. */
+  filterable?: boolean;
 }
 
-const { tickets, class: className, transitionName } = Astro.props;
+const {
+  tickets,
+  class: className,
+  transitionName,
+  id,
+  filterable = false,
+} = Astro.props;
+
+const releaseType = (ticket: TicketDocument) =>
+  ticket.international ? "international" : ticket.rerelease ? "rerelease" : "new";
+
+const filterData = (ticket: TicketDocument) =>
+  filterable
+    ? {
+        "data-search": [
+          ticket.title,
+          ticket.theater,
+          ticket.rating,
+          ticket.price,
+          ticket.date,
+        ]
+          .join(" ")
+          .toLowerCase(),
+        "data-title": ticket.title,
+        "data-theater": ticket.theater,
+        "data-rating": ticket.rating,
+        "data-year": ticket.date?.slice(0, 4),
+        "data-date": ticket.date,
+        "data-price": ticket.price,
+        "data-type": releaseType(ticket),
+      }
+    : {};
 ---
 
 <ol
+  id={id}
   class:list={[
     "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 border-t border-l border-solid border-black",
     className,
@@ -20,7 +55,7 @@ const { tickets, class: className, transitionName } = Astro.props;
 >
   {
     tickets.map((ticket) => (
-      <li>
+      <li {...filterData(ticket)}>
         <Ticket
           title={ticket.title}
           theater={ticket.theater}
