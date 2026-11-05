@@ -25,6 +25,26 @@ export const formatDateForDisplay = (
 };
 
 /**
+ * Format a date string like a printed ticket stub (e.g., "Sun Nov 01 2026").
+ * Rendered uppercase by the `label` utility.
+ * @param {string} dateString - The date string to format (YYYY-MM-DD).
+ * @returns {string} The formatted date string.
+ */
+export const formatDateForStub = (
+  dateString: string | null | undefined
+): string | null => {
+  if (!dateString) return null;
+
+  const date = new Date(dateString + "T00:00:00");
+  if (isNaN(date.getTime())) return null;
+
+  const part = (options: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat("en-US", options).format(date);
+
+  return `${part({ weekday: "short" })} ${part({ month: "short" })} ${part({ day: "2-digit" })} ${part({ year: "numeric" })}`;
+};
+
+/**
  * Format a date string for datetime attribute (ISO format).
  * @param {string} dateString - The date string to format (YYYY-MM-DD).
  * @returns {string} The ISO formatted date string.

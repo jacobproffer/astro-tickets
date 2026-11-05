@@ -1,4 +1,5 @@
 ---
+import "@fontsource-variable/jetbrains-mono/wght.css";
 import "@styles/global.css";
 import SiteSEO from "@components/SiteSEO.astro";
 import Header from "@components/Header.astro";
@@ -30,7 +31,7 @@ const { pageTitle, pageDescription } = Astro.props;
       @font-face {
         font-family: "VT323";
         font-style: normal;
-        font-display: optional;
+        font-display: swap;
         font-weight: 400;
         src: url(/vt323-latin-400-normal.woff2) format("woff2");
         unicode-range:

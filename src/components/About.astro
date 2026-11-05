@@ -190,16 +190,16 @@ const stats =
       {
         stats.map((stat) => (
           <div class="flex flex-col gap-1 p-4 border border-solid">
-            <dt class="text-sm uppercase">{stat.label}</dt>
+            <dt class="label">{stat.label}</dt>
             <dd
               class:list={[
-                "leading-tight",
+                "leading-tight tabular-nums",
                 stat.small ? "text-xl md:text-2xl" : "text-3xl md:text-4xl",
               ]}
             >
               {stat.value}
             </dd>
-            <dd class="text-sm">{stat.note}</dd>
+            <dd class="font-print text-xs leading-5 opacity-80">{stat.note}</dd>
           </div>
         ))
       }
