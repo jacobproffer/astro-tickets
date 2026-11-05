@@ -1,0 +1,70 @@
+---
+import FilterSelect from "@components/FilterSelect.astro";
+
+interface Props {
+  theaters: string[];
+  years: number[];
+  ratings: string[];
+}
+
+const { theaters, years, ratings } = Astro.props;
+---
+
+<div class="border border-solid border-black">
+  <label for="searchInput" class="sr-only">Search tickets</label>
+  <input
+    type="search"
+    id="searchInput"
+    placeholder="Search by title, theater, rating, price, or date..."
+    class="w-full rounded-none border-b border-solid border-black bg-card px-4 py-3 font-mono text-lg placeholder:text-black focus:outline-2 focus:-outline-offset-2 focus:outline-black"
+    autocomplete="off"
+  />
+  <div class="grid grid-cols-2 gap-px bg-black md:grid-cols-5">
+    <FilterSelect
+      id="theaterFilter"
+      label="Filter by theater"
+      options={[
+        { value: "", label: "All theaters" },
+        ...theaters.map((t) => ({ value: t, label: t })),
+      ]}
+    />
+    <FilterSelect
+      id="yearFilter"
+      label="Filter by year"
+      options={[
+        { value: "", label: "All years" },
+        ...years.map((y) => ({ value: y, label: String(y) })),
+      ]}
+    />
+    <FilterSelect
+      id="ratingFilter"
+      label="Filter by rating"
+      options={[
+        { value: "", label: "All ratings" },
+        ...ratings.map((r) => ({ value: r, label: r })),
+      ]}
+    />
+    <FilterSelect
+      id="typeFilter"
+      label="Filter by release type"
+      options={[
+        { value: "", label: "All releases" },
+        { value: "new", label: "New releases" },
+        { value: "rerelease", label: "Re-releases" },
+        { value: "international", label: "International" },
+      ]}
+    />
+    <FilterSelect
+      id="sortSelect"
+      label="Sort by"
+      class="col-span-2 md:col-span-1"
+      options={[
+        { value: "date-desc", label: "Newest first" },
+        { value: "date-asc", label: "Oldest first" },
+        { value: "price-desc", label: "Price (high–low)" },
+        { value: "price-asc", label: "Price (low–high)" },
+        { value: "title", label: "Title (A–Z)" },
+      ]}
+    />
+  </div>
+</div>
