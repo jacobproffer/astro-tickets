@@ -22,8 +22,8 @@ const data = Object.entries(theaterCounts)
   .sort((a, b) => b.count - a.count);
 ---
 
-<div class="flex flex-col gap-2 p-4 border border-solid">
-  <h2 class="text-xl md:text-2xl">Theater Breakdown</h2>
+<div class="chart-card flex flex-col gap-2 bg-paper p-5 font-mono text-sm">
+  <h2 class="display mb-1 text-5xl">Theater Breakdown</h2>
   <figure
     id="theaters-chart"
     class="w-full overflow-x-auto lg:flex-1"
@@ -84,7 +84,7 @@ const data = Object.entries(theaterCounts)
           Plot.barX(chartData, {
             y: "theater",
             x: "count",
-            fill: "#2e160e",
+            fill: "#ff5b23",
             sort: { y: "-x" },
             tip: {
               format: {

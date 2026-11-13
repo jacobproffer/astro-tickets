@@ -33,9 +33,9 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
 ---
 
 <div
-  class="flex flex-col gap-2 p-4 border border-solid lg:col-span-2"
+  class="chart-card flex flex-col gap-2 bg-paper p-5 font-mono text-sm lg:col-span-2"
 >
-  <h2 class="text-xl md:text-2xl">Movies Per Year</h2>
+  <h2 class="display mb-1 text-5xl">Movies Per Year</h2>
   <p>
     {totalMovies} movies across {years} years (avg: {avgPerYear}/year)
   </p>
@@ -96,7 +96,7 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
           Plot.line(chartData, {
             x: "year",
             y: "count",
-            stroke: "#121212",
+            stroke: "#1d1a17",
             strokeWidth: 2,
             tip: {
               format: {
@@ -107,7 +107,7 @@ const avgPerYear = years === 0 ? "0.0" : (totalMovies / years).toFixed(1);
           Plot.dot(chartData, {
             x: "year",
             y: "count",
-            fill: "#2e160e",
+            fill: "#ff5b23",
             r: 3,
           }),
           Plot.ruleY([0]),

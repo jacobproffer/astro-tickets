@@ -35,8 +35,8 @@ const data = Object.entries(ratingCounts)
   });
 ---
 
-<div class="flex flex-col gap-2 p-4 border border-solid">
-  <h2 class="text-xl md:text-2xl">Rating Breakdown</h2>
+<div class="chart-card flex flex-col gap-2 bg-paper p-5 font-mono text-sm">
+  <h2 class="display mb-1 text-5xl">Rating Breakdown</h2>
   <figure
     id="ratings-chart"
     class="w-full overflow-x-auto"
@@ -93,7 +93,7 @@ const data = Object.entries(ratingCounts)
           Plot.barY(chartData, {
             x: "rating",
             y: "count",
-            fill: "#2e160e",
+            fill: "#ff5b23",
             tip: {
               format: {
                 x: true,

@@ -1,24 +1,60 @@
 @import "tailwindcss";
 
 @theme {
-  --color-black: #2e160e;
-  --color-white: #fefbf7;
-  --color-blue: #9cd0f2;
-  --color-gray-100: #c1c1bd;
-  --color-gray-200: #b3b2ae;
-  --color-green: #9bd49d;
-  --color-pink: #f598a0;
-  --color-card: #fcf6ee;
-  /* VT323 is the display face: headings, titles, prices, numbers. It only has
-     a regular weight and turns muddy below ~16px, so keep it large and unbolded. */
-  --font-mono: "VT323", monospace;
-  /* The "fine print" face for small labels, dates, and metadata. */
-  --font-print: "JetBrains Mono Variable", ui-monospace, monospace;
+  /* Spot-ink palette: think riso print on uncoated stock. */
+  --color-ink: #1d1a17;
+  --color-paper: #f1ebe0;
+  --color-receipt: #f7f5f1;
+  --color-stock: #d3d0c8;
+  --color-muted: #6b645c;
+  --color-orange: #ff5b23;
+  --color-blue: #2f55a4;
+  --color-green: #2f7d52;
+
+  /* Archivo is variable on width (62–125%) and weight. Condensed for display,
+     expanded for small caps-style labels. */
+  --font-sans: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  /* The "fine print" face: dates, serials, receipt lines. */
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  /* Handwritten marginalia. Decorative only, keep it large. */
+  --font-script: "Nothing You Could Do", cursive;
+
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.25, 1.15);
+  --ease-settle: cubic-bezier(0.5, 0, 0.15, 1);
+}
+
+:root {
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .17 0 0 0 0 .14 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@layer base {
+  html {
+    background: var(--color-stock);
+    color: var(--color-ink);
+  }
+
+  /* Paper grain lives in backgrounds (page, tickets, receipt, charts), not in
+     a page-wide overlay. An overlay darkens everything beneath it, but view
+     transitions draw moving elements above it, so tickets visibly brightened
+     mid-transition. */
+  body {
+    background-image: var(--noise);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-orange);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-orange);
+    color: var(--color-ink);
+  }
 }
 
 /* Ticket-stub fine print: tiny, uppercase, letterspaced. */
 @utility label {
-  font-family: var(--font-print);
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 500;
@@ -26,73 +62,301 @@
   text-transform: uppercase;
 }
 
+/* Giant condensed display type. */
+@utility display {
+  font-family: var(--font-sans);
+  font-weight: 900;
+  font-stretch: 62%;
+  text-transform: uppercase;
+  line-height: 0.8;
+  letter-spacing: -0.01em;
+}
+
+/* Grain printed over a whole area, type included. Only use it on areas that
+   contain no view-transition-named elements (hero, footer). */
+@utility grain {
+  position: relative;
+  background-color: var(--color-stock);
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* Above anything tossed or dragged onto the hero pile. */
+    z-index: 1000;
+    pointer-events: none;
+    background-image: var(--noise);
+    mix-blend-mode: multiply;
+    opacity: 0.7;
+  }
+}
+
+/* Riso misregistration: a second ink peeking out from behind. */
+@utility misprint {
+  text-shadow: -0.012em 0.008em 0 rgb(47 85 164 / 0.55);
+}
+@utility misprint-orange {
+  text-shadow: -0.012em 0.008em 0 rgb(255 91 35 / 0.55);
+}
+
+/* Poster-style highlight bar. */
+@utility hl {
+  display: inline-block;
+  background: var(--color-orange);
+  color: var(--color-ink);
+  padding: 0.2em 0.55em 0.12em;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-stretch: 112%;
+  font-size: 0.8125rem;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
 /* Dotted leader between a key and its value, like a receipt line. */
 @utility leader {
   flex: 1;
   min-width: 1rem;
-  border-bottom: 1px dotted currentColor;
+  border-bottom: 1.5px dotted currentColor;
   opacity: 0.6;
   translate: 0 -0.25em;
 }
 
-/* Custom View Transition Animations */
-@keyframes fade-in {
-  from {
+/* Handwritten note with a halo so it reads over busy backgrounds. */
+@utility script {
+  font-family: var(--font-script);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Square ink button. */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+  &:hover {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Ticket shell, shared by Ticket.astro and Card.astro.
+   Everything inside is sized in cqw so a ticket scales as one object.
+------------------------------------------------------------------- */
+@layer components {
+  .tk {
+    --ink-c: var(--color-ink);
+    --hl-bg: var(--color-orange);
+    --hl-fg: var(--color-ink);
+    container-type: inline-size;
+    display: block;
+    color: var(--ink-c);
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.18))
+      drop-shadow(0 6px 10px rgb(0 0 0 / 0.08));
+    transition:
+      translate 0.35s var(--ease-settle),
+      rotate 0.35s var(--ease-settle),
+      filter 0.35s;
+  }
+  .tk-re {
+    --ink-c: var(--color-blue);
+    --hl-bg: var(--color-blue);
+    --hl-fg: var(--color-paper);
+  }
+  .tk-intl {
+    --ink-c: var(--color-green);
+    --hl-bg: var(--color-green);
+    --hl-fg: var(--color-paper);
+  }
+  .tk-in {
+    position: relative;
+    aspect-ratio: 2.05 / 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 23cqw;
+    background: var(--color-paper) var(--noise);
+    -webkit-mask: radial-gradient(circle 8cqw at 100% 50%, #0000 98%, #000);
+    mask: radial-gradient(circle 8cqw at 100% 50%, #0000 98%, #000);
+  }
+  .tk-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 3.2cqw 3.6cqw 3cqw;
+  }
+  .tk-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2cqw;
+    min-width: 0;
+    font: 500 2.5cqw/1 var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .tk-rule {
+    border-top: 0.55cqw solid currentColor;
+    margin: 2cqw 0;
+  }
+  .tk-rule-thin {
+    border-top-width: 0.25cqw;
+  }
+  .tk-title {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0;
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+  .tk-c {
+    font-weight: 800;
+    font-stretch: 62%;
+    line-height: 0.84;
+    letter-spacing: -0.005em;
+  }
+  .tk-x {
+    font-weight: 900;
+    font-stretch: 125%;
+    line-height: 0.98;
+    margin-top: 0.6cqw;
+  }
+  .tk-theater {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-stretch: 125%;
+    font-size: 2.3cqw;
+    letter-spacing: 0.03em;
+  }
+  .tk-bars {
+    flex-shrink: 0;
+    height: 4.4cqw;
+    width: 26cqw;
+    background: var(--bars);
+  }
+  .tk-stub {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3.2cqw 2cqw 3cqw;
+    border-left: 0.3cqw dashed currentColor;
+    font-family: var(--font-sans);
+  }
+  .tk-hl {
+    background: var(--hl-bg);
+    color: var(--hl-fg);
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-stretch: 112%;
+    line-height: 1;
+    padding: 0.55cqw 1.3cqw 0.35cqw;
+    white-space: nowrap;
+  }
+  .tk-rate {
+    font-size: 3cqw;
+  }
+  .tk-badge {
+    font-size: 2.1cqw;
+  }
+  .tk-price {
+    font-weight: 800;
+    font-stretch: 62%;
+    font-size: 7.5cqw;
+    line-height: 1;
+  }
+  .tk-vdate {
+    position: absolute;
+    left: 2.2cqw;
+    top: 50%;
+    translate: 0 -50%;
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    white-space: nowrap;
+    font: 500 2.1cqw/1 var(--font-mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* Interactive tickets (links) lift and tilt a touch. */
+  a.tk:hover,
+  a.tk:focus-visible,
+  .tk-lift:hover {
+    translate: 0 -5px;
+    rotate: -0.6deg;
+    filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.15))
+      drop-shadow(0 16px 18px rgb(0 0 0 / 0.16));
+  }
+  a.tk:focus-visible {
+    outline: none;
+  }
+  a.tk:focus-visible .tk-in {
+    box-shadow: inset 0 0 0 0.8cqw var(--color-orange);
+  }
+
+  /* Tickets slide in from below as they scroll into view. Only tickets that
+     start below the fold are hidden (by reveal.ts), and each reveals once, so
+     page transitions and layout changes never catch them mid-animation. */
+  .tk-enter {
+    transition:
+      opacity 0.6s var(--ease-settle),
+      transform 0.6s var(--ease-settle),
+      translate 0.35s var(--ease-settle),
+      rotate 0.35s var(--ease-settle),
+      filter 0.35s;
+  }
+  .tk-enter.is-pending {
     opacity: 0;
+    transform: translateY(32px) rotate(var(--enter-r, 2deg));
   }
 }
 
-@keyframes fade-out {
-  to {
-    opacity: 0;
+/* Page transitions use the browser's default crossfade, which blends the old
+   and new page without dipping to the background mid-way. */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 
-@keyframes slide-from-right {
-  from {
-    transform: translateX(30px);
-  }
+/* Observable Plot charts on paper cards. */
+.chart-card {
+  background-image: var(--noise);
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.12)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.06));
 }
-
-@keyframes slide-to-left {
-  to {
-    transform: translateX(-30px);
-  }
-}
-
-@keyframes scale-up {
-  from {
-    transform: scale(0.95);
-  }
-}
-
-@keyframes scale-down {
-  to {
-    transform: scale(1.05);
-  }
-}
-
-/* View Transition API styles */
-::view-transition-old(root) {
-  animation: 300ms cubic-bezier(0.4, 0, 1, 1) both fade-out;
-}
-
-::view-transition-new(root) {
-  animation: 300ms cubic-bezier(0, 0, 0.2, 1) both fade-in;
-}
-
-::view-transition-old(slide) {
-  animation: 300ms cubic-bezier(0.4, 0, 1, 1) both slide-to-left;
-}
-
-::view-transition-new(slide) {
-  animation: 300ms cubic-bezier(0, 0, 0.2, 1) both slide-from-right;
-}
-
-::view-transition-old(logo) {
-  animation: 400ms cubic-bezier(0.4, 0, 1, 1) both fade-out;
-}
-
-::view-transition-new(logo) {
-  animation: 400ms cubic-bezier(0, 0, 0.2, 1) 100ms both fade-in;
+.chart-card svg {
+  font-family: var(--font-sans);
+  font-stretch: 87.5%;
+  font-size: 11px;
+  background: transparent;
 }

@@ -10,16 +10,16 @@ interface Props {
 const { theaters, years, ratings } = Astro.props;
 ---
 
-<div class="border border-solid border-black">
+<div class="border-2 border-ink bg-ink">
   <label for="searchInput" class="sr-only">Search tickets</label>
   <input
     type="search"
     id="searchInput"
     placeholder="Search by title, theater, rating, price, or date..."
-    class="w-full rounded-none border-b border-solid border-black bg-card px-4 py-3 font-mono text-lg placeholder:text-black focus:outline-2 focus:-outline-offset-2 focus:outline-black"
+    class="block w-full rounded-none border-b-2 border-ink bg-paper px-4 py-4 text-xl font-semibold placeholder:font-normal placeholder:text-muted focus-visible:outline-offset-[-3px]"
     autocomplete="off"
   />
-  <div class="grid grid-cols-2 gap-px bg-black md:grid-cols-5">
+  <div class="grid grid-cols-2 gap-0.5 md:grid-cols-5">
     <FilterSelect
       id="theaterFilter"
       label="Filter by theater"

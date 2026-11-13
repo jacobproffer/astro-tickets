@@ -1,59 +1,68 @@
 ---
+import { barcode, serial, splitTitle } from "@utils/ticket";
+
 interface Props {
   title: string;
   count: number;
   totalCount: number;
   href: string;
   type: "theater" | "rating";
+  subtitle?: string;
 }
 
 const { title, count, totalCount, href, type } = Astro.props;
 
 const typeLabels = {
-  theater: "Movie Theater",
-  rating: "Movie Rating",
+  theater: "Movie theater",
+  rating: "Movie rating",
 };
 
 const actionLabels = {
-  theater: "View Theater",
-  rating: "View Rating",
+  theater: "View theater",
+  rating: "View rating",
 };
 
 const percentage = Math.round((count / totalCount) * 100);
+const { lead, tail, leadSize, tailSize } = splitTitle(title);
 ---
 
-<li class="relative h-full">
+<li>
   <a
     href={href}
-    class="flex h-full flex-col bg-white p-5 border-r border-b border-solid border-black hover:bg-green transition-colors focus:outline-4 focus:outline-black focus:-outline-offset-2"
+    class="tk tk-enter tk-lift"
+    style={`--bars: ${barcode(title)}`}
   >
-    <div class="label pt-px">
-      <span class="sr-only">{type}</span>
-      {typeLabels[type]}
-    </div>
-
-    <h2 class="mt-3 mb-6 text-3xl leading-none">{title}</h2>
-
-    <div class="mt-auto flex items-start justify-between gap-4">
-      <div class="flex flex-col gap-1">
-        <span class="label font-normal">Movies</span>
-        <span class="flex h-7 items-center text-xl leading-none tabular-nums">
-          {count}
-          {count === 1 ? " ticket" : " tickets"}
+    <div class="tk-in">
+      <div class="tk-main">
+        <div class="tk-row">
+          <span>{typeLabels[type]}</span>
+          <span aria-hidden="true">{serial(title)}</span>
+        </div>
+        <div class="tk-rule"></div>
+        <h2 class="tk-title">
+          <span class="tk-c" style={`font-size:${leadSize}cqw`}>{lead}</span>
+          {
+            tail && (
+              <>
+                {" "}
+                <span class="tk-x" style={`font-size:${tailSize}cqw`}>{tail}</span>
+              </>
+            )
+          }
+        </h2>
+        <div class="tk-rule tk-rule-thin"></div>
+        <div class="tk-row">
+          <span class="tk-theater" aria-hidden="true">{actionLabels[type]} →</span>
+          <span class="tk-bars" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div class="tk-stub">
+        <span class="tk-hl tk-rate">{percentage}%<span class="sr-only"> of all tickets</span></span>
+        <span class="tk-vdate" aria-hidden="true">{count === 1 ? "1 ticket" : `${count} tickets`}</span>
+        <span class="tk-price">
+          {count}<span class="sr-only">{count === 1 ? " ticket" : " tickets"}</span>
         </span>
       </div>
-      <div class="flex flex-col items-end gap-1">
-        <span class="label font-normal">Share</span>
-        <span class="flex h-7 min-w-8 items-center justify-center border border-solid px-1.5 text-xl leading-none tabular-nums">
-          {percentage}%
-        </span>
-      </div>
-    </div>
-
-    <div class="mt-4 flex items-baseline gap-2 pt-4 border-t border-solid border-black">
-      <span class="label" aria-hidden="true">{actionLabels[type]}</span>
-      <span class="leader" aria-hidden="true"></span>
-      <span class="text-2xl leading-none" aria-hidden="true">→</span>
     </div>
   </a>
 </li>

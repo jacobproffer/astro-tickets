@@ -2,17 +2,20 @@
 interface Props {
   href: string;
   isActive?: boolean;
+  match?: "exact" | "prefix";
   class?: string;
 }
 
-const { href, isActive, class: className } = Astro.props;
+const { href, isActive, match = "prefix", class: className } = Astro.props;
 ---
 
 <a
   href={href}
+  data-match={match}
   class:list={[
-    "block lg:text-2xl text-black py-3 px-4 border-l border-solid border-black text-center transition-colors hover:text-black hover:bg-gray-100 focus:outline-4 focus:outline-black focus:-outline-offset-2",
-    isActive ? "border-black text-white bg-black" : "bg-white",
+    "label relative inline-block py-1 transition-colors hover:text-orange",
+    "after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[3px] after:origin-left after:scale-x-0 after:bg-orange after:transition-transform after:duration-300",
+    "hover:after:scale-x-100 aria-[current=page]:after:scale-x-100",
     className,
   ]}
   aria-current={isActive ? "page" : undefined}

@@ -48,15 +48,18 @@ const filterData = (ticket: TicketDocument) =>
 <ol
   id={id}
   class:list={[
-    "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 border-t border-l border-solid border-black",
+    "grid grid-cols-1 gap-x-5 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
     className,
   ]}
   transition:name={transitionName}
 >
   {
-    tickets.map((ticket) => (
+    tickets.map((ticket, i) => (
       <li {...filterData(ticket)}>
         <Ticket
+          id={ticket._id}
+          class="tk-enter tk-lift"
+          style={`--enter-r: ${((i * 7) % 5) - 2}deg`}
           title={ticket.title}
           theater={ticket.theater}
           time={ticket.date}

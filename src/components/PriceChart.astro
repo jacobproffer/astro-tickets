@@ -35,8 +35,8 @@ const change =
     : 0;
 ---
 
-<div class="flex flex-col gap-2 p-4 border border-solid lg:col-span-2">
-  <h2 class="text-xl md:text-2xl">Average Ticket Price</h2>
+<div class="chart-card flex flex-col gap-2 bg-paper p-5 font-mono text-sm lg:col-span-2">
+  <h2 class="display mb-1 text-5xl">Average Ticket Price</h2>
   {
     first && last && (
       <p>
@@ -91,7 +91,7 @@ const change =
           Plot.line(chartData, {
             x: "year",
             y: "price",
-            stroke: "#121212",
+            stroke: "#1d1a17",
             strokeWidth: 2,
             tip: {
               format: {
@@ -103,7 +103,7 @@ const change =
           Plot.dot(chartData, {
             x: "year",
             y: "price",
-            fill: "#2e160e",
+            fill: "#ff5b23",
             r: 3,
           }),
           Plot.ruleY([0]),

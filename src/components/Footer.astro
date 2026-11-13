@@ -1,19 +1,17 @@
----
-import Graphic from "@images/deadmans-brew-cut.svg";
----
-
-<footer class="pt-4 px-4">
-  <Graphic class="w-full" mode="inline" />
+<footer class="grain mt-16 overflow-hidden">
   <div
-    class="flex items-center justify-between max-sm:flex-col border-t border-b border-solid"
+    class="label mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 border-t-[3px] border-ink px-4 pt-4"
   >
-    <a
-      class="w-full text-center p-4 border-l border-solid transition-colors hover:bg-gray-100 focus:outline-4 focus:outline-black focus:-outline-offset-2 max-sm:border-r max-sm:border-b"
-      href="https://proffer.dev/">Built by Jacob Proffer</a
-    >
-    <a
-      class="w-full text-center p-4 border-r border-l border-solid transition-colors hover:bg-gray-100 focus:outline-4 focus:outline-black focus:-outline-offset-2"
-      href="https://github.com/jacobproffer/astro-tickets">GitHub Repository</a
+    <a class="hover:text-orange" href="https://proffer.dev/">Built by Jacob Proffer</a>
+    <span class="script text-2xl text-blue" aria-hidden="true">see you at the movies</span>
+    <a class="hover:text-orange" href="https://github.com/jacobproffer/astro-tickets"
+      >GitHub repository</a
     >
   </div>
+  <p
+    class="display misprint -mb-[0.22em] pt-4 text-center text-[14.6vw] whitespace-nowrap text-orange"
+    aria-hidden="true"
+  >
+    Deadman's Brew
+  </p>
 </footer>

@@ -1,39 +1,270 @@
 ---
-import Container from "@components/Container.astro";
-import Stat from "@components/Stat.astro";
-import Graphic from "@images/deadmans-brew.svg";
-import { getTickets } from "@utils/sanity";
+import Ticket from "@components/Ticket.astro";
+import { getTicketDate, getTickets } from "@utils/sanity";
 
-const initialYear = 2007;
-const currentYear = new Date().getFullYear();
-const years = currentYear - initialYear;
+const tickets = (await getTickets()).sort(
+  (a, b) => getTicketDate(b).getTime() - getTicketDate(a).getTime(),
+);
 
-const tickets = await getTickets();
-const ticketCount = tickets.length;
+const first = tickets.at(-1);
+const since = first
+  ? getTicketDate(first).toLocaleDateString("en-US", {
+      month: "2-digit",
+      year: "numeric",
+    })
+  : "";
+const theaterCount = new Set(tickets.map((t) => t.theater)).size;
 
-// Get unique theaters from tickets
-const uniqueTheaters = new Set(tickets.map((ticket) => ticket.theater));
-const theaterCount = uniqueTheaters.size;
+// The 12 newest land on the pile, oldest first so the newest ends on top.
+const pile = tickets.slice(0, 12).reverse();
+
+// "Toss another" draws from older stubs spread across the whole collection.
+const rest = tickets.slice(12);
+const step = Math.max(1, Math.floor(rest.length / 40));
+const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
 ---
 
-<Container class="grid gap-4 text-black bg-card mb-4" as="section">
-  <h1 class="sr-only">Deadman's Brew Movie Ticket Collection</h1>
-  <Graphic class="max-w-full w-full h-auto block" />
-  <ul
-    class="grid border-t border-b border-black border-solid text-2xl md:grid-cols-3 lg:text-4xl"
+<section
+  class="hero grain h-[calc(100svh-4.5rem)] min-h-[560px] max-h-[960px] overflow-hidden"
+  aria-labelledby="hero-title"
+>
+  <h1 id="hero-title" class="sr-only">Deadman's Brew, a movie ticket collection</h1>
+
+  <div
+    class="giant display misprint pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap text-orange"
+    aria-hidden="true"
   >
-    <li
-      class="flex items-baseline gap-3 py-3 border-b border-black border-solid md:border-r md:border-b-0 md:pr-4 md:py-4"
+    <span class="giant-in">Deadman's</span>
+  </div>
+  <div
+    class="giant giant-bottom display misprint pointer-events-none absolute -bottom-[0.06em] left-1/2 -translate-x-1/2 whitespace-nowrap text-orange"
+    aria-hidden="true"
+  >
+    <span class="giant-in">Brew</span>
+  </div>
+
+  <div id="pile" class="pile absolute inset-0 z-10" aria-hidden="true" inert>
+    {
+      pile.map((t, i) => (
+        <Ticket
+          id={t._id}
+          as="div"
+          title={t.title}
+          theater={t.theater}
+          time={t.date}
+          price={t.price}
+          rating={t.rating}
+          international={t.international}
+          rerelease={t.rerelease}
+          class="pile-tk"
+          style={`--d:${(0.35 + i * 0.09).toFixed(2)}s`}
+        />
+      ))
+    }
+  </div>
+
+  <template id="pile-pool">
+    {
+      pool.map((t) => (
+        <Ticket
+          id={t._id}
+          as="div"
+          title={t.title}
+          theater={t.theater}
+          time={t.date}
+          price={t.price}
+          rating={t.rating}
+          international={t.international}
+          rerelease={t.rerelease}
+          class="pile-tk"
+        />
+      ))
+    }
+  </template>
+
+  <p
+    class="tagline script pointer-events-none absolute top-1/2 left-1/2 z-[60] -translate-1/2 -rotate-[7deg] whitespace-nowrap text-[clamp(2rem,5vw,4.75rem)]"
+    aria-hidden="true"
+  >
+    a ticket collection
+  </p>
+
+  <div
+    class="absolute inset-x-4 bottom-[calc(21vw+1rem)] z-[70] flex sm:bottom-4 flex-wrap items-end justify-between gap-3"
+  >
+    <ul class="flex flex-wrap gap-2" aria-label="Collection at a glance">
+      <li class="hl">{tickets.length} tickets</li>
+      <li class="hl">{theaterCount} theaters</li>
+      {since && <li class="hl">Since {since.replace("/", " / ")}</li>}
+    </ul>
+    <button
+      type="button"
+      id="toss"
+      class="btn border-ink bg-ink text-paper hover:border-orange hover:bg-orange hover:text-ink"
+      hidden
     >
-      <Stat label="Years" value={years} />
-    </li>
-    <li
-      class="flex items-baseline gap-3 py-3 border-b border-black border-solid md:border-r md:border-b-0 md:px-4 md:py-4"
-    >
-      <Stat label="Theaters" value={theaterCount} />
-    </li>
-    <li class="flex items-baseline gap-3 py-3 md:pl-4 md:py-4">
-      <Stat label="Tickets" value={ticketCount} />
-    </li>
-  </ul>
-</Container>
+      Toss another stub ↓
+    </button>
+  </div>
+</section>
+
+<style>
+  .giant {
+    font-size: clamp(4rem, 26vw, 25rem);
+    line-height: 0.78;
+  }
+  .giant-in {
+    display: inline-block;
+    animation: slam 0.9s var(--ease-snap) both;
+  }
+  .giant-bottom .giant-in {
+    --from: 40%;
+    animation-delay: 0.1s;
+  }
+  @keyframes slam {
+    from {
+      transform: translateY(var(--from, -40%));
+      opacity: 0;
+    }
+  }
+
+  /* A strip of masking tape stuck across the pile, with torn ends. */
+  .tagline {
+    padding: 0.08em 0.6em 0.02em;
+    background: rgb(236 226 205 / 0.92);
+    --tear: conic-gradient(from 45deg at left, #0000, #000 1deg 89deg, #0000 90deg)
+        left / 51% 0.3em repeat-y,
+      conic-gradient(from -135deg at right, #0000, #000 1deg 89deg, #0000 90deg)
+        right / 51% 0.3em repeat-y;
+    -webkit-mask: var(--tear);
+    mask: var(--tear);
+    filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.12));
+    animation: write 1.2s 0.9s ease-out both;
+  }
+  @keyframes write {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  /* Without JS the stubs fan out around the center. */
+  .pile :global(.pile-tk) {
+    --tw: clamp(200px, 27vw, 360px);
+    position: absolute;
+    left: var(--x, 50%);
+    top: var(--y, 50%);
+    width: var(--tw);
+    margin: calc(var(--tw) / -4.1) 0 0 calc(var(--tw) / -2);
+    rotate: var(--r, 0deg);
+    animation: drop 0.85s cubic-bezier(0.3, 1.25, 0.5, 1) var(--d, 0s) both;
+  }
+  .pile :global(.pile-tk:nth-child(odd)) {
+    --r: -9deg;
+    --x: 42%;
+  }
+  .pile :global(.pile-tk:nth-child(even)) {
+    --r: 8deg;
+    --x: 58%;
+  }
+  .pile.draggable :global(.pile-tk) {
+    cursor: grab;
+    touch-action: none;
+  }
+  .pile :global(.pile-tk.lifted) {
+    cursor: grabbing;
+    scale: 1.03;
+    filter: drop-shadow(0 18px 22px rgb(0 0 0 / 0.25));
+  }
+  @keyframes drop {
+    from {
+      transform: translateY(-120vh) rotate(var(--spin, 30deg));
+    }
+  }
+</style>
+
+<script>
+  function initPile() {
+    const pile = document.getElementById("pile");
+    const pool = document.getElementById("pile-pool") as HTMLTemplateElement | null;
+    const toss = document.getElementById("toss") as HTMLButtonElement | null;
+    if (!pile || pile.dataset.ready) return;
+    pile.dataset.ready = "true";
+
+    // Seeded so the pile lands the same way on every visit.
+    let seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    let z = 1;
+
+    const canDrag = window.matchMedia("(pointer: fine)").matches;
+    if (canDrag) {
+      pile.classList.add("draggable");
+      pile.removeAttribute("inert");
+    }
+
+    function place(el: HTMLElement) {
+      el.style.setProperty("--x", `${50 + (rnd() - 0.5) * 62}%`);
+      el.style.setProperty("--y", `${50 + (rnd() - 0.5) * 42}%`);
+      el.style.setProperty("--r", `${(rnd() - 0.5) * 50}deg`);
+      el.style.setProperty("--spin", `${(rnd() - 0.5) * 120}deg`);
+      el.style.zIndex = String(++z);
+      if (canDrag) makeDraggable(el);
+    }
+
+    function makeDraggable(el: HTMLElement) {
+      let ox = 0;
+      let oy = 0;
+      el.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0) return;
+        el.setPointerCapture(e.pointerId);
+        el.style.zIndex = String(++z);
+        el.classList.add("lifted");
+        const sx = e.clientX - ox;
+        const sy = e.clientY - oy;
+        const move = (ev: PointerEvent) => {
+          ox = ev.clientX - sx;
+          oy = ev.clientY - sy;
+          el.style.translate = `${ox}px ${oy}px`;
+        };
+        const up = () => {
+          el.classList.remove("lifted");
+          el.removeEventListener("pointermove", move);
+          el.removeEventListener("pointerup", up);
+          el.removeEventListener("pointercancel", up);
+        };
+        el.addEventListener("pointermove", move);
+        el.addEventListener("pointerup", up);
+        el.addEventListener("pointercancel", up);
+      });
+    }
+
+    pile.querySelectorAll<HTMLElement>(".pile-tk").forEach(place);
+
+    const extras = pool
+      ? [...pool.content.querySelectorAll<HTMLElement>(".pile-tk")]
+      : [];
+    if (toss && extras.length) {
+      // Shuffle so each visit tosses a different run of stubs.
+      for (let i = extras.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [extras[i], extras[j]] = [extras[j], extras[i]];
+      }
+      let next = 0;
+      toss.hidden = false;
+      toss.addEventListener("click", () => {
+        const el = extras[next++ % extras.length].cloneNode(true) as HTMLElement;
+        el.style.setProperty("--d", "0s");
+        place(el);
+        pile.appendChild(el);
+        // Keep the DOM from growing without bound.
+        const all = pile.querySelectorAll(".pile-tk");
+        if (all.length > 40) all[0].remove();
+      });
+    }
+  }
+
+  initPile();
+  document.addEventListener("astro:page-load", initPile);
+</script>

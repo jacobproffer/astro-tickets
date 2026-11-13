@@ -2,6 +2,7 @@
 import { getTicketDate, getTickets } from "@utils/sanity";
 import Section from "@components/Section.astro";
 import ExternalLink from "@components/ExternalLink.astro";
+import { barcode, serial } from "@utils/ticket";
 import MoviesPerYearChart from "@components/MoviesPerYearChart.astro";
 import PriceChart from "@components/PriceChart.astro";
 import RatingsChart from "@components/RatingsChart.astro";
@@ -144,14 +145,25 @@ const stats =
             ]
           : []),
       ];
+
+const printedOn = new Date()
+  .toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  })
+  .replace(/,/g, "")
+  .replace(/\//g, " / ");
+const receiptSerial = serial(`receipt-${totalTickets}`).replace(/(\d{4})(?=\d)/g, "$1 ");
 ---
 
-<Section headline="About Deadman's Brew">
-  <div class="grid">
-    <div
-      class="prose prose-lg max-w-none grid gap-x-8 gap-y-4 py-4 lg:grid-cols-2 border-b border-solid"
-    >
-      <p class="text-lg leading-6 m-0">
+<Section headline="About" note="the fine print">
+  <div class="grid items-start gap-12 pt-2 pb-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-14 xl:gap-20">
+    <div class="grid gap-8 lg:sticky lg:top-10">
+      <p
+        class="max-w-[24em] text-[clamp(1.5rem,2.75vw,2.75rem)] leading-[1.18] font-medium tracking-[-0.01em] [&_strong]:bg-orange [&_strong]:box-decoration-clone [&_strong]:px-1.5 [&_strong]:font-bold"
+      >
         Deadman's Brew is the movie ticket collection of Jacob Proffer,
         documenting <strong>{yearsCollecting} years</strong> of cinema experiences
         across{" "}
@@ -170,7 +182,7 @@ const stats =
             : ` theaters across the United States`
         }.
       </p>
-      <p class="text-lg leading-6 m-0">
+      <p class="max-w-[42rem] border-t-2 border-ink pt-4 text-base leading-relaxed md:text-lg">
         This site is built by <ExternalLink
           url="https://proffer.dev/"
           title="Jacob Proffer"
@@ -186,29 +198,77 @@ const stats =
         />.
       </p>
     </div>
-    <dl class="grid grid-cols-2 gap-4 py-4 lg:grid-cols-4">
-      {
-        stats.map((stat) => (
-          <div class="flex flex-col gap-1 p-4 border border-solid">
-            <dt class="label">{stat.label}</dt>
-            <dd
-              class:list={[
-                "leading-tight tabular-nums",
-                stat.small ? "text-xl md:text-2xl" : "text-3xl md:text-4xl",
-              ]}
-            >
-              {stat.value}
-            </dd>
-            <dd class="font-print text-xs leading-5 opacity-80">{stat.note}</dd>
-          </div>
-        ))
-      }
-    </dl>
-    <div class="grid gap-4 lg:grid-cols-3">
-      <MoviesPerYearChart tickets={tickets} />
-      <TheatersChart tickets={tickets} />
-      <PriceChart tickets={tickets} />
-      <RatingsChart tickets={tickets} />
+
+    <div class="receipt relative mx-auto w-full max-w-[380px] rotate-2 bg-receipt px-6 pt-7 pb-11 font-mono text-[13px] leading-relaxed uppercase">
+      <p class="display text-center text-4xl">Deadman's Brew</p>
+      <p class="mt-1 text-center text-[11px] text-muted">
+        Ticket collection · Est. {firstYear}<br />
+        Order #{totalTickets} · {printedOn}
+      </p>
+      <hr class="my-3 border-0 border-t-[1.5px] border-dashed border-ink" />
+      <dl class="grid gap-y-0.5">
+        {
+          stats.map((stat, i) => (
+            <>
+              {i === 4 && <hr class="my-2 border-0 border-t-[1.5px] border-dashed border-ink" />}
+              <div class="flex items-baseline gap-2">
+                <dt class="shrink-0">{stat.label}</dt>
+                <span class="leader" aria-hidden="true" />
+                <dd class="max-w-[55%] truncate text-right tabular-nums">{stat.value}</dd>
+              </div>
+              <dd class="-mt-0.5 pl-3 text-[11px] text-muted">{stat.note}</dd>
+            </>
+          ))
+        }
+      </dl>
+      <hr class="my-3 border-0 border-t-[1.5px] border-dashed border-ink" />
+      <div class="flex items-baseline gap-2 text-base font-bold">
+        <span>Total</span>
+        <span class="leader" aria-hidden="true"></span>
+        <span class="tabular-nums">{money(totalSpent)}</span>
+      </div>
+      <p class="script my-4 -rotate-6 text-center text-3xl whitespace-nowrap text-blue" aria-hidden="true">
+        thanks for watching
+      </p>
+      <div class="h-12" style={`background: ${barcode("deadmans-brew-receipt")}`} aria-hidden="true"></div>
+      <p class="mt-1.5 text-center text-[11px] text-muted" aria-hidden="true">
+        {receiptSerial} · Keep this stub
+      </p>
     </div>
   </div>
+
+  <div class="grid gap-5 lg:grid-cols-3">
+    <MoviesPerYearChart tickets={tickets} />
+    <TheatersChart tickets={tickets} />
+    <PriceChart tickets={tickets} />
+    <RatingsChart tickets={tickets} />
+  </div>
 </Section>
+
+<style>
+  .receipt {
+    background-image: var(--noise);
+    filter: drop-shadow(0 8px 14px rgb(0 0 0 / 0.15));
+    -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 14px 100%;
+    mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 14px 100%;
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .receipt {
+        animation: print linear both;
+        animation-timeline: view();
+        animation-range: entry 5% cover 40%;
+      }
+    }
+  }
+  @keyframes print {
+    from {
+      clip-path: inset(0 0 100% 0);
+      translate: 0 -60px;
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+      translate: 0 0;
+    }
+  }
+</style>
