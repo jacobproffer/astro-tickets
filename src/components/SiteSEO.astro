@@ -1,7 +1,8 @@
 ---
 import { SEO, type Props as SEOProps } from "astro-seo";
-const facebookImageFile = new URL("/images/facebook-social.jpg", Astro.url);
-const twitterImageFile = new URL("/images/twitter-social.jpg", Astro.url);
+const socialImage = new URL("/images/social.jpg", Astro.site ?? Astro.url).toString();
+const socialImageAlt =
+  "Deadman's Brew logo above a row of four movie ticket stubs.";
 
 interface Props {
   seo?: SEOProps;
@@ -23,14 +24,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       url: canonicalURL,
       title: seo?.title ?? siteName,
       type: "website",
-      image: facebookImageFile.toString(),
+      image: socialImage,
     },
     image: {
-      url: facebookImageFile.toString(),
-      secureUrl: facebookImageFile.toString(),
-      alt: "",
-      height: 1200,
-      width: 800,
+      url: socialImage,
+      secureUrl: socialImage,
+      alt: socialImageAlt,
+      width: 1200,
+      height: 630,
     },
   }}
   extend={{
@@ -63,11 +64,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       },
       {
         name: "twitter:image",
-        content: twitterImageFile.toString(),
+        content: socialImage,
       },
       {
         name: "twitter:image:alt",
-        content: "A pile of movie tickets.",
+        content: socialImageAlt,
       },
     ],
   }}
