@@ -8,6 +8,9 @@
   --color-stock: #d3d0c8;
   --color-muted: #6b645c;
   --color-orange: #ff5b23;
+  /* Darker orange for text that must be read on the gray stock (>= 3:1 large,
+     4.5:1 small). The bright orange is for fills and the logotype. */
+  --color-rust: #9a3412;
   --color-blue: #2f55a4;
   --color-green: #2f7d52;
 
@@ -158,6 +161,9 @@
 ------------------------------------------------------------------- */
 @layer components {
   .tk {
+    /* Readable floor for ticket print; cqw sizes alone get tiny on narrow
+       tickets. Decorative pile copies opt out so they keep their proportions. */
+    --fs-min: 10.5px;
     --ink-c: var(--color-ink);
     --hl-bg: var(--color-orange);
     --hl-fg: var(--color-ink);
@@ -202,7 +208,7 @@
     justify-content: space-between;
     gap: 2cqw;
     min-width: 0;
-    font: 500 2.5cqw/1 var(--font-mono);
+    font: 500 max(var(--fs-min), 2.5cqw)/1 var(--font-mono);
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
@@ -238,19 +244,36 @@
     margin-top: 0.6cqw;
   }
   .tk-theater {
+    flex: 0 1 auto;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-family: var(--font-sans);
     font-weight: 700;
     font-stretch: 125%;
-    font-size: 2.3cqw;
+    font-size: max(var(--fs-min), 2.3cqw);
     letter-spacing: 0.03em;
   }
+  /* The serial is decoration; drop it when the ticket is too narrow for it
+     and the readable-size admit line to share a row. */
+  @container (width < 330px) {
+    .tk-serial {
+      display: none;
+    }
+  }
+  /* Long theater names fit on narrow tickets at normal width. */
+  @container (width < 360px) {
+    .tk-theater {
+      font-stretch: 100%;
+    }
+  }
+  /* The theater name gets the room; the barcode fills whatever is left. */
   .tk-bars {
-    flex-shrink: 0;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 26cqw;
     height: 4.4cqw;
-    width: 26cqw;
     background: var(--bars);
   }
   .tk-stub {
@@ -274,10 +297,10 @@
     white-space: nowrap;
   }
   .tk-rate {
-    font-size: 3cqw;
+    font-size: max(calc(var(--fs-min) + 1px), 3cqw);
   }
   .tk-badge {
-    font-size: 2.1cqw;
+    font-size: max(calc(var(--fs-min) - 0.5px), 2.1cqw);
   }
   .tk-price {
     font-weight: 800;
@@ -293,7 +316,7 @@
     writing-mode: vertical-rl;
     rotate: 180deg;
     white-space: nowrap;
-    font: 500 2.1cqw/1 var(--font-mono);
+    font: 500 max(calc(var(--fs-min) - 0.5px), 2.1cqw)/1 var(--font-mono);
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }

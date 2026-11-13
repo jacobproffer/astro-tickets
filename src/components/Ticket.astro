@@ -64,7 +64,7 @@ const kind = international ? "International" : rerelease ? "Re-release" : null;
           kind ? (
             <span class="tk-hl tk-badge">{kind}</span>
           ) : (
-            <span aria-hidden="true">{serial(seed)}</span>
+            <span class="tk-serial" aria-hidden="true">{serial(seed)}</span>
           )
         }
       </div>

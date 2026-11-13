@@ -200,7 +200,7 @@ const receiptSerial = serial(`receipt-${totalTickets}`).replace(/(\d{4})(?=\d)/g
     </div>
 
     <div class="receipt relative mx-auto w-full max-w-[380px] rotate-2 bg-receipt px-6 pt-7 pb-11 font-mono text-[13px] leading-relaxed uppercase">
-      <p class="display text-center text-4xl">Deadman's Brew</p>
+      <div class="display text-center text-4xl">Deadman's Brew</div>
       <p class="mt-1 text-center text-[11px] text-muted">
         Ticket collection · Est. {firstYear}<br />
         Order #{totalTickets} · {printedOn}
@@ -227,9 +227,9 @@ const receiptSerial = serial(`receipt-${totalTickets}`).replace(/(\d{4})(?=\d)/g
         <span class="leader" aria-hidden="true"></span>
         <span class="tabular-nums">{money(totalSpent)}</span>
       </div>
-      <p class="script my-4 -rotate-6 text-center text-3xl whitespace-nowrap text-blue" aria-hidden="true">
+      <div class="script my-4 -rotate-6 text-center text-3xl whitespace-nowrap text-blue" aria-hidden="true">
         thanks for watching
-      </p>
+      </div>
       <div class="h-12" style={`background: ${barcode("deadmans-brew-receipt")}`} aria-hidden="true"></div>
       <p class="mt-1.5 text-center text-[11px] text-muted" aria-hidden="true">
         {receiptSerial} · Keep this stub

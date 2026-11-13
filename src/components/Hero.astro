@@ -82,12 +82,12 @@ const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
     }
   </template>
 
-  <p
+  <div
     class="tagline script pointer-events-none absolute top-1/2 left-1/2 z-[60] -translate-1/2 -rotate-[7deg] whitespace-nowrap text-[clamp(2rem,5vw,4.75rem)]"
     aria-hidden="true"
   >
     a ticket collection
-  </p>
+  </div>
 
   <div
     class="absolute inset-x-4 bottom-[calc(21vw+1rem)] z-[70] flex sm:bottom-4 flex-wrap items-end justify-between gap-3"
@@ -152,6 +152,7 @@ const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
 
   /* Without JS the stubs fan out around the center. */
   .pile :global(.pile-tk) {
+    --fs-min: 0px;
     --tw: clamp(200px, 27vw, 360px);
     position: absolute;
     left: var(--x, 50%);
