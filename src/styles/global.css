@@ -6,13 +6,18 @@
   --color-paper: #f1ebe0;
   --color-receipt: #f7f5f1;
   --color-stock: #d3d0c8;
-  --color-muted: #6b645c;
-  --color-orange: #ff5b23;
-  /* Darker orange for text that must be read on the gray stock (>= 3:1 large,
-     4.5:1 small). The bright orange is for fills and the logotype. */
-  --color-rust: #9a3412;
-  --color-blue: #2f55a4;
-  --color-green: #2f7d52;
+  --color-muted: #5c564f;
+  /* One deep riso orange for everything: the wordmark, fills, notes, charts.
+     Large text on the grained stock ~3.5:1 (needs 3), paper text on an orange
+     fill ~4.9:1 (needs 4.5), as a graphic on paper ~4.2:1 (needs 3). */
+  --color-orange: #b8390c;
+  /* Text inks are tuned for WCAG 2.2 AA (4.5:1) against the grain-darkened
+     backgrounds a pixel-sampling checker sees (~#ccc9c0 stock, ~#e1dacf paper),
+     not just the flat tokens. Orange is for large text and fills; small
+     orange text (link hovers) uses the darker rust to reach 4.5:1. */
+  --color-rust: #8c2f10;
+  --color-blue: #2a4d96;
+  --color-green: #22643f;
 
   /* Archivo is variable on width (62–125%) and weight. Condensed for display,
      expanded for small caps-style labels. */
@@ -44,14 +49,15 @@
     background-image: var(--noise);
   }
 
+  /* Ink, not orange: focus indicators need 3:1 against the gray stock. */
   :focus-visible {
-    outline: 3px solid var(--color-orange);
+    outline: 3px solid var(--color-ink);
     outline-offset: 2px;
   }
 
   ::selection {
     background: var(--color-orange);
-    color: var(--color-ink);
+    color: var(--color-paper);
   }
 }
 
@@ -93,19 +99,17 @@
   }
 }
 
-/* Riso misregistration: a second ink peeking out from behind. */
+/* Riso misregistration: a second ink peeking out from behind. Solid ink, not
+   translucent, so the offset itself still clears 3:1 for large text. */
 @utility misprint {
-  text-shadow: -0.012em 0.008em 0 rgb(47 85 164 / 0.55);
-}
-@utility misprint-orange {
-  text-shadow: -0.012em 0.008em 0 rgb(255 91 35 / 0.55);
+  text-shadow: -0.012em 0.008em 0 var(--color-blue);
 }
 
 /* Poster-style highlight bar. */
 @utility hl {
   display: inline-block;
   background: var(--color-orange);
-  color: var(--color-ink);
+  color: var(--color-paper);
   padding: 0.2em 0.55em 0.12em;
   font-family: var(--font-sans);
   font-weight: 800;
@@ -166,7 +170,7 @@
     --fs-min: 10.5px;
     --ink-c: var(--color-ink);
     --hl-bg: var(--color-orange);
-    --hl-fg: var(--color-ink);
+    --hl-fg: var(--color-paper);
     container-type: inline-size;
     display: block;
     color: var(--ink-c);
@@ -334,7 +338,7 @@
     outline: none;
   }
   a.tk:focus-visible .tk-in {
-    box-shadow: inset 0 0 0 0.8cqw var(--color-orange);
+    box-shadow: inset 0 0 0 0.8cqw var(--color-ink);
   }
 
   /* Tickets slide in from below as they scroll into view. Only tickets that
