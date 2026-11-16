@@ -3,6 +3,10 @@ import "@fontsource-variable/archivo/wdth.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
 import "@fontsource/nothing-you-could-do/latin-400.css";
 import "@styles/global.css";
+// Same hashed files the @font-face rules above point at, so preloading them
+// doesn't cost a second download.
+import archivoLatin from "@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url";
+import scriptLatin from "@fontsource/nothing-you-could-do/files/nothing-you-could-do-latin-400-normal.woff2?url";
 import SiteSEO from "@components/SiteSEO.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
@@ -21,6 +25,26 @@ const { pageTitle, pageDescription } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+
+    <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={scriptLatin} as="font" type="font/woff2" crossorigin />
+    <!--
+      Fonts use font-display: swap, so on a cold load the hero wordmark would
+      slam in set in the wider fallback face, then snap to condensed Archivo.
+      Hold the hero's entrance animations on their first (invisible) frame
+      until the display fonts are ready, capped so text never stays hidden.
+    -->
+    <script is:inline>
+      (() => {
+        const fonts = ['900 1em "Archivo Variable"', '1em "Nothing You Could Do"'];
+        if (!document.fonts || fonts.every((f) => document.fonts.check(f))) return;
+        const root = document.documentElement;
+        root.classList.add("fonts-pending");
+        const done = () => root.classList.remove("fonts-pending");
+        Promise.all(fonts.map((f) => document.fonts.load(f))).then(done, done);
+        setTimeout(done, 1500);
+      })();
+    </script>
 
 
     <link
