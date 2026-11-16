@@ -151,6 +151,12 @@
 
 /* ---- Keyframes ---- */
 
+/* Set by an inline script in BaseLayout until the display fonts load. Both
+   animations fill backwards, so pausing holds them invisible. */
+.fonts-pending :is(.animate-slam, .animate-write) {
+  animation-play-state: paused;
+}
+
 @keyframes slam {
   from {
     transform: translateY(var(--from, -40%));
