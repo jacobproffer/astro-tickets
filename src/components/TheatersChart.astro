@@ -1,4 +1,5 @@
 ---
+import ChartCard from "@components/ChartCard.astro";
 import type { Ticket } from "@utils/sanity";
 
 interface Props {
@@ -22,15 +23,14 @@ const data = Object.entries(theaterCounts)
   .sort((a, b) => b.count - a.count);
 ---
 
-<div class="flex flex-col gap-2 p-4 border border-solid">
-  <h2 class="text-xl md:text-2xl">Theater Breakdown</h2>
+<ChartCard title="Theater Breakdown">
   <figure
     id="theaters-chart"
     class="w-full overflow-x-auto lg:flex-1"
     aria-label="Movies by theater chart"
   >
   </figure>
-</div>
+</ChartCard>
 
 <script>
   import * as Plot from "@observablehq/plot";
@@ -84,7 +84,7 @@ const data = Object.entries(theaterCounts)
           Plot.barX(chartData, {
             y: "theater",
             x: "count",
-            fill: "#2e160e",
+            fill: "#b8390c",
             sort: { y: "-x" },
             tip: {
               format: {

@@ -31,7 +31,8 @@ const pageDescription = `Browse ${tickets.length} ${rating} rated movie tickets 
 
 <BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
   <Section
-    headline={`${rating} Rated Movies (${tickets.length})`}
+    headline={`Rated ${rating}`}
+    note={`${tickets.length} ${tickets.length === 1 ? "movie" : "movies"}`}
     headingLevel={1}
   >
     <PageHeader

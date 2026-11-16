@@ -1,0 +1,21 @@
+---
+/** Paper card around an Observable Plot chart. */
+interface Props {
+  title: string;
+  class?: string;
+}
+
+const { title, class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "flex flex-col gap-2 bg-paper bg-(image:--noise) p-5 font-mono text-sm [filter:var(--filter-card)]",
+    // Plot's own SVG text: narrow sans so long theater names fit the axis.
+    "[&_svg]:bg-transparent [&_svg]:font-sans [&_svg]:text-[11px] [&_svg]:font-stretch-[87.5%]",
+    className,
+  ]}
+>
+  <h2 class="display mb-1 text-5xl">{title}</h2>
+  <slot />
+</div>

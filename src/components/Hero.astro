@@ -1,39 +1,203 @@
 ---
-import Container from "@components/Container.astro";
-import Stat from "@components/Stat.astro";
-import Graphic from "@images/deadmans-brew.svg";
-import { getTickets } from "@utils/sanity";
+import Ticket from "@components/Ticket.astro";
+import { getTicketDate, getTickets } from "@utils/sanity";
 
-const initialYear = 2007;
-const currentYear = new Date().getFullYear();
-const years = currentYear - initialYear;
+const tickets = (await getTickets()).sort(
+  (a, b) => getTicketDate(b).getTime() - getTicketDate(a).getTime(),
+);
 
-const tickets = await getTickets();
-const ticketCount = tickets.length;
+const first = tickets.at(-1);
+const since = first
+  ? getTicketDate(first).toLocaleDateString("en-US", {
+      month: "2-digit",
+      year: "numeric",
+    })
+  : "";
+const theaterCount = new Set(tickets.map((t) => t.theater)).size;
 
-// Get unique theaters from tickets
-const uniqueTheaters = new Set(tickets.map((ticket) => ticket.theater));
-const theaterCount = uniqueTheaters.size;
+// The 12 newest land on the pile, oldest first so the newest ends on top.
+const pile = tickets.slice(0, 12).reverse();
+
+// "Toss another" draws from older stubs spread across the whole collection.
+const rest = tickets.slice(12);
+const step = Math.max(1, Math.floor(rest.length / 40));
+const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
+
+// Pile copies: scattered by the script below (which sets --x/--y/--r), fanned
+// out by nth-child without JS, and drop in on load. They keep true-scale print
+// (--fs-min 0) since they're decorative and repeated in Recent.
+const pileClass = [
+  "pile-tk absolute left-(--x) top-[var(--y,50%)] w-(--tw) -mt-[calc(var(--tw)/4.1)] -ml-[calc(var(--tw)/2)] rotate-(--r) animate-drop",
+  "[--fs-min:0px] [--tw:clamp(200px,27vw,360px)] select-none",
+  "odd:[--r:-9deg] odd:[--x:42%] even:[--r:8deg] even:[--x:58%]",
+  "data-lifted:scale-103 data-lifted:cursor-grabbing data-lifted:transition-none data-lifted:[filter:drop-shadow(0_18px_22px_rgb(0_0_0/0.25))]",
+].join(" ");
 ---
 
-<Container class="grid gap-4 text-black bg-card mb-4" as="section">
-  <h1 class="sr-only">Deadman's Brew Movie Ticket Collection</h1>
-  <Graphic class="max-w-full w-full h-auto block" />
-  <ul
-    class="grid border-t border-b border-black border-solid text-2xl md:grid-cols-3 lg:text-4xl"
+<section
+  class="grain h-[calc(100svh-4.5rem)] min-h-[560px] max-h-[960px] overflow-hidden"
+  aria-labelledby="hero-title"
+>
+  <h1 id="hero-title" class="sr-only">Deadman's Brew, a movie ticket collection</h1>
+
+  <div
+    class="display misprint pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 text-[clamp(4rem,26vw,25rem)] leading-[0.78] whitespace-nowrap text-orange"
+    aria-hidden="true"
   >
-    <li
-      class="flex items-baseline gap-3 py-3 border-b border-black border-solid md:border-r md:border-b-0 md:pr-4 md:py-4"
+    <span class="inline-block animate-slam">Deadman's</span>
+  </div>
+  <div
+    class="display misprint pointer-events-none absolute -bottom-[0.06em] left-1/2 -translate-x-1/2 text-[clamp(4rem,26vw,25rem)] leading-[0.78] whitespace-nowrap text-orange [--from:40%] [--slam-delay:0.1s]"
+    aria-hidden="true"
+  >
+    <span class="inline-block animate-slam">Brew</span>
+  </div>
+
+  <div id="pile" class="absolute inset-0 z-10" aria-hidden="true" inert>
+    {
+      pile.map((t, i) => (
+        <Ticket
+          id={t._id}
+          as="div"
+          title={t.title}
+          theater={t.theater}
+          time={t.date}
+          price={t.price}
+          rating={t.rating}
+          international={t.international}
+          rerelease={t.rerelease}
+          class={pileClass}
+          style={`--d:${(0.35 + i * 0.09).toFixed(2)}s`}
+        />
+      ))
+    }
+  </div>
+
+  <template id="pile-pool">
+    {
+      pool.map((t) => (
+        <Ticket
+          id={t._id}
+          as="div"
+          title={t.title}
+          theater={t.theater}
+          time={t.date}
+          price={t.price}
+          rating={t.rating}
+          international={t.international}
+          rerelease={t.rerelease}
+          class={pileClass}
+        />
+      ))
+    }
+  </template>
+
+  <div
+    class="script cut-tear-sides pointer-events-none absolute top-1/2 left-1/2 z-[60] -translate-1/2 -rotate-[7deg] animate-write bg-[rgb(236_226_205/0.92)] px-[0.6em] pt-[0.08em] pb-[0.02em] text-[clamp(2rem,5vw,4.75rem)] whitespace-nowrap drop-shadow-[0_2px_3px_rgb(0_0_0/0.12)]"
+    aria-hidden="true"
+  >
+    a ticket collection
+  </div>
+
+  <div
+    class="absolute inset-x-4 bottom-[calc(21vw+1rem)] z-[70] flex sm:bottom-4 flex-wrap items-end justify-between gap-3"
+  >
+    <ul class="flex flex-wrap gap-2" aria-label="Collection at a glance">
+      <li class="hl">{tickets.length} tickets</li>
+      <li class="hl">{theaterCount} theaters</li>
+      {since && <li class="hl">Since {since.replace("/", " / ")}</li>}
+    </ul>
+    <button
+      type="button"
+      id="toss"
+      class="btn border-ink bg-ink text-paper hover:border-orange hover:bg-orange hover:text-paper"
+      hidden
     >
-      <Stat label="Years" value={years} />
-    </li>
-    <li
-      class="flex items-baseline gap-3 py-3 border-b border-black border-solid md:border-r md:border-b-0 md:px-4 md:py-4"
-    >
-      <Stat label="Theaters" value={theaterCount} />
-    </li>
-    <li class="flex items-baseline gap-3 py-3 md:pl-4 md:py-4">
-      <Stat label="Tickets" value={ticketCount} />
-    </li>
-  </ul>
-</Container>
+      Toss another stub ↓
+    </button>
+  </div>
+</section>
+
+<script>
+  function initPile() {
+    const pile = document.getElementById("pile");
+    const pool = document.getElementById("pile-pool") as HTMLTemplateElement | null;
+    const toss = document.getElementById("toss") as HTMLButtonElement | null;
+    if (!pile || pile.dataset.ready) return;
+    pile.dataset.ready = "true";
+
+    // Seeded so the pile lands the same way on every visit.
+    let seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    let z = 1;
+
+    const canDrag = window.matchMedia("(pointer: fine)").matches;
+    if (canDrag) pile.removeAttribute("inert");
+
+    function place(el: HTMLElement) {
+      el.style.setProperty("--x", `${50 + (rnd() - 0.5) * 62}%`);
+      el.style.setProperty("--y", `${50 + (rnd() - 0.5) * 42}%`);
+      el.style.setProperty("--r", `${(rnd() - 0.5) * 50}deg`);
+      el.style.setProperty("--spin", `${(rnd() - 0.5) * 120}deg`);
+      el.style.zIndex = String(++z);
+      if (canDrag) {
+        el.classList.add("cursor-grab", "touch-none");
+        makeDraggable(el);
+      }
+    }
+
+    function makeDraggable(el: HTMLElement) {
+      let ox = 0;
+      let oy = 0;
+      el.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0) return;
+        el.setPointerCapture(e.pointerId);
+        el.style.zIndex = String(++z);
+        el.dataset.lifted = "";
+        const sx = e.clientX - ox;
+        const sy = e.clientY - oy;
+        const move = (ev: PointerEvent) => {
+          ox = ev.clientX - sx;
+          oy = ev.clientY - sy;
+          el.style.translate = `${ox}px ${oy}px`;
+        };
+        const up = () => {
+          delete el.dataset.lifted;
+          el.removeEventListener("pointermove", move);
+          el.removeEventListener("pointerup", up);
+          el.removeEventListener("pointercancel", up);
+        };
+        el.addEventListener("pointermove", move);
+        el.addEventListener("pointerup", up);
+        el.addEventListener("pointercancel", up);
+      });
+    }
+
+    pile.querySelectorAll<HTMLElement>(".pile-tk").forEach(place);
+
+    const extras = pool
+      ? [...pool.content.querySelectorAll<HTMLElement>(".pile-tk")]
+      : [];
+    if (toss && extras.length) {
+      // Shuffle so each visit tosses a different run of stubs.
+      for (let i = extras.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [extras[i], extras[j]] = [extras[j], extras[i]];
+      }
+      let next = 0;
+      toss.hidden = false;
+      toss.addEventListener("click", () => {
+        const el = extras[next++ % extras.length].cloneNode(true) as HTMLElement;
+        el.style.setProperty("--d", "0s");
+        place(el);
+        pile.appendChild(el);
+        // Keep the DOM from growing without bound.
+        const all = pile.querySelectorAll(".pile-tk");
+        if (all.length > 40) all[0].remove();
+      });
+    }
+  }
+
+  initPile();
+  document.addEventListener("astro:page-load", initPile);
+</script>

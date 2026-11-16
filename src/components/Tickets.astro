@@ -4,32 +4,20 @@ import Section from "@components/Section.astro";
 import TicketGrid from "@components/TicketGrid.astro";
 
 const tickets = await getTickets();
-// Sort tickets by date in descending order (newest first)
-const sortedTickets = tickets.sort((a, b) => {
-  const dateA = getTicketDate(a);
-  const dateB = getTicketDate(b);
-  return dateB.getTime() - dateA.getTime();
-});
+const sortedTickets = tickets.sort(
+  (a, b) => getTicketDate(b).getTime() - getTicketDate(a).getTime(),
+);
 
 // Show only the 12 most recent tickets on the homepage
 const recentTickets = sortedTickets.slice(0, 12);
 const totalTickets = tickets.length;
 ---
 
-<Section headline="Recent Tickets">
+<Section headline="Recent" note="stubs from the pile">
   <TicketGrid tickets={recentTickets} />
 
-  <div
-    class="flex justify-between items-center pb-4 mb-4 border-b border-solid"
-  >
-    <p>
-      Showing {recentTickets.length} of {totalTickets} tickets
-    </p>
-    <a
-      href="/tickets/"
-      class="border border-solid py-3 px-4 hover:bg-gray-100 focus:outline-4 focus:outline-black focus:-outline-offset-2 transition-colors"
-    >
-      View All {totalTickets} Tickets
-    </a>
+  <div class="flex flex-wrap items-center justify-between gap-4 border-b-2 border-ink pb-6">
+    <p class="label">Showing {recentTickets.length} of {totalTickets} tickets</p>
+    <a href="/tickets/" class="btn">View all {totalTickets} tickets →</a>
   </div>
 </Section>

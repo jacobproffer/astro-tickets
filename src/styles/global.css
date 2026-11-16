@@ -1,98 +1,203 @@
 @import "tailwindcss";
 
 @theme {
-  --color-black: #2e160e;
-  --color-white: #fefbf7;
-  --color-blue: #9cd0f2;
-  --color-gray-100: #c1c1bd;
-  --color-gray-200: #b3b2ae;
-  --color-green: #9bd49d;
-  --color-pink: #f598a0;
-  --color-card: #fcf6ee;
-  /* VT323 is the display face: headings, titles, prices, numbers. It only has
-     a regular weight and turns muddy below ~16px, so keep it large and unbolded. */
-  --font-mono: "VT323", monospace;
-  /* The "fine print" face for small labels, dates, and metadata. */
-  --font-print: "JetBrains Mono Variable", ui-monospace, monospace;
+  /* Spot-ink palette: think riso print on uncoated stock. */
+  --color-ink: #1d1a17;
+  --color-paper: #f1ebe0;
+  --color-receipt: #f7f5f1;
+  --color-stock: #d3d0c8;
+  --color-muted: #5c564f;
+  /* One deep riso orange for everything: the wordmark, fills, notes, charts.
+     Large text on the grained stock ~3.5:1 (needs 3), paper text on an orange
+     fill ~4.9:1 (needs 4.5), as a graphic on paper ~4.2:1 (needs 3). */
+  --color-orange: #b8390c;
+  /* Text inks are tuned for WCAG 2.2 AA (4.5:1) against the grain-darkened
+     backgrounds a pixel-sampling checker sees (~#ccc9c0 stock, ~#e1dacf paper),
+     not just the flat tokens. Orange is for large text and fills; small
+     orange text (link hovers) uses the darker rust to reach 4.5:1. */
+  --color-rust: #8c2f10;
+  --color-blue: #2a4d96;
+  --color-green: #22643f;
+
+  /* Archivo is variable on width (62–125%) and weight. Condensed for display,
+     expanded for small caps-style labels. */
+  --font-sans: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  /* The "fine print" face: dates, serials, receipt lines. */
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  /* Handwritten marginalia. Decorative only, keep it large. */
+  --font-script: "Nothing You Could Do", cursive;
+
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.25, 1.15);
+  --ease-settle: cubic-bezier(0.5, 0, 0.15, 1);
 }
+
+/* Inline so the per-element delay variables (--d, --slam-delay) resolve on
+   each element; a regular theme variable would resolve them once on :root. */
+@theme inline {
+  --animate-slam: slam 0.9s var(--ease-snap) var(--slam-delay, 0s) both;
+  --animate-drop: drop 0.85s cubic-bezier(0.3, 1.25, 0.5, 1) var(--d, 0s) both;
+  --animate-write: write 1.2s 0.9s ease-out both;
+}
+
+:root {
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .17 0 0 0 0 .14 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --icon-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E");
+  /* Stacked drop-shadows (contact + ambient). Tailwind's drop-shadow theme
+     tokens can't hold a list, so these are applied with [filter:var(...)]. */
+  --filter-ticket: drop-shadow(0 1px 1px rgb(0 0 0 / 0.18)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.08));
+  --filter-ticket-lift: drop-shadow(0 2px 2px rgb(0 0 0 / 0.15)) drop-shadow(0 16px 18px rgb(0 0 0 / 0.16));
+  --filter-card: drop-shadow(0 1px 1px rgb(0 0 0 / 0.12)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.06));
+}
+
+/* Scroll-driven animation, only where supported and motion is welcome. */
+@custom-variant scroll-anim {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      @slot;
+    }
+  }
+}
+
+@layer base {
+  html {
+    @apply bg-stock text-ink;
+  }
+
+  /* Paper grain lives in backgrounds (page, tickets, receipt, charts), not in
+     a page-wide overlay. An overlay darkens everything beneath it, but view
+     transitions draw moving elements above it, so tickets visibly brightened
+     mid-transition. */
+  body {
+    @apply bg-(image:--noise);
+  }
+
+  /* Ink, not orange: focus indicators need 3:1 against the gray stock. */
+  :focus-visible {
+    @apply outline-3 outline-offset-2 outline-ink;
+  }
+
+  ::selection {
+    @apply bg-orange text-paper;
+  }
+}
+
+/* ---- Shared type and UI patterns (used across many components) ---- */
 
 /* Ticket-stub fine print: tiny, uppercase, letterspaced. */
 @utility label {
-  font-family: var(--font-print);
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  @apply font-mono text-xs font-medium tracking-[0.06em] uppercase;
+}
+
+/* Giant condensed display type. Plain line-height (not leading-*) so a
+   text-* size on the element still sets its own line-height. */
+@utility display {
+  @apply font-sans font-black font-stretch-[62%] tracking-[-0.01em] uppercase;
+  line-height: 0.8;
+}
+
+/* Handwritten marginalia. */
+@utility script {
+  @apply font-script font-normal tracking-normal normal-case;
+}
+
+/* Poster-style highlight bar. Plain line-height (not leading-*) so a text-*
+   size on the element can still set its own. */
+@utility hl {
+  @apply inline-block bg-orange px-[0.55em] pt-[0.2em] pb-[0.12em] font-sans text-[0.8125rem] font-extrabold font-stretch-[112%] tracking-[0.02em] text-paper uppercase;
+  line-height: 1.1;
+}
+
+/* Square ink button. */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 border-2 border-ink px-4 py-3 font-mono text-[0.75rem] font-medium tracking-[0.06em] uppercase transition-colors duration-150 hover:bg-ink hover:text-paper;
 }
 
 /* Dotted leader between a key and its value, like a receipt line. */
 @utility leader {
-  flex: 1;
-  min-width: 1rem;
-  border-bottom: 1px dotted currentColor;
-  opacity: 0.6;
-  translate: 0 -0.25em;
+  @apply min-w-4 flex-1 -translate-y-[0.25em] border-b-[1.5px] border-dotted border-current opacity-60;
 }
 
-/* Custom View Transition Animations */
-@keyframes fade-in {
+/* Riso misregistration: a second ink peeking out from behind. Solid ink, not
+   translucent, so the offset itself still clears 3:1 for large text. */
+@utility misprint {
+  text-shadow: -0.012em 0.008em 0 var(--color-blue);
+}
+
+/* Grain printed over a whole area, type included. Only use it on areas that
+   contain no view-transition-named elements (hero, footer). The overlay sits
+   above anything tossed or dragged onto the hero pile. */
+@utility grain {
+  @apply relative bg-stock after:pointer-events-none after:absolute after:inset-0 after:z-1000 after:bg-(image:--noise) after:opacity-70 after:mix-blend-multiply;
+}
+
+/* ---- Cut-paper edges. Too long to read well as arbitrary classes. ---- */
+
+/* Semicircle bite out of a ticket's right edge. */
+@utility cut-ticket {
+  mask: radial-gradient(circle 8cqw at 100% 50%, #0000 98%, #000);
+}
+
+/* Torn zigzag bottom edge (receipt). */
+@utility cut-tear-bottom {
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 14px 100%;
+}
+
+/* Torn zigzag left and right ends (masking tape). */
+@utility cut-tear-sides {
+  mask:
+    conic-gradient(from 45deg at left, #0000, #000 1deg 89deg, #0000 90deg) left / 51% 0.3em repeat-y,
+    conic-gradient(from -135deg at right, #0000, #000 1deg 89deg, #0000 90deg) right / 51% 0.3em repeat-y;
+}
+
+/* ---- Keyframes ---- */
+
+@keyframes slam {
   from {
+    transform: translateY(var(--from, -40%));
     opacity: 0;
   }
 }
 
-@keyframes fade-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes slide-from-right {
+@keyframes drop {
   from {
-    transform: translateX(30px);
+    transform: translateY(-120vh) rotate(var(--spin, 30deg));
   }
 }
 
-@keyframes slide-to-left {
-  to {
-    transform: translateX(-30px);
-  }
-}
-
-@keyframes scale-up {
+@keyframes write {
   from {
-    transform: scale(0.95);
+    clip-path: inset(0 100% 0 0);
   }
-}
-
-@keyframes scale-down {
   to {
-    transform: scale(1.05);
+    clip-path: inset(0 0 0 0);
   }
 }
 
-/* View Transition API styles */
-::view-transition-old(root) {
-  animation: 300ms cubic-bezier(0.4, 0, 1, 1) both fade-out;
+@keyframes print {
+  from {
+    clip-path: inset(0 0 100% 0);
+    translate: 0 -60px;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    translate: 0 0;
+  }
 }
 
-::view-transition-new(root) {
-  animation: 300ms cubic-bezier(0, 0, 0.2, 1) both fade-in;
-}
+/* Page transitions use the browser's default crossfade, which blends the old
+   and new page without dipping to the background mid-way. */
 
-::view-transition-old(slide) {
-  animation: 300ms cubic-bezier(0.4, 0, 1, 1) both slide-to-left;
-}
-
-::view-transition-new(slide) {
-  animation: 300ms cubic-bezier(0, 0, 0.2, 1) both slide-from-right;
-}
-
-::view-transition-old(logo) {
-  animation: 400ms cubic-bezier(0.4, 0, 1, 1) both fade-out;
-}
-
-::view-transition-new(logo) {
-  animation: 400ms cubic-bezier(0, 0, 0.2, 1) 100ms both fade-in;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }

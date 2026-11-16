@@ -1,59 +1,37 @@
 ---
+import TicketShell from "@components/TicketShell.astro";
+
 interface Props {
   title: string;
   count: number;
   totalCount: number;
   href: string;
   type: "theater" | "rating";
+  subtitle?: string;
 }
 
 const { title, count, totalCount, href, type } = Astro.props;
 
 const typeLabels = {
-  theater: "Movie Theater",
-  rating: "Movie Rating",
+  theater: "Movie theater",
+  rating: "Movie rating",
 };
 
 const actionLabels = {
-  theater: "View Theater",
-  rating: "View Rating",
+  theater: "View theater",
+  rating: "View rating",
 };
 
 const percentage = Math.round((count / totalCount) * 100);
+const tickets = count === 1 ? "ticket" : "tickets";
 ---
 
-<li class="relative h-full">
-  <a
-    href={href}
-    class="flex h-full flex-col bg-white p-5 border-r border-b border-solid border-black hover:bg-green transition-colors focus:outline-4 focus:outline-black focus:-outline-offset-2"
-  >
-    <div class="label pt-px">
-      <span class="sr-only">{type}</span>
-      {typeLabels[type]}
-    </div>
-
-    <h2 class="mt-3 mb-6 text-3xl leading-none">{title}</h2>
-
-    <div class="mt-auto flex items-start justify-between gap-4">
-      <div class="flex flex-col gap-1">
-        <span class="label font-normal">Movies</span>
-        <span class="flex h-7 items-center text-xl leading-none tabular-nums">
-          {count}
-          {count === 1 ? " ticket" : " tickets"}
-        </span>
-      </div>
-      <div class="flex flex-col items-end gap-1">
-        <span class="label font-normal">Share</span>
-        <span class="flex h-7 min-w-8 items-center justify-center border border-solid px-1.5 text-xl leading-none tabular-nums">
-          {percentage}%
-        </span>
-      </div>
-    </div>
-
-    <div class="mt-4 flex items-baseline gap-2 pt-4 border-t border-solid border-black">
-      <span class="label" aria-hidden="true">{actionLabels[type]}</span>
-      <span class="leader" aria-hidden="true"></span>
-      <span class="text-2xl leading-none" aria-hidden="true">→</span>
-    </div>
-  </a>
+<li>
+  <TicketShell as="a" href={href} title={title} seed={title} titleAs="h2" lift enter>
+    <Fragment slot="top">{typeLabels[type]}</Fragment>
+    <span slot="bottom" aria-hidden="true">{actionLabels[type]} →</span>
+    <Fragment slot="rate">{percentage}%<span class="sr-only"> of all tickets</span></Fragment>
+    <span slot="side" aria-hidden="true">{count} {tickets}</span>
+    <Fragment slot="big">{count}<span class="sr-only"> {tickets}</span></Fragment>
+  </TicketShell>
 </li>

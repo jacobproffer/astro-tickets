@@ -41,7 +41,11 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
 ---
 
 <BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
-  <Section headline={`All Tickets (${page.total})`} headingLevel={1}>
+  <Section
+    headline="All tickets"
+    note={`${page.total} stubs and counting`}
+    headingLevel={1}
+  >
     <PageHeader
       title="tickets"
       showRange={{ start: page.start, end: page.end, total: page.total }}
@@ -53,54 +57,32 @@ const pageDescription = `Browse movie tickets ${page.start + 1}-${page.end + 1} 
 
     <nav
       aria-label="Ticket pagination"
-      class="flex items-center justify-between pb-4 border-b border-solid"
+      class="flex flex-wrap items-center justify-between gap-4 border-b-2 border-ink pb-6"
     >
-      <div
-        class="flex flex-1 flex-col sm:flex-row sm:items-center max-sm:gap-4 justify-between"
-      >
-        <p>
-          Showing <span class="font-medium">{page.start + 1}</span> to{" "}
-          <span class="font-medium">{page.end + 1}</span> of{" "}
-          <span class="font-medium">{page.total}</span> tickets
-        </p>
+      <p class="label">
+        Showing {page.start + 1} to {page.end + 1} of {page.total} tickets
+      </p>
 
-        <div class="flex items-center">
-          {
-            page.url.prev && (
-              <a
-                href={page.url.prev}
-                class="relative inline-flex items-center border-t border-l border-b border-solid px-4 py-3 text-black hover:bg-gray-100 focus:z-20 focus:outline-4 focus:outline-black focus:-outline-offset-2 transition-colors"
-              >
-                Previous
-              </a>
-            )
-          }
-
-          <span
-            class="relative inline-flex items-center px-4 py-3 border border-black border-solid z-10 text-white bg-black focus:z-20"
-          >
-            {page.currentPage}
-          </span>
-
-          {
-            page.lastPage > 1 && (
-              <span class="relative inline-flex items-center px-4 py-3">
-                of {page.lastPage}
-              </span>
-            )
-          }
-
-          {
-            page.url.next && (
-              <a
-                href={page.url.next}
-                class="relative inline-flex items-center border border-solid px-4 py-3 text-black hover:bg-gray-100 focus:z-20 focus:outline-4 focus:outline-black focus:-outline-offset-2 transition-colors"
-              >
-                Next
-              </a>
-            )
-          }
-        </div>
+      <div class="flex items-center gap-2">
+        {
+          page.url.prev && (
+            <a href={page.url.prev} class="btn" rel="prev">
+              ← Previous
+            </a>
+          )
+        }
+        <span class="hl px-3 py-2 text-base" aria-current="page">
+          <span class="sr-only">Page </span>
+          {page.currentPage}
+        </span>
+        {page.lastPage > 1 && <span class="label px-1">of {page.lastPage}</span>}
+        {
+          page.url.next && (
+            <a href={page.url.next} class="btn" rel="next">
+              Next →
+            </a>
+          )
+        }
       </div>
     </nav>
   </Section>

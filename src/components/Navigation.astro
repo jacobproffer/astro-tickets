@@ -1,71 +1,62 @@
 ---
 import NavLink from "@components/NavLink.astro";
 
+const links = [
+  { href: "/tickets/", label: "All tickets", match: "prefix" },
+  { href: "/theaters/", label: "Theaters", match: "prefix" },
+  { href: "/ratings/", label: "Ratings", match: "prefix" },
+  { href: "/search/", label: "Search", match: "exact" },
+] as const;
+
 const currentPath = Astro.url.pathname;
+const isActive = (href: string, match: string) =>
+  match === "exact" ? currentPath === href : currentPath.startsWith(href);
 ---
 
-<nav aria-label="primary">
-  <ul class="grid grid-cols-4 md:grid-cols-5 border-r border-solid">
-    <li class="w-full max-md:col-span-4 max-md:border-b border-solid">
-      <NavLink href="/" isActive={currentPath === "/"}> Home </NavLink>
-    </li>
-    <li class="w-full">
-      <NavLink href="/tickets/" isActive={currentPath.startsWith("/tickets")}>
-        All
-      </NavLink>
-    </li>
-    <li class="w-full">
-      <NavLink href="/theaters/" isActive={currentPath.startsWith("/theaters")}>
-        Theaters
-      </NavLink>
-    </li>
-    <li class="w-full">
-      <NavLink href="/ratings/" isActive={currentPath.startsWith("/ratings")}>
-        Ratings
-      </NavLink>
-    </li>
-    <li class="w-full">
-      <NavLink href="/search/" isActive={currentPath === "/search/"}>
-        Search
-      </NavLink>
-    </li>
+<nav
+  aria-label="primary"
+  class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4"
+>
+  <a
+    href="/"
+    class="hl text-sm transition-colors hover:bg-ink hover:text-paper"
+    aria-current={currentPath === "/" ? "page" : undefined}
+    data-match="exact"
+  >
+    Deadman's Brew
+  </a>
+  <ul class="flex flex-wrap gap-x-5 gap-y-2">
+    {
+      links.map((link) => (
+        <li>
+          <NavLink
+            href={link.href}
+            isActive={isActive(link.href, link.match)}
+            match={link.match}
+          >
+            {link.label}
+          </NavLink>
+        </li>
+      ))
+    }
   </ul>
 </nav>
 
 <script>
+  // The header persists across ClientRouter navigations, so keep
+  // aria-current in sync after each swap.
   document.addEventListener("astro:after-swap", () => {
-    const currentPath = window.location.pathname;
-    const nav = document.querySelector('nav[aria-label="primary"]');
-    if (!nav) return;
-
-    const links = nav.querySelectorAll("a");
-    links.forEach((link) => {
-      const href = link.getAttribute("href");
-      let isActive = false;
-
-      if (href === "/") {
-        isActive = currentPath === "/";
-      } else if (href === "/tickets/") {
-        isActive = currentPath.startsWith("/tickets");
-      } else if (href === "/theaters/") {
-        isActive =
-          currentPath === "/theaters/" || currentPath.startsWith("/theaters/");
-      } else if (href === "/ratings/") {
-        isActive =
-          currentPath === "/ratings/" || currentPath.startsWith("/ratings");
-      } else if (href === "/search/") {
-        isActive = currentPath === "/search/";
-      }
-
-      if (isActive) {
-        link.setAttribute("aria-current", "page");
-        link.classList.add("bg-black", "text-white");
-        link.classList.remove("bg-white");
-      } else {
-        link.removeAttribute("aria-current");
-        link.classList.add("bg-white");
-        link.classList.remove("bg-black", "text-white");
-      }
-    });
+    const path = window.location.pathname;
+    document
+      .querySelectorAll<HTMLAnchorElement>('nav[aria-label="primary"] a')
+      .forEach((link) => {
+        const href = link.getAttribute("href") ?? "";
+        const active =
+          link.dataset.match === "exact"
+            ? path === href
+            : path.startsWith(href);
+        if (active) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
   });
 </script>

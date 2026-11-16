@@ -30,7 +30,8 @@ const pageDescription = `Browse ${tickets.length} movie tickets from ${theater} 
 ---
 
 <BaseLayout pageTitle={pageTitle} pageDescription={pageDescription}>
-  <Section headline={`${theater} Movies (${tickets.length})`} headingLevel={1}>
+  <Section headline={theater}
+    note={`${tickets.length} ${tickets.length === 1 ? "movie" : "movies"}`} headingLevel={1}>
     <PageHeader
       title="movies"
       count={tickets.length}
