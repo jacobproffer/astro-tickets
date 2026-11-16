@@ -199,7 +199,7 @@ const receiptSerial = serial(`receipt-${totalTickets}`).replace(/(\d{4})(?=\d)/g
       </p>
     </div>
 
-    <div class="receipt relative mx-auto w-full max-w-[380px] rotate-2 bg-receipt px-6 pt-7 pb-11 font-mono text-[13px] leading-relaxed uppercase">
+    <div class="cut-tear-bottom relative mx-auto w-full max-w-[380px] rotate-2 bg-receipt bg-(image:--noise) px-6 pt-7 pb-11 font-mono text-[13px] leading-relaxed uppercase drop-shadow-[0_8px_14px_rgb(0_0_0/0.15)] scroll-anim:[animation-name:print] scroll-anim:[animation-fill-mode:both] scroll-anim:[animation-timing-function:linear] scroll-anim:[animation-timeline:view()] scroll-anim:[animation-range:entry_5%_cover_40%]">
       <div class="display text-center text-4xl">Deadman's Brew</div>
       <p class="mt-1 text-center text-[11px] text-muted">
         Ticket collection · Est. {firstYear}<br />
@@ -244,31 +244,3 @@ const receiptSerial = serial(`receipt-${totalTickets}`).replace(/(\d{4})(?=\d)/g
     <RatingsChart tickets={tickets} />
   </div>
 </Section>
-
-<style>
-  .receipt {
-    background-image: var(--noise);
-    filter: drop-shadow(0 8px 14px rgb(0 0 0 / 0.15));
-    -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 14px 100%;
-    mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 14px 100%;
-  }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .receipt {
-        animation: print linear both;
-        animation-timeline: view();
-        animation-range: entry 5% cover 40%;
-      }
-    }
-  }
-  @keyframes print {
-    from {
-      clip-path: inset(0 0 100% 0);
-      translate: 0 -60px;
-    }
-    to {
-      clip-path: inset(0 0 0 0);
-      translate: 0 0;
-    }
-  }
-</style>

@@ -58,7 +58,8 @@ const filterData = (ticket: TicketDocument) =>
       <li {...filterData(ticket)}>
         <Ticket
           id={ticket._id}
-          class="tk-enter tk-lift"
+          lift
+          enter
           style={`--enter-r: ${((i * 7) % 5) - 2}deg`}
           title={ticket.title}
           theater={ticket.theater}

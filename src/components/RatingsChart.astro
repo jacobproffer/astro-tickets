@@ -1,4 +1,5 @@
 ---
+import ChartCard from "@components/ChartCard.astro";
 import type { Ticket } from "@utils/sanity";
 
 interface Props {
@@ -35,15 +36,14 @@ const data = Object.entries(ratingCounts)
   });
 ---
 
-<div class="chart-card flex flex-col gap-2 bg-paper p-5 font-mono text-sm">
-  <h2 class="display mb-1 text-5xl">Rating Breakdown</h2>
+<ChartCard title="Rating Breakdown">
   <figure
     id="ratings-chart"
     class="w-full overflow-x-auto"
     aria-label="Movies by rating chart"
   >
   </figure>
-</div>
+</ChartCard>
 
 <script>
   import * as Plot from "@observablehq/plot";

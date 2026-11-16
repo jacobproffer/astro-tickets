@@ -16,7 +16,7 @@ const { theaters, years, ratings } = Astro.props;
     type="search"
     id="searchInput"
     placeholder="Search by title, theater, rating, price, or date..."
-    class="block w-full rounded-none border-b-2 border-ink bg-paper px-4 py-4 text-xl font-semibold placeholder:font-normal placeholder:text-muted focus-visible:outline-offset-[-3px]"
+    class="block w-full rounded-none border-b-2 border-ink bg-paper px-4 py-4 text-xl font-semibold placeholder:font-normal placeholder:text-muted [&::-webkit-search-cancel-button]:size-[1em] [&::-webkit-search-cancel-button]:cursor-pointer [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-cancel-button]:bg-(image:--icon-x) [&::-webkit-search-cancel-button]:bg-contain [&::-webkit-search-cancel-button]:bg-center [&::-webkit-search-cancel-button]:bg-no-repeat focus-visible:outline-offset-[-3px]"
     autocomplete="off"
   />
   <div class="grid grid-cols-2 gap-0.5 md:grid-cols-5">

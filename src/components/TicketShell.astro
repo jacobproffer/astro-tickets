@@ -1,0 +1,177 @@
+---
+/**
+ * The printed-ticket object shared by Ticket.astro and Card.astro: paper with
+ * a bite out of the right edge, a dashed perforation, and a stub.
+ *
+ * Everything inside is sized in cqw (percent of the ticket's width) so a
+ * ticket scales as one object. Readable text has a floor of --fs-min
+ * (10.5px by default); decorative pile copies set [--fs-min:0px] to keep
+ * their true proportions.
+ *
+ * Slots: top (left of the top row), badge (replaces the serial), bottom
+ * (theater line), rate (stub highlight), side (vertical stub text), big
+ * (stub figure).
+ */
+import { barcode, serial, splitTitle } from "@utils/ticket";
+
+type Kind = "regular" | "rerelease" | "international";
+
+interface Props {
+  title: string;
+  /** Stable seed for the serial and barcode. */
+  seed: string;
+  kind?: Kind;
+  /** Root element: an <article>, or an <a> for linked tickets. */
+  as?: "article" | "a";
+  href?: string;
+  /** Heading level for the title; pile copies use a plain element. */
+  titleAs?: "h2" | "h3" | "div";
+  /** Lift and tilt on hover (and focus, for links). */
+  lift?: boolean;
+  /** Slide in once on scroll (see scripts/reveal.ts). */
+  enter?: boolean;
+  class?: string;
+  style?: string;
+  [key: string]: any;
+}
+
+const {
+  title,
+  seed,
+  kind = "regular",
+  as: Root = "article",
+  href,
+  titleAs: TitleTag = "h3",
+  lift = false,
+  enter = false,
+  class: className,
+  style,
+  ...rest
+} = Astro.props;
+
+const { lead, tail, leadSize, tailSize } = splitTitle(title ?? "");
+
+// Render optional slots up front: a conditional slot (`{x && <span slot>}`)
+// still counts as provided, so only draw a wrapper when there's content.
+const slot = async (name: string) =>
+  Astro.slots.has(name) ? (await Astro.slots.render(name)).trim() : "";
+const [badge, rate, side, big] = await Promise.all(
+  ["badge", "rate", "side", "big"].map(slot),
+);
+
+// Each kind prints in one ink; its highlights are that ink with paper text.
+const ink = {
+  regular: "text-ink",
+  rerelease: "text-blue",
+  international: "text-green",
+}[kind];
+const highlight = {
+  regular: "bg-orange text-paper",
+  rerelease: "bg-blue text-paper",
+  international: "bg-green text-paper",
+}[kind];
+
+const hlBase =
+  "font-sans font-extrabold font-stretch-[112%] leading-none whitespace-nowrap px-[1.3cqw] pt-[0.55cqw] pb-[0.35cqw]";
+const rowBase =
+  "flex min-w-0 items-center justify-between gap-[2cqw] font-mono text-[max(var(--fs-min,10.5px),2.5cqw)] leading-none font-medium tracking-[0.04em] uppercase";
+---
+
+<Root
+  href={href}
+  class:list={[
+    "group block @container [filter:var(--filter-ticket)] transition-[opacity,transform,translate,rotate,filter] duration-500 ease-settle",
+    ink,
+    lift &&
+      "outline-none hover:-translate-y-[5px] hover:-rotate-[0.6deg] hover:[filter:var(--filter-ticket-lift)] focus-visible:-translate-y-[5px] focus-visible:-rotate-[0.6deg] focus-visible:[filter:var(--filter-ticket-lift)]",
+    enter &&
+      "data-pending:opacity-0 data-pending:[transform:translateY(32px)_rotate(var(--enter-r,2deg))]",
+    className,
+  ]}
+  style={`--bars: ${barcode(seed)};${style ?? ""}`}
+  data-enter={enter ? "" : undefined}
+  {...rest}
+>
+  <div
+    class="cut-ticket relative grid aspect-[2.05/1] grid-cols-[minmax(0,1fr)_23cqw] bg-paper bg-(image:--noise) group-focus-visible:shadow-[inset_0_0_0_0.8cqw_var(--color-ink)]"
+  >
+    <div class="flex min-w-0 flex-col px-[3.6cqw] pt-[3.2cqw] pb-[3cqw]">
+      <div class={rowBase}>
+        <span><slot name="top" /></span>
+        {
+          badge ? (
+            <span
+              class:list={[hlBase, highlight, "text-[max(calc(var(--fs-min,10.5px)-0.5px),2.1cqw)]"]}
+              set:html={badge}
+            />
+          ) : (
+            <span class="@max-[330px]:hidden" aria-hidden="true">
+              {serial(seed)}
+            </span>
+          )
+        }
+      </div>
+      <div class="my-[2cqw] border-t-[0.55cqw] border-current"></div>
+      <TitleTag
+        class="m-0 flex min-h-0 flex-1 flex-col justify-center overflow-hidden font-sans uppercase wrap-anywhere"
+      >
+        <span
+          class="leading-[0.84] font-extrabold font-stretch-[62%] tracking-[-0.005em]"
+          style={`font-size:${leadSize}cqw`}>{lead}</span
+        >
+        {
+          tail && (
+            <>
+              {" "}
+              <span
+                class="mt-[0.6cqw] leading-[0.98] font-black font-stretch-[125%]"
+                style={`font-size:${tailSize}cqw`}
+              >
+                {tail}
+              </span>
+            </>
+          )
+        }
+      </TitleTag>
+      <div class="my-[2cqw] border-t-[0.25cqw] border-current"></div>
+      <div class={rowBase}>
+        <span
+          class="min-w-0 shrink overflow-hidden font-sans text-[max(var(--fs-min,10.5px),2.3cqw)] font-bold font-stretch-[125%] tracking-[0.03em] text-ellipsis whitespace-nowrap @max-[360px]:font-stretch-[100%]"
+        >
+          <slot name="bottom" />
+        </span>
+        <span
+          class="h-[4.4cqw] max-w-[26cqw] min-w-0 flex-1 basis-0 bg-(image:--bars)"
+          aria-hidden="true"></span>
+      </div>
+    </div>
+    <div
+      class="relative flex flex-col items-center justify-between border-l-[0.3cqw] border-dashed border-current px-[2cqw] pt-[3.2cqw] pb-[3cqw] font-sans"
+    >
+      {
+        rate && (
+          <span
+            class:list={[hlBase, highlight, "text-[max(calc(var(--fs-min,10.5px)+1px),3cqw)]"]}
+            set:html={rate}
+          />
+        )
+      }
+      {
+        side && (
+          <span
+            class="absolute top-1/2 left-[2.2cqw] -translate-y-1/2 rotate-180 font-mono text-[max(calc(var(--fs-min,10.5px)-0.5px),2.1cqw)] leading-none font-medium tracking-[0.05em] whitespace-nowrap uppercase [writing-mode:vertical-rl]"
+            set:html={side}
+          />
+        )
+      }
+      {
+        big && (
+          <span
+            class="text-[7.5cqw] leading-none font-extrabold font-stretch-[62%]"
+            set:html={big}
+          />
+        )
+      }
+    </div>
+  </div>
+</Root>

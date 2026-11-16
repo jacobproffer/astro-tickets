@@ -22,28 +22,38 @@ const pile = tickets.slice(0, 12).reverse();
 const rest = tickets.slice(12);
 const step = Math.max(1, Math.floor(rest.length / 40));
 const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
+
+// Pile copies: scattered by the script below (which sets --x/--y/--r), fanned
+// out by nth-child without JS, and drop in on load. They keep true-scale print
+// (--fs-min 0) since they're decorative and repeated in Recent.
+const pileClass = [
+  "pile-tk absolute left-(--x) top-[var(--y,50%)] w-(--tw) -mt-[calc(var(--tw)/4.1)] -ml-[calc(var(--tw)/2)] rotate-(--r) animate-drop",
+  "[--fs-min:0px] [--tw:clamp(200px,27vw,360px)] select-none",
+  "odd:[--r:-9deg] odd:[--x:42%] even:[--r:8deg] even:[--x:58%]",
+  "data-lifted:scale-103 data-lifted:cursor-grabbing data-lifted:transition-none data-lifted:[filter:drop-shadow(0_18px_22px_rgb(0_0_0/0.25))]",
+].join(" ");
 ---
 
 <section
-  class="hero grain h-[calc(100svh-4.5rem)] min-h-[560px] max-h-[960px] overflow-hidden"
+  class="grain h-[calc(100svh-4.5rem)] min-h-[560px] max-h-[960px] overflow-hidden"
   aria-labelledby="hero-title"
 >
   <h1 id="hero-title" class="sr-only">Deadman's Brew, a movie ticket collection</h1>
 
   <div
-    class="giant display misprint pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap text-orange"
+    class="display misprint pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 text-[clamp(4rem,26vw,25rem)] leading-[0.78] whitespace-nowrap text-orange"
     aria-hidden="true"
   >
-    <span class="giant-in">Deadman's</span>
+    <span class="inline-block animate-slam">Deadman's</span>
   </div>
   <div
-    class="giant giant-bottom display misprint pointer-events-none absolute -bottom-[0.06em] left-1/2 -translate-x-1/2 whitespace-nowrap text-orange"
+    class="display misprint pointer-events-none absolute -bottom-[0.06em] left-1/2 -translate-x-1/2 text-[clamp(4rem,26vw,25rem)] leading-[0.78] whitespace-nowrap text-orange [--from:40%] [--slam-delay:0.1s]"
     aria-hidden="true"
   >
-    <span class="giant-in">Brew</span>
+    <span class="inline-block animate-slam">Brew</span>
   </div>
 
-  <div id="pile" class="pile absolute inset-0 z-10" aria-hidden="true" inert>
+  <div id="pile" class="absolute inset-0 z-10" aria-hidden="true" inert>
     {
       pile.map((t, i) => (
         <Ticket
@@ -56,7 +66,7 @@ const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
           rating={t.rating}
           international={t.international}
           rerelease={t.rerelease}
-          class="pile-tk"
+          class={pileClass}
           style={`--d:${(0.35 + i * 0.09).toFixed(2)}s`}
         />
       ))
@@ -76,14 +86,14 @@ const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
           rating={t.rating}
           international={t.international}
           rerelease={t.rerelease}
-          class="pile-tk"
+          class={pileClass}
         />
       ))
     }
   </template>
 
   <div
-    class="tagline script pointer-events-none absolute top-1/2 left-1/2 z-[60] -translate-1/2 -rotate-[7deg] whitespace-nowrap text-[clamp(2rem,5vw,4.75rem)]"
+    class="script cut-tear-sides pointer-events-none absolute top-1/2 left-1/2 z-[60] -translate-1/2 -rotate-[7deg] animate-write bg-[rgb(236_226_205/0.92)] px-[0.6em] pt-[0.08em] pb-[0.02em] text-[clamp(2rem,5vw,4.75rem)] whitespace-nowrap drop-shadow-[0_2px_3px_rgb(0_0_0/0.12)]"
     aria-hidden="true"
   >
     a ticket collection
@@ -108,84 +118,6 @@ const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
   </div>
 </section>
 
-<style>
-  .giant {
-    font-size: clamp(4rem, 26vw, 25rem);
-    line-height: 0.78;
-  }
-  .giant-in {
-    display: inline-block;
-    animation: slam 0.9s var(--ease-snap) both;
-  }
-  .giant-bottom .giant-in {
-    --from: 40%;
-    animation-delay: 0.1s;
-  }
-  @keyframes slam {
-    from {
-      transform: translateY(var(--from, -40%));
-      opacity: 0;
-    }
-  }
-
-  /* A strip of masking tape stuck across the pile, with torn ends. */
-  .tagline {
-    padding: 0.08em 0.6em 0.02em;
-    background: rgb(236 226 205 / 0.92);
-    --tear: conic-gradient(from 45deg at left, #0000, #000 1deg 89deg, #0000 90deg)
-        left / 51% 0.3em repeat-y,
-      conic-gradient(from -135deg at right, #0000, #000 1deg 89deg, #0000 90deg)
-        right / 51% 0.3em repeat-y;
-    -webkit-mask: var(--tear);
-    mask: var(--tear);
-    filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.12));
-    animation: write 1.2s 0.9s ease-out both;
-  }
-  @keyframes write {
-    from {
-      clip-path: inset(0 100% 0 0);
-    }
-    to {
-      clip-path: inset(0 0 0 0);
-    }
-  }
-
-  /* Without JS the stubs fan out around the center. */
-  .pile :global(.pile-tk) {
-    --fs-min: 0px;
-    --tw: clamp(200px, 27vw, 360px);
-    position: absolute;
-    left: var(--x, 50%);
-    top: var(--y, 50%);
-    width: var(--tw);
-    margin: calc(var(--tw) / -4.1) 0 0 calc(var(--tw) / -2);
-    rotate: var(--r, 0deg);
-    animation: drop 0.85s cubic-bezier(0.3, 1.25, 0.5, 1) var(--d, 0s) both;
-  }
-  .pile :global(.pile-tk:nth-child(odd)) {
-    --r: -9deg;
-    --x: 42%;
-  }
-  .pile :global(.pile-tk:nth-child(even)) {
-    --r: 8deg;
-    --x: 58%;
-  }
-  .pile.draggable :global(.pile-tk) {
-    cursor: grab;
-    touch-action: none;
-  }
-  .pile :global(.pile-tk.lifted) {
-    cursor: grabbing;
-    scale: 1.03;
-    filter: drop-shadow(0 18px 22px rgb(0 0 0 / 0.25));
-  }
-  @keyframes drop {
-    from {
-      transform: translateY(-120vh) rotate(var(--spin, 30deg));
-    }
-  }
-</style>
-
 <script>
   function initPile() {
     const pile = document.getElementById("pile");
@@ -200,10 +132,7 @@ const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
     let z = 1;
 
     const canDrag = window.matchMedia("(pointer: fine)").matches;
-    if (canDrag) {
-      pile.classList.add("draggable");
-      pile.removeAttribute("inert");
-    }
+    if (canDrag) pile.removeAttribute("inert");
 
     function place(el: HTMLElement) {
       el.style.setProperty("--x", `${50 + (rnd() - 0.5) * 62}%`);
@@ -211,7 +140,10 @@ const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
       el.style.setProperty("--r", `${(rnd() - 0.5) * 50}deg`);
       el.style.setProperty("--spin", `${(rnd() - 0.5) * 120}deg`);
       el.style.zIndex = String(++z);
-      if (canDrag) makeDraggable(el);
+      if (canDrag) {
+        el.classList.add("cursor-grab", "touch-none");
+        makeDraggable(el);
+      }
     }
 
     function makeDraggable(el: HTMLElement) {
@@ -221,7 +153,7 @@ const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
         if (e.button !== 0) return;
         el.setPointerCapture(e.pointerId);
         el.style.zIndex = String(++z);
-        el.classList.add("lifted");
+        el.dataset.lifted = "";
         const sx = e.clientX - ox;
         const sy = e.clientY - oy;
         const move = (ev: PointerEvent) => {
@@ -230,7 +162,7 @@ const pool = rest.filter((_, i) => i % step === 0).slice(0, 40);
           el.style.translate = `${ox}px ${oy}px`;
         };
         const up = () => {
-          el.classList.remove("lifted");
+          delete el.dataset.lifted;
           el.removeEventListener("pointermove", move);
           el.removeEventListener("pointerup", up);
           el.removeEventListener("pointercancel", up);

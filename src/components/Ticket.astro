@@ -1,6 +1,6 @@
 ---
+import TicketShell from "@components/TicketShell.astro";
 import { formatDateForStub, formatDateForDateTime } from "@utils/format";
-import { barcode, serial, splitTitle } from "@utils/ticket";
 
 interface Props {
   title: string;
@@ -14,7 +14,10 @@ interface Props {
   id?: string;
   /** Heading level for the title; pile copies use a plain element. */
   as?: "h2" | "h3" | "div";
+  lift?: boolean;
+  enter?: boolean;
   class?: string;
+  style?: string;
   [key: string]: any;
 }
 
@@ -27,84 +30,44 @@ const {
   international,
   rerelease,
   id,
-  as: TitleTag = "h3",
-  class: className,
-  style: extraStyle,
+  as = "h3",
   ...rest
 } = Astro.props;
 
-const seed = id ?? `${title}-${time}`;
-const { lead, tail, leadSize, tailSize } = splitTitle(title ?? "");
 const hasPrice = price !== undefined && price !== null;
 const wholePrice = hasPrice
   ? Number.isInteger(price)
     ? `$${price}`
     : `$${price.toFixed(2)}`
   : "";
-const kind = international ? "International" : rerelease ? "Re-release" : null;
+const kind = international ? "international" : rerelease ? "rerelease" : "regular";
+const badge = international ? "International" : rerelease ? "Re-release" : null;
 ---
 
-<article
-  class:list={[
-    "tk",
-    international && "tk-intl",
-    !international && rerelease && "tk-re",
-    className,
-  ]}
-  style={`--bars: ${barcode(seed)};${extraStyle ?? ""}`}
+<TicketShell
+  title={title}
+  seed={id ?? `${title}-${time}`}
+  kind={kind}
+  titleAs={as}
   {...rest}
 >
-  <div class="tk-in">
-    <div class="tk-main">
-      <div class="tk-row">
-        <span>
-          {hasPrice && <>Admit one / ${price.toFixed(2)}</>}
-        </span>
-        {
-          kind ? (
-            <span class="tk-hl tk-badge">{kind}</span>
-          ) : (
-            <span class="tk-serial" aria-hidden="true">{serial(seed)}</span>
-          )
-        }
-      </div>
-      <div class="tk-rule"></div>
-      <TitleTag class="tk-title">
-        <span class="tk-c" style={`font-size:${leadSize}cqw`}>{lead}</span>
-        {
-          tail && (
-            <>
-              {" "}
-              <span class="tk-x" style={`font-size:${tailSize}cqw`}>{tail}</span>
-            </>
-          )
-        }
-      </TitleTag>
-      <div class="tk-rule tk-rule-thin"></div>
-      <div class="tk-row">
-        <span class="tk-theater">
-          <span class="sr-only">Seen at </span>{theater}
-        </span>
-        <span class="tk-bars" aria-hidden="true"></span>
-      </div>
-    </div>
-    <div class="tk-stub">
-      {
-        rating && (
-          <span class="tk-hl tk-rate">
-            <span class="sr-only">Rated </span>
-            {rating}
-          </span>
-        )
-      }
-      {
-        time && (
-          <time class="tk-vdate" datetime={formatDateForDateTime(time)}>
-            {formatDateForStub(time)}
-          </time>
-        )
-      }
-      {hasPrice && <span class="tk-price" aria-hidden="true">{wholePrice}</span>}
-    </div>
-  </div>
-</article>
+  <Fragment slot="top">{hasPrice && <>Admit one / ${price.toFixed(2)}</>}</Fragment>
+  {badge && <Fragment slot="badge">{badge}</Fragment>}
+  <Fragment slot="bottom"><span class="sr-only">Seen at </span>{theater}</Fragment>
+  {
+    rating && (
+      <Fragment slot="rate">
+        <span class="sr-only">Rated </span>
+        {rating}
+      </Fragment>
+    )
+  }
+  {
+    time && (
+      <time slot="side" datetime={formatDateForDateTime(time)}>
+        {formatDateForStub(time)}
+      </time>
+    )
+  }
+  {hasPrice && <span slot="big" aria-hidden="true">{wholePrice}</span>}
+</TicketShell>

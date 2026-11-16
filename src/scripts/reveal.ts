@@ -1,4 +1,5 @@
-// One-time "dispense" entrance for tickets (.tk-enter) below the fold.
+// One-time "dispense" entrance for tickets rendered with `enter` (they carry
+// data-enter) below the fold. Hidden ones get data-pending until revealed.
 //
 // Tickets already on screen when a page loads are left alone, so a page
 // transition never captures them hidden. Everything else is hidden once and
@@ -14,7 +15,7 @@ function initReveal() {
   if (!("IntersectionObserver" in window)) return;
 
   const pending = [
-    ...document.querySelectorAll<HTMLElement>(".tk-enter:not([data-revealed])"),
+    ...document.querySelectorAll<HTMLElement>("[data-enter]:not([data-revealed])"),
   ].filter((el) => {
     const top = el.getBoundingClientRect().top;
     if (top < window.innerHeight) {
@@ -30,7 +31,7 @@ function initReveal() {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         const el = entry.target as HTMLElement;
-        el.classList.remove("is-pending");
+        delete el.dataset.pending;
         el.dataset.revealed = "";
         observer?.unobserve(el);
       }
@@ -39,7 +40,7 @@ function initReveal() {
   );
 
   for (const el of pending) {
-    el.classList.add("is-pending");
+    el.dataset.pending = "";
     observer.observe(el);
   }
 }

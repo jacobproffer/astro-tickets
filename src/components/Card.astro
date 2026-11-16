@@ -1,5 +1,5 @@
 ---
-import { barcode, serial, splitTitle } from "@utils/ticket";
+import TicketShell from "@components/TicketShell.astro";
 
 interface Props {
   title: string;
@@ -23,46 +23,15 @@ const actionLabels = {
 };
 
 const percentage = Math.round((count / totalCount) * 100);
-const { lead, tail, leadSize, tailSize } = splitTitle(title);
+const tickets = count === 1 ? "ticket" : "tickets";
 ---
 
 <li>
-  <a
-    href={href}
-    class="tk tk-enter tk-lift"
-    style={`--bars: ${barcode(title)}`}
-  >
-    <div class="tk-in">
-      <div class="tk-main">
-        <div class="tk-row">
-          <span>{typeLabels[type]}</span>
-          <span class="tk-serial" aria-hidden="true">{serial(title)}</span>
-        </div>
-        <div class="tk-rule"></div>
-        <h2 class="tk-title">
-          <span class="tk-c" style={`font-size:${leadSize}cqw`}>{lead}</span>
-          {
-            tail && (
-              <>
-                {" "}
-                <span class="tk-x" style={`font-size:${tailSize}cqw`}>{tail}</span>
-              </>
-            )
-          }
-        </h2>
-        <div class="tk-rule tk-rule-thin"></div>
-        <div class="tk-row">
-          <span class="tk-theater" aria-hidden="true">{actionLabels[type]} →</span>
-          <span class="tk-bars" aria-hidden="true"></span>
-        </div>
-      </div>
-      <div class="tk-stub">
-        <span class="tk-hl tk-rate">{percentage}%<span class="sr-only"> of all tickets</span></span>
-        <span class="tk-vdate" aria-hidden="true">{count === 1 ? "1 ticket" : `${count} tickets`}</span>
-        <span class="tk-price">
-          {count}<span class="sr-only">{count === 1 ? " ticket" : " tickets"}</span>
-        </span>
-      </div>
-    </div>
-  </a>
+  <TicketShell as="a" href={href} title={title} seed={title} titleAs="h2" lift enter>
+    <Fragment slot="top">{typeLabels[type]}</Fragment>
+    <span slot="bottom" aria-hidden="true">{actionLabels[type]} →</span>
+    <Fragment slot="rate">{percentage}%<span class="sr-only"> of all tickets</span></Fragment>
+    <span slot="side" aria-hidden="true">{count} {tickets}</span>
+    <Fragment slot="big">{count}<span class="sr-only"> {tickets}</span></Fragment>
+  </TicketShell>
 </li>

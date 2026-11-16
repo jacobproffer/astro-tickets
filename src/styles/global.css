@@ -31,14 +31,36 @@
   --ease-settle: cubic-bezier(0.5, 0, 0.15, 1);
 }
 
+/* Inline so the per-element delay variables (--d, --slam-delay) resolve on
+   each element; a regular theme variable would resolve them once on :root. */
+@theme inline {
+  --animate-slam: slam 0.9s var(--ease-snap) var(--slam-delay, 0s) both;
+  --animate-drop: drop 0.85s cubic-bezier(0.3, 1.25, 0.5, 1) var(--d, 0s) both;
+  --animate-write: write 1.2s 0.9s ease-out both;
+}
+
 :root {
   --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .17 0 0 0 0 .14 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --icon-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E");
+  /* Stacked drop-shadows (contact + ambient). Tailwind's drop-shadow theme
+     tokens can't hold a list, so these are applied with [filter:var(...)]. */
+  --filter-ticket: drop-shadow(0 1px 1px rgb(0 0 0 / 0.18)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.08));
+  --filter-ticket-lift: drop-shadow(0 2px 2px rgb(0 0 0 / 0.15)) drop-shadow(0 16px 18px rgb(0 0 0 / 0.16));
+  --filter-card: drop-shadow(0 1px 1px rgb(0 0 0 / 0.12)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.06));
+}
+
+/* Scroll-driven animation, only where supported and motion is welcome. */
+@custom-variant scroll-anim {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      @slot;
+    }
+  }
 }
 
 @layer base {
   html {
-    background: var(--color-stock);
-    color: var(--color-ink);
+    @apply bg-stock text-ink;
   }
 
   /* Paper grain lives in backgrounds (page, tickets, receipt, charts), not in
@@ -46,57 +68,53 @@
      transitions draw moving elements above it, so tickets visibly brightened
      mid-transition. */
   body {
-    background-image: var(--noise);
+    @apply bg-(image:--noise);
   }
 
   /* Ink, not orange: focus indicators need 3:1 against the gray stock. */
   :focus-visible {
-    outline: 3px solid var(--color-ink);
-    outline-offset: 2px;
+    @apply outline-3 outline-offset-2 outline-ink;
   }
 
   ::selection {
-    background: var(--color-orange);
-    color: var(--color-paper);
+    @apply bg-orange text-paper;
   }
 }
+
+/* ---- Shared type and UI patterns (used across many components) ---- */
 
 /* Ticket-stub fine print: tiny, uppercase, letterspaced. */
 @utility label {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  @apply font-mono text-xs font-medium tracking-[0.06em] uppercase;
 }
 
-/* Giant condensed display type. */
+/* Giant condensed display type. Plain line-height (not leading-*) so a
+   text-* size on the element still sets its own line-height. */
 @utility display {
-  font-family: var(--font-sans);
-  font-weight: 900;
-  font-stretch: 62%;
-  text-transform: uppercase;
+  @apply font-sans font-black font-stretch-[62%] tracking-[-0.01em] uppercase;
   line-height: 0.8;
-  letter-spacing: -0.01em;
 }
 
-/* Grain printed over a whole area, type included. Only use it on areas that
-   contain no view-transition-named elements (hero, footer). */
-@utility grain {
-  position: relative;
-  background-color: var(--color-stock);
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    /* Above anything tossed or dragged onto the hero pile. */
-    z-index: 1000;
-    pointer-events: none;
-    background-image: var(--noise);
-    mix-blend-mode: multiply;
-    opacity: 0.7;
-  }
+/* Handwritten marginalia. */
+@utility script {
+  @apply font-script font-normal tracking-normal normal-case;
+}
+
+/* Poster-style highlight bar. Plain line-height (not leading-*) so a text-*
+   size on the element can still set its own. */
+@utility hl {
+  @apply inline-block bg-orange px-[0.55em] pt-[0.2em] pb-[0.12em] font-sans text-[0.8125rem] font-extrabold font-stretch-[112%] tracking-[0.02em] text-paper uppercase;
+  line-height: 1.1;
+}
+
+/* Square ink button. */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 border-2 border-ink px-4 py-3 font-mono text-[0.75rem] font-medium tracking-[0.06em] uppercase transition-colors duration-150 hover:bg-ink hover:text-paper;
+}
+
+/* Dotted leader between a key and its value, like a receipt line. */
+@utility leader {
+  @apply min-w-4 flex-1 -translate-y-[0.25em] border-b-[1.5px] border-dotted border-current opacity-60;
 }
 
 /* Riso misregistration: a second ink peeking out from behind. Solid ink, not
@@ -105,256 +123,64 @@
   text-shadow: -0.012em 0.008em 0 var(--color-blue);
 }
 
-/* Poster-style highlight bar. */
-@utility hl {
-  display: inline-block;
-  background: var(--color-orange);
-  color: var(--color-paper);
-  padding: 0.2em 0.55em 0.12em;
-  font-family: var(--font-sans);
-  font-weight: 800;
-  font-stretch: 112%;
-  font-size: 0.8125rem;
-  line-height: 1.1;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+/* Grain printed over a whole area, type included. Only use it on areas that
+   contain no view-transition-named elements (hero, footer). The overlay sits
+   above anything tossed or dragged onto the hero pile. */
+@utility grain {
+  @apply relative bg-stock after:pointer-events-none after:absolute after:inset-0 after:z-1000 after:bg-(image:--noise) after:opacity-70 after:mix-blend-multiply;
 }
 
-/* Dotted leader between a key and its value, like a receipt line. */
-@utility leader {
-  flex: 1;
-  min-width: 1rem;
-  border-bottom: 1.5px dotted currentColor;
-  opacity: 0.6;
-  translate: 0 -0.25em;
+/* ---- Cut-paper edges. Too long to read well as arbitrary classes. ---- */
+
+/* Semicircle bite out of a ticket's right edge. */
+@utility cut-ticket {
+  mask: radial-gradient(circle 8cqw at 100% 50%, #0000 98%, #000);
 }
 
-/* Handwritten note with a halo so it reads over busy backgrounds. */
-@utility script {
-  font-family: var(--font-script);
-  font-weight: 400;
-  text-transform: none;
-  letter-spacing: 0;
+/* Torn zigzag bottom edge (receipt). */
+@utility cut-tear-bottom {
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 14px 100%;
 }
 
-/* Square ink button. */
-@utility btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--color-ink);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  transition:
-    background-color 0.15s,
-    color 0.15s;
-  &:hover {
-    background: var(--color-ink);
-    color: var(--color-paper);
-  }
+/* Torn zigzag left and right ends (masking tape). */
+@utility cut-tear-sides {
+  mask:
+    conic-gradient(from 45deg at left, #0000, #000 1deg 89deg, #0000 90deg) left / 51% 0.3em repeat-y,
+    conic-gradient(from -135deg at right, #0000, #000 1deg 89deg, #0000 90deg) right / 51% 0.3em repeat-y;
 }
 
-/* ------------------------------------------------------------------
-   Ticket shell, shared by Ticket.astro and Card.astro.
-   Everything inside is sized in cqw so a ticket scales as one object.
-------------------------------------------------------------------- */
-@layer components {
-  .tk {
-    /* Readable floor for ticket print; cqw sizes alone get tiny on narrow
-       tickets. Decorative pile copies opt out so they keep their proportions. */
-    --fs-min: 10.5px;
-    --ink-c: var(--color-ink);
-    --hl-bg: var(--color-orange);
-    --hl-fg: var(--color-paper);
-    container-type: inline-size;
-    display: block;
-    color: var(--ink-c);
-    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.18))
-      drop-shadow(0 6px 10px rgb(0 0 0 / 0.08));
-    transition:
-      translate 0.35s var(--ease-settle),
-      rotate 0.35s var(--ease-settle),
-      filter 0.35s;
-  }
-  .tk-re {
-    --ink-c: var(--color-blue);
-    --hl-bg: var(--color-blue);
-    --hl-fg: var(--color-paper);
-  }
-  .tk-intl {
-    --ink-c: var(--color-green);
-    --hl-bg: var(--color-green);
-    --hl-fg: var(--color-paper);
-  }
-  .tk-in {
-    position: relative;
-    aspect-ratio: 2.05 / 1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 23cqw;
-    background: var(--color-paper) var(--noise);
-    -webkit-mask: radial-gradient(circle 8cqw at 100% 50%, #0000 98%, #000);
-    mask: radial-gradient(circle 8cqw at 100% 50%, #0000 98%, #000);
-  }
-  .tk-main {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    padding: 3.2cqw 3.6cqw 3cqw;
-  }
-  .tk-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2cqw;
-    min-width: 0;
-    font: 500 max(var(--fs-min), 2.5cqw)/1 var(--font-mono);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  .tk-rule {
-    border-top: 0.55cqw solid currentColor;
-    margin: 2cqw 0;
-  }
-  .tk-rule-thin {
-    border-top-width: 0.25cqw;
-  }
-  .tk-title {
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin: 0;
-    font-family: var(--font-sans);
-    text-transform: uppercase;
-    overflow-wrap: anywhere;
-  }
-  .tk-c {
-    font-weight: 800;
-    font-stretch: 62%;
-    line-height: 0.84;
-    letter-spacing: -0.005em;
-  }
-  .tk-x {
-    font-weight: 900;
-    font-stretch: 125%;
-    line-height: 0.98;
-    margin-top: 0.6cqw;
-  }
-  .tk-theater {
-    flex: 0 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-family: var(--font-sans);
-    font-weight: 700;
-    font-stretch: 125%;
-    font-size: max(var(--fs-min), 2.3cqw);
-    letter-spacing: 0.03em;
-  }
-  /* The serial is decoration; drop it when the ticket is too narrow for it
-     and the readable-size admit line to share a row. */
-  @container (width < 330px) {
-    .tk-serial {
-      display: none;
-    }
-  }
-  /* Long theater names fit on narrow tickets at normal width. */
-  @container (width < 360px) {
-    .tk-theater {
-      font-stretch: 100%;
-    }
-  }
-  /* The theater name gets the room; the barcode fills whatever is left. */
-  .tk-bars {
-    flex: 1 1 0;
-    min-width: 0;
-    max-width: 26cqw;
-    height: 4.4cqw;
-    background: var(--bars);
-  }
-  .tk-stub {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    padding: 3.2cqw 2cqw 3cqw;
-    border-left: 0.3cqw dashed currentColor;
-    font-family: var(--font-sans);
-  }
-  .tk-hl {
-    background: var(--hl-bg);
-    color: var(--hl-fg);
-    font-family: var(--font-sans);
-    font-weight: 800;
-    font-stretch: 112%;
-    line-height: 1;
-    padding: 0.55cqw 1.3cqw 0.35cqw;
-    white-space: nowrap;
-  }
-  .tk-rate {
-    font-size: max(calc(var(--fs-min) + 1px), 3cqw);
-  }
-  .tk-badge {
-    font-size: max(calc(var(--fs-min) - 0.5px), 2.1cqw);
-  }
-  .tk-price {
-    font-weight: 800;
-    font-stretch: 62%;
-    font-size: 7.5cqw;
-    line-height: 1;
-  }
-  .tk-vdate {
-    position: absolute;
-    left: 2.2cqw;
-    top: 50%;
-    translate: 0 -50%;
-    writing-mode: vertical-rl;
-    rotate: 180deg;
-    white-space: nowrap;
-    font: 500 max(calc(var(--fs-min) - 0.5px), 2.1cqw)/1 var(--font-mono);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
+/* ---- Keyframes ---- */
 
-  /* Interactive tickets (links) lift and tilt a touch. */
-  a.tk:hover,
-  a.tk:focus-visible,
-  .tk-lift:hover {
-    translate: 0 -5px;
-    rotate: -0.6deg;
-    filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.15))
-      drop-shadow(0 16px 18px rgb(0 0 0 / 0.16));
-  }
-  a.tk:focus-visible {
-    outline: none;
-  }
-  a.tk:focus-visible .tk-in {
-    box-shadow: inset 0 0 0 0.8cqw var(--color-ink);
-  }
-
-  /* Tickets slide in from below as they scroll into view. Only tickets that
-     start below the fold are hidden (by reveal.ts), and each reveals once, so
-     page transitions and layout changes never catch them mid-animation. */
-  .tk-enter {
-    transition:
-      opacity 0.6s var(--ease-settle),
-      transform 0.6s var(--ease-settle),
-      translate 0.35s var(--ease-settle),
-      rotate 0.35s var(--ease-settle),
-      filter 0.35s;
-  }
-  .tk-enter.is-pending {
+@keyframes slam {
+  from {
+    transform: translateY(var(--from, -40%));
     opacity: 0;
-    transform: translateY(32px) rotate(var(--enter-r, 2deg));
+  }
+}
+
+@keyframes drop {
+  from {
+    transform: translateY(-120vh) rotate(var(--spin, 30deg));
+  }
+}
+
+@keyframes write {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes print {
+  from {
+    clip-path: inset(0 0 100% 0);
+    translate: 0 -60px;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    translate: 0 0;
   }
 }
 
@@ -374,16 +200,4 @@
   ::view-transition-new(*) {
     animation: none !important;
   }
-}
-
-/* Observable Plot charts on paper cards. */
-.chart-card {
-  background-image: var(--noise);
-  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.12)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.06));
-}
-.chart-card svg {
-  font-family: var(--font-sans);
-  font-stretch: 87.5%;
-  font-size: 11px;
-  background: transparent;
 }
